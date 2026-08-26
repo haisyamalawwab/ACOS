@@ -1,0 +1,278 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# 01. ACOS Setup, Pretrained Model Caching & Exploratory Data Analysis (EDA)\n",
+    "\n",
+    "**Aspect-Category-Opinion-Sentiment (ACOS) Quadruple Extraction**\n",
+    "\n",
+    "This notebook handles the initial setup for running ACOS on **Google Colab** (or Local environment), checks GPU acceleration, downloads and caches the pretrained `bert-base-uncased` model assets locally (to eliminate legacy S3 download failures), and performs comprehensive Exploratory Data Analysis (EDA) with publication-quality visualizations and CSV statistical exports."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## 1. Environment Setup & Dependency Installation\n",
+    "Install required dependencies (`torchcrf`, `transformers`, `huggingface_hub`, `seaborn`, `scikit-learn`)."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Check if running on Google Colab\n",
+    "try:\n",
+    "    import google.colab\n",
+    "    IN_COLAB = True\n",
+    "    print(\"🚀 Running in Google Colab environment.\")\n",
+    "except ImportError:\n",
+    "    IN_COLAB = False\n",
+    "    print(\"💻 Running in Local environment.\")\n",
+    "\n",
+    "# Install dependencies\n",
+    "!pip install -q pytorch-crf transformers huggingface_hub seaborn scikit-learn matplotlib pandas boto3\n",
+    "\n",
+    "import os\n",
+    "import sys\n",
+    "import torch\n",
+    "import numpy as np\n",
+    "import pandas as pd\n",
+    "import matplotlib.pyplot as plt\n",
+    "import seaborn as sns\n",
+    "\n",
+    "# Check GPU Availability\n",
+    "if torch.cuda.is_available():\n",
+    "    device = torch.device(\"cuda\")\n",
+    "    print(f\"✅ GPU Detected: {torch.cuda.get_device_name(0)}\")\n",
+    "    print(f\"   Total VRAM: {torch.cuda.get_device_properties(0).total_memory / 1e9:.2f} GB\")\n",
+    "else:\n",
+    "    device = torch.device(\"cpu\")\n",
+    "    print(\"⚠️ No GPU detected. Running on CPU.\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## 2. Directory Navigation & Path Initialization"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# 1. Detect if repository is present; if running in fresh Colab session, auto-clone repository\n",
+    "if not os.path.exists(\"Extract-Classify-ACOS\") and not os.path.exists(\"../Extract-Classify-ACOS\"):\n",
+    "    if not os.path.exists(\"ACOS\"):\n",
+    "        print(\"📥 Cloning ACOS repository from GitHub into Colab environment...\")\n",
+    "        !git clone https://github.com/haisyamalawwab/ACOS.git\n",
+    "\n",
+    "# 2. Robustly locate base project directory across Colab & Local\n",
+    "if os.path.exists(\"Extract-Classify-ACOS\"):\n",
+    "    base_project_dir = os.path.abspath(\".\")\n",
+    "elif os.path.exists(\"../Extract-Classify-ACOS\"):\n",
+    "    base_project_dir = os.path.abspath(\"..\")\n",
+    "elif os.path.exists(\"ACOS/Extract-Classify-ACOS\"):\n",
+    "    base_project_dir = os.path.abspath(\"ACOS\")\n",
+    "elif os.path.exists(\"/content/ACOS/Extract-Classify-ACOS\"):\n",
+    "    base_project_dir = \"/content/ACOS\"\n",
+    "elif os.path.exists(\"/content/Extract-Classify-ACOS\"):\n",
+    "    base_project_dir = \"/content\"\n",
+    "else:\n",
+    "    base_project_dir = os.path.abspath(\".\")\n",
+    "\n",
+    "extract_dir = os.path.join(base_project_dir, \"Extract-Classify-ACOS\")\n",
+    "notebooks_dir = os.path.join(base_project_dir, \"notebooks\")\n",
+    "\n",
+    "for p in [base_project_dir, extract_dir, notebooks_dir]:\n",
+    "    if p not in sys.path:\n",
+    "        sys.path.insert(0, p)\n",
+    "\n",
+    "# 3. Import colab_utils with fallback download\n",
+    "try:\n",
+    "    from colab_utils import setup_timestamped_run_dir, download_bert_pretrained, analyze_and_plot_eda\n",
+    "except ModuleNotFoundError:\n",
+    "    import urllib.request\n",
+    "    print(\"⚠️ Downloading colab_utils.py fallback directly from GitHub...\")\n",
+    "    raw_url = \"https://raw.githubusercontent.com/haisyamalawwab/ACOS/main/notebooks/colab_utils.py\"\n",
+    "    urllib.request.urlretrieve(raw_url, \"colab_utils.py\")\n",
+    "    from colab_utils import setup_timestamped_run_dir, download_bert_pretrained, analyze_and_plot_eda\n",
+    "\n",
+    "print(f\"📂 Base project directory: {base_project_dir}\")\n",
+    "print(f\"📁 Extract & Model directory: {extract_dir}\")\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## 3. Initialize Timestamped Session Directory (`DDMMYYYY_HMS`)\n",
+    "Every session automatically creates an isolated directory inside `results/` for storing plots, CSV tables, model checkpoints, and execution logs."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Choose domain: 'rest16' (Restaurant-ACOS) or 'laptop' (Laptop-ACOS)\n",
+    "DOMAIN = \"rest16\"\n",
+    "\n",
+    "results_base = os.path.join(base_project_dir, \"results\")\n",
+    "session_dirs = setup_timestamped_run_dir(base_dir=results_base, domain=DOMAIN)\n",
+    "\n",
+    "print(\"Directory structure:\")\n",
+    "for k, v in session_dirs.items():\n",
+    "    print(f\"  - {k}: {v}\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## 4. Download & Cache Pretrained BERT Model (`bert-base-uncased`)\n",
+    "Downloads `config.json`, `pytorch_model.bin`, and `vocab.txt` directly from HuggingFace Hub to local cache `./bert_base_uncased`."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "bert_cache_dir = os.path.join(base_project_dir, \"bert_base_uncased\")\n",
+    "download_bert_pretrained(target_dir=bert_cache_dir)\n",
+    "\n",
+    "# Verify files\n",
+    "for f in [\"config.json\", \"pytorch_model.bin\", \"vocab.txt\"]:\n",
+    "    fpath = os.path.join(bert_cache_dir, f)\n",
+    "    assert os.path.exists(fpath), f\"Missing BERT file: {fpath}\"\n",
+    "    print(f\"✅ {f} ({os.path.getsize(fpath)/1024/1024:.2f} MB)\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## 5. Exploratory Data Analysis (EDA) & Visualization\n",
+    "Perform deep statistical analysis on `Restaurant-ACOS` (`rest16`) and `Laptop-ACOS` (`laptop`) datasets:\n",
+    "- Sentence and Quadruple counts per split (Train / Dev / Test)\n",
+    "- Explicit vs. Implicit Aspect and Opinion proportions\n",
+    "- Top Aspect Categories & Sentiment Polarity distributions\n",
+    "- Automatic export to high-resolution PNG plots (`plots/`) and CSV files (`csv/`)."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "data_root = os.path.join(base_project_dir, \"data\")\n",
+    "\n",
+    "# Analyze chosen domain\n",
+    "df_stats, df_records = analyze_and_plot_eda(\n",
+    "    data_dir=data_root,\n",
+    "    domain=DOMAIN,\n",
+    "    output_plots_dir=session_dirs[\"plots\"],\n",
+    "    output_csv_dir=session_dirs[\"csv\"]\n",
+    ")\n",
+    "\n",
+    "print(f\"\\n=== [{DOMAIN.upper()}] Dataset Summary Table ===\")\n",
+    "display(df_stats)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Sample Data Preview with Implicit/Explicit Flags"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "if df_records is not None and not df_records.empty:\n",
+    "    print(f\"Total Quadruple Records Analyzed: {len(df_records)}\")\n",
+    "    display(df_records.head(10))\n",
+    "    \n",
+    "    # Summary of Implicit Aspect & Opinion presence\n",
+    "    imp_asp_pct = (df_records[\"Is_Implicit_Aspect\"].sum() / len(df_records)) * 100\n",
+    "    imp_opi_pct = (df_records[\"Is_Implicit_Opinion\"].sum() / len(df_records)) * 100\n",
+    "    print(f\"\\n🔍 Implicit Aspects: {df_records['Is_Implicit_Aspect'].sum()} ({imp_asp_pct:.2f}%)\")\n",
+    "    print(f\"🔍 Implicit Opinions: {df_records['Is_Implicit_Opinion'].sum()} ({imp_opi_pct:.2f}%)\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Display Generated Visualization Charts\n",
+    "Visualizations are rendered inline and saved to `plots/`."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from IPython.display import Image, display\n",
+    "\n",
+    "plot1 = os.path.join(session_dirs[\"plots\"], \"01_eda_dataset_distribution.png\")\n",
+    "plot2 = os.path.join(session_dirs[\"plots\"], \"02_eda_category_sentiment.png\")\n",
+    "\n",
+    "if os.path.exists(plot1):\n",
+    "    print(\"📊 Plot 1: Dataset Composition & Explicit vs. Implicit Distribution\")\n",
+    "    display(Image(plot1))\n",
+    "    \n",
+    "if os.path.exists(plot2):\n",
+    "    print(\"📊 Plot 2: Aspect Category & Sentiment Polarity Breakdown\")\n",
+    "    display(Image(plot2))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## 6. Summary of Exported Artifacts\n",
+    "All outputs from this step are safely persisted in the timestamped session directory:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "print(\"📁 Generated CSV Files:\")\n",
+    "for f in os.listdir(session_dirs[\"csv\"]):\n",
+    "    print(f\"  - {os.path.join(session_dirs['csv'], f)}\")\n",
+    "\n",
+    "print(\"\\n📁 Generated Plots:\")\n",
+    "for f in os.listdir(session_dirs[\"plots\"]):\n",
+    "    print(f\"  - {os.path.join(session_dirs['plots'], f)}\")\n",
+    "\n",
+    "print(\"\\n✨ Setup & EDA completed successfully. Proceed to '02_ACOS_Step1_Aspect_Opinion_Extraction.ipynb'!\")"
+   ]
+  }
+ ],
+ "metadata": {
+  "language_info": {
+   "name": "python"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 4
+}
