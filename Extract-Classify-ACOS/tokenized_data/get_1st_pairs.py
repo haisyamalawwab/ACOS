@@ -4,16 +4,31 @@ import codecs as cs
 import os
 import sys
 
-base_dir = sys.argv[1]
-domian_type = sys.argv[2]
+if len(sys.argv) > 3:
+    pred_file = sys.argv[1]
+    domian_type = sys.argv[2]
+    out_file = sys.argv[3]
+else:
+    base_dir = sys.argv[1]
+    domian_type = sys.argv[2]
+    cur_dir = os.path.join(base_dir, 'output', 'Extract-Classify-QUAD', domian_type)
+    pred_file = os.path.join(cur_dir + '_1st', 'pred4pipeline.txt')
+    # Check possible locations for tokenized_data
+    if os.path.exists(os.path.join(base_dir, 'tokenized_data')):
+        out_file = os.path.join(base_dir, 'tokenized_data', domian_type + '_test_pair_1st.tsv')
+    elif os.path.exists(os.path.join(base_dir, 'Extract-Classify-ACOS', 'tokenized_data')):
+        out_file = os.path.join(base_dir, 'Extract-Classify-ACOS', 'tokenized_data', domian_type + '_test_pair_1st.tsv')
+    else:
+        out_file = os.path.join(base_dir, 'ACOS-main', 'Extract-Classify-ACOS', 'tokenized_data', domian_type + '_test_pair_1st.tsv')
 
-cur_dir = base_dir+'/output/Extract-Classify-QUAD/'+domian_type
+if not os.path.exists(pred_file):
+    # Try alternate location
+    if os.path.exists(os.path.join(base_dir, 'pred4pipeline.txt')):
+        pred_file = os.path.join(base_dir, 'pred4pipeline.txt')
 
-if not os.path.exists(cur_dir+'_1st'):
-    os.makedirs(cur_dir+'_1st')
-
-f = cs.open(cur_dir+'_1st'+'/pred4pipeline.txt', 'r').readlines()
-wf = cs.open(base_dir+'/ACOS-main/Extract-Classify-ACOS/tokenized_data/'+domian_type+'_test_pair_1st.tsv', 'w')
+os.makedirs(os.path.dirname(out_file), exist_ok=True)
+f = cs.open(pred_file, 'r', encoding='utf-8').readlines()
+wf = cs.open(out_file, 'w', encoding='utf-8')
 
 for line in f:
     asp = []; opi = []
