@@ -115,4 +115,55 @@ Dipangkas ~90 baris. Perubahan yang penting:
 - Ditambah mode 3-argumen eksplisit: `pred_file domain out_file`.
 - Ditambah `os.makedirs(..., exist_ok=True)` dan `encoding='utf-8'`.
 
-<!-- APPEND-MARKER -->
+## 6. Temuan
+
+### Bug upstream (bukan dari perubahan di atas)
+
+**P2 — `ae_loss` undefined di jalur gradient accumulation / fp16**
+`run_step1.py:420-428`. Baris 422 dan 426 memakai variabel `ae_loss` yang tidak
+pernah didefinisikan di scope loop training; yang ada hanya `loss = losses[0]`.
+Selama `gradient_accumulation_steps == 1` dan `--fp16` tidak dipakai (default
+`run.sh`), kedua baris ini tidak tereksekusi. Begitu salah satu diaktifkan,
+langsung `NameError`.
+
+**P2 — `pdb.set_trace()` di jalur except menggantung run non-interaktif**
+`run_classifier_dataset_utils.py:176-179`. Bare `except` yang memanggil
+`pdb.set_trace()` saat `line[0]` gagal dibaca. Kalau ada baris TSV malformed,
+proses tidak error tapi masuk prompt debugger dan menggantung selamanya — sulit
+didiagnosis di batch run.
+
+### Catatan lain
+
+- **Duplikasi file_utils.** `Extract-Classify-ACOS/file_utils.py` byte-identik
+  dengan `bert_utils/file_utils.py` (279 baris). `modeling.py` mengimpor yang
+  top-level, `bert_utils/tokenization.py` mengimpor yang di dalam package.
+- **`run.sh` masih path absolut** environment penulis (`/mnt/nfs-storage-titan/...`)
+  untuk `BERT_BASE_DIR`, `BASE_DIR`, `DATA_DIR`. Harus diedit manual sebelum jalan;
+  `Readme.md` memang menginstruksikan begitu.
+- **Risiko path-mismatch di jembatan step1 -> step2.** `get_1st_pairs.py` menentukan
+  output dari `BASE_DIR`, sementara `run_step2.py` membaca dari
+  `DATA_DIR/tokenized_data/`. Kalau `$BASE_DIR/tokenized_data` kebetulan ada tapi
+  bukan `DATA_DIR`, cabang fallback pertama menulis ke tempat yang salah
+  **tanpa error**.
+- **Tidak ada `requirements.txt`.** Dependensi dari hasil baca import: `torch`,
+  `pytorch-crf` (`torchcrf`), `scikit-learn`, `tqdm`, `numpy`, `boto3`/`requests`
+  (dipakai `file_utils`). `Readme.md` menyebut Python 3.7 / PyTorch 1.8.
+- **Tidak ada `.gitignore`**, dan 16 file `.pyc` di `__pycache__/` ter-track di git
+  (termasuk `.cpython-37/38/39` — artefak dari beberapa versi Python).
+- **Semua `.tsv` di `tokenized_data/` ber-CRLF.** Tertangani karena semua parser
+  memakai `.strip()`, tapi `dataset_utils.py` maupun `get_1st_pairs.py` tidak akan
+  toleran kalau cara parsing diubah.
+- **Folder `data/` tidak direferensikan kode mana pun.** Dataset yang benar-benar
+  dipakai adalah versi ter-tokenisasi di `Extract-Classify-ACOS/tokenized_data/`.
+  `data/` murni untuk distribusi/publikasi.
+
+## 7. Batas verifikasi
+
+- Tidak ada test di repo.
+- Environment analisis: Python 3.14, `torch` tidak terinstal. Tidak ada kode yang
+  dijalankan.
+- Semua temuan di atas hasil pembacaan kode statis, bukan hasil eksekusi.
+- Belum ada file kode yang diubah. Sesuai `.agents/skills`, perubahan struktural
+  butuh konfirmasi lebih dulu, dan tidak ada yang terbukti broken sampai pipeline
+  benar-benar dijalankan.
+
