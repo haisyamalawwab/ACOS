@@ -587,6 +587,10 @@ class SubtaskMetricCapture:
 
     _HEAD = re.compile(r"\*{5}\s*(.+?)\s*results\s*\*{5}")
     _METRIC = re.compile(r"^\s*(precision|recall|micro-F1)\s*=\s*([0-9.]+)%?\s*$")
+    # pair_eval juga me-log blok "***** Test results *****" / "***** Eval results *****"
+    # untuk metrik quadruple keseluruhan. Blok itu bukan sub-task, jadi diabaikan
+    # agar tidak muncul sebagai baris tambahan di tabel sub-task.
+    _BUKAN_SUBTASK = {"test", "eval"}
 
     def __init__(self, logger, level=None):
         import logging as _logging
@@ -626,8 +630,11 @@ class SubtaskMetricCapture:
         head = self._HEAD.search(msg)
         if head:
             name = head.group(1).strip()
-            self._current = name
-            self.records.setdefault(name, {})
+            if name.lower() in self._BUKAN_SUBTASK:
+                self._current = None
+            else:
+                self._current = name
+                self.records.setdefault(name, {})
             return
         m = self._METRIC.match(msg)
         if m and self._current:
