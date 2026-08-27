@@ -17,9 +17,13 @@ from hashlib import sha256
 import sys
 from io import open
 
-import boto3
 import requests
-from botocore.exceptions import ClientError
+try:
+    import boto3
+    from botocore.exceptions import ClientError
+except ImportError:
+    boto3 = None
+    ClientError = Exception
 from tqdm import tqdm
 
 try:
@@ -145,6 +149,8 @@ def s3_request(func):
 
     @wraps(func)
     def wrapper(url, *args, **kwargs):
+        if boto3 is None:
+            raise EnvironmentError("boto3 is required for S3 downloads. Please install boto3 via pip.")
         try:
             return func(url, *args, **kwargs)
         except ClientError as exc:

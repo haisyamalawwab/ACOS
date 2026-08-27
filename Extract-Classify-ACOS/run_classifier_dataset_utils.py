@@ -155,6 +155,14 @@ class QuadProcessor(DataProcessor):
         return self._create_examples(
             self._read_tsv(os.path.join(data_dir, "tokenized_data/"+string+"_test_quad_bert.tsv")), "test")
 
+    def get_test_examples(self, data_dir, domain_type):
+        """Alias for get_dev_examples (test set)."""
+        return self.get_dev_examples(data_dir, domain_type)
+
+    def get_test_1st_examples(self, data_dir, domain_type):
+        """Alias for get_dev_examples."""
+        return self.get_dev_examples(data_dir, domain_type)
+
     def get_labels(self, domain_type):
         """See base class."""
 
@@ -206,6 +214,18 @@ class CategorySentiProcessor(DataProcessor):
         string = domain_type
         return self._create_examples(
             self._read_tsv(os.path.join(data_dir, "tokenized_data/"+string+"_test_pair_1st.tsv")), "test")
+
+    def get_test_1st_examples(self, data_dir, domain_type):
+        """Loads Step 1 candidate pairs file (test_pair_1st.tsv)."""
+        return self.get_dev_examples(data_dir, domain_type)
+
+    def get_test_examples(self, data_dir, domain_type):
+        """Loads ground truth test pair file if present, otherwise test_pair_1st.tsv."""
+        string = domain_type
+        pair_file = os.path.join(data_dir, "tokenized_data", string + "_test_pair.tsv")
+        if not os.path.exists(pair_file):
+            pair_file = os.path.join(data_dir, "tokenized_data", string + "_test_pair_1st.tsv")
+        return self._create_examples(self._read_tsv(pair_file), "test")
 
     def get_labels(self, domain_type):
         """See base class."""
@@ -262,7 +282,7 @@ class CategorySentiProcessor(DataProcessor):
 
 
 def convert_examples_to_features(examples, label_list, max_seq_length,
-                                 tokenizer, output_mode, task_name):
+                                 tokenizer, output_mode, task_name="quad", domain_type=None, *args, **kwargs):
     """Loads a data file into a list of `InputBatch`s."""
 
     label_map_senti = {label : i for i, label in enumerate(label_list[0])}
@@ -385,7 +405,7 @@ def _truncate_seq_pair(bert_tokens_a, aspect_labels, max_length):
 
 
 def convert_examples_to_features2nd(examples, label_list, max_seq_length,
-                                 tokenizer, output_mode):
+                                    tokenizer, output_mode="classification", task_name="categorysenti", domain_type=None, *args, **kwargs):
     """Loads a data file into a list of `InputBatch`s."""
 
     category_senti_map = {label : i for i, label in enumerate(label_list[0])}
@@ -550,3 +570,7 @@ output_modes = {
     "quad": "classification",
     "categorysenti": "classification",
 }
+
+# Alias for Step 2 feature conversion compatibility
+convert_examples_to_features_categorysenti = convert_examples_to_features2nd
+

@@ -1,0 +1,6 @@
+__pycache__/
+*.py[cod]
+*$py.class
+results/
+bert_base_uncased/
+.ipynb_checkpoints/
