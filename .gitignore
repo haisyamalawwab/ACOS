@@ -1,8 +1,8 @@
 __pycache__/
 *.py[cod]
 *$py.class
-results/
+# results/
 bert_base_uncased/
 .ipynb_checkpoints/
 work/
-output/
+# output/
