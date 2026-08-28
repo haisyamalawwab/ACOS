@@ -224,4 +224,9 @@ def patch(path):
     replace_once(cells[CELL_EVAL], OLD_EVAL_ELSE, NEW_EVAL_ELSE, "penjaga loader evaluasi")
     replace_once(cells[CELL_INFER], OLD_INFER, NEW_INFER, "impor kelas model di sel inferensi")
 
-    with open(path, "w",
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(nb, f, ensure_ascii=False, indent=1)
+
+
+for target in sys.argv[1:]:
+    patch(target)
