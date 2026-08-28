@@ -34,12 +34,6 @@ RESUME_LAST_SESSION = True
 # 1. Inisialisasi direktori sesi (lanjutkan sesi lama atau buat timestamp baru)
 results_base = os.path.join(active_save_dir, "results")
 
-_SESSION_KEYS = ("root", "checkpoints", "step1_checkpoint", "step2_checkpoint",
-                 "plots", "csv", "md", "logs")
-
-_SESSION_KEYS = ("root", "checkpoints", "step1_checkpoint", "step2_checkpoint",
-                 "plots", "csv", "md", "logs")
-
 def session_dirs_from_root(run_dir):
     """Menyusun ulang peta direktori sesi dengan kunci yang sama seperti
     setup_timestamped_run_dir(), tanpa membuat folder timestamp baru."""
@@ -198,10 +192,12 @@ def write_source(cell, text):
 
 def replace_once(cell, old, new, tag):
     text = read_source(cell)
+    # new diperiksa lebih dulu: beberapa new memuat old sebagai awalan, jadi
+    # memeriksa old dulu akan menerapkan hunk yang sama dua kali.
+    if new in text:
+        print("  skip (sudah diterapkan):", tag)
+        return
     if old not in text:
-        if new in text:
-            print("  skip (sudah diterapkan):", tag)
-            return
         raise SystemExit("  GAGAL: pola tidak ditemukan -> " + tag)
     write_source(cell, text.replace(old, new, 1))
     print("  ok:", tag)

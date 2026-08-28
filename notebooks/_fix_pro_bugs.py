@@ -173,10 +173,12 @@ def write_source(cell, text):
 
 def replace_once(cell, old, new, tag):
     text = read_source(cell)
+    # new diperiksa lebih dulu: beberapa new memuat old sebagai awalan, jadi
+    # memeriksa old dulu akan menerapkan hunk yang sama dua kali.
+    if new in text:
+        print("  skip (sudah diperbaiki):", tag)
+        return
     if old not in text:
-        if new in text:
-            print("  skip (sudah diperbaiki):", tag)
-            return
         raise SystemExit("  GAGAL: pola tidak ditemukan -> " + tag)
     write_source(cell, text.replace(old, new, 1))
     print("  ok:", tag)
