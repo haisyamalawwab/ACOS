@@ -1,0 +1,1144 @@
+=== CELL 0 (markdown) ===
+# 00. ACOS Master Pipeline: End-to-End Execution (Production PRO Version)
+
+**Aspect-Category-Opinion-Sentiment (ACOS) Quadruple Extraction with Implicit Aspects and Opinions**
+
+This production-grade master notebook executes the **entire ACOS benchmark pipeline with 1-Click** on **Google Colab** (with automatic Google Drive persistence at `/content/drive/MyDrive/ACOS`) or on a **Local Environment** (Windows / Linux):
+
+1. **Environment Setup & GPU Diagnostics:** Automatic Google Drive mounting, dependency installation, and detailed GPU / VRAM inspection.
+2. **Dynamic Path Architecture (Zero Hardcoded Paths):** Seamless switching between Google Drive `/content/drive/MyDrive/ACOS` and local project workspace.
+3. **Pretrained BERT Offline Caching:** Directly caches `bert-base-uncased` from HuggingFace Hub to prevent legacy S3 URL deprecation errors.
+4. **Exploratory Data Analysis (EDA):** High-resolution publication plots (300 DPI) and structured CSV exports.
+5. **Step 1 (Aspect-Opinion Co-Extraction):** Trains and evaluates BERT-CRF, saves best model checkpoint, tracks peak VRAM, and exports `pred4pipeline.txt`.
+6. **Smart State Checkpoint & Recovery:** Saves `pipeline_state.pkl` and provides auto-detection if kernel reconnects.
+7. **Candidate Pair Generation Bridge:** Forms Cartesian candidate pairs `(aspect, opinion)` with implicit entity handling `[-1, -1]`.
+8. **Step 2 (Category-Sentiment Classification):** Trains multi-label classifier, saves best checkpoint, and predicts full quadruples.
+9. **Benchmark Dashboard & 15 Subtask Metrics:** Evaluates complete quadruple extraction and exports `master_metrics.json`.
+10. **MCP (Model Context Protocol) Ready:** Emits real-time `session_manifest.json` tracking pipeline lifecycle states.
+11. **Live Interactive Inference:** Color-coded two-stage quadruple extraction on arbitrary customer review text.
+
+==================================================
+
+=== CELL 1 (markdown) ===
+## 1. Environment Setup, Google Drive Mounting & GPU Diagnostics
+
+==================================================
+
+=== CELL 2 (code) ===
+# 1. Mount Google Drive jika di Colab
+try:
+    from google.colab import drive
+    drive.mount('/content/drive')
+    print("✅ Google Drive berhasil di-mount pada /content/drive")
+except Exception:
+    print("💻 Berjalan pada lingkungan Lokal / Colab tanpa drive mount.")
+
+# 2. Instalasi dependensi yang dibutuhkan
+!pip install -q pytorch-crf transformers huggingface_hub seaborn scikit-learn matplotlib pandas boto3 tqdm
+
+import os
+import sys
+import random
+import json
+import shutil
+import pickle
+from datetime import datetime
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+import torch
+
+# 3. GPU Hardware Diagnostics & Optimization
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+print(f"\n⚡ Perangkat Komputasi Utama: {device}")
+
+if torch.cuda.is_available():
+    gpu_name = torch.cuda.get_device_name(0)
+    vram_total_gb = torch.cuda.get_device_properties(0).total_memory / (1024 ** 3)
+    cuda_cap = torch.cuda.get_device_capability(0)
+    print(f"   GPU Model         : {gpu_name}")
+    print(f"   Total VRAM        : {vram_total_gb:.2f} GB")
+    print(f"   Compute Capability: {cuda_cap[0]}.{cuda_cap[1]}")
+    print(f"   cuDNN Version     : {torch.backends.cudnn.version()}")
+    # Aktifkan optimasi benchmark cuDNN untuk matrix/convolution ops
+    torch.backends.cudnn.benchmark = True
+    torch.cuda.empty_cache()
+    print("   ✅ CUDA Cache dibersihkan & cuDNN benchmark diaktifkan.")
+else:
+    print("   ℹ️ Berjalan dengan CPU mode.")
+
+==================================================
+
+=== CELL 3 (markdown) ===
+## 2. Dynamic Directory Navigation & Path Initialization (Zero Hardcoded Paths)
+
+==================================================
+
+=== CELL 4 (code) ===
+# 1. Deteksi dinamis root direktori proyek (Colab vs Lokal)
+IS_COLAB = "google.colab" in sys.modules or os.path.exists("/content")
+HAS_DRIVE = os.path.exists("/content/drive/MyDrive")
+
+if HAS_DRIVE:
+    base_project_dir = "/content/drive/MyDrive/ACOS"
+    os.makedirs(base_project_dir, exist_ok=True)
+    save_dir = os.path.join(base_project_dir, "Output")
+    os.makedirs(save_dir, exist_ok=True)
+    print(f"💾 Mode Google Drive Aktif: {base_project_dir}")
+    print(f"📁 Output Sesi akan disimpan di: {save_dir}")
+elif os.path.exists("/content/ACOS/Extract-Classify-ACOS"):
+    base_project_dir = "/content/ACOS"
+    save_dir = base_project_dir
+    print(f"💾 Mode Colab Ephemeral Aktif: {base_project_dir}")
+elif os.path.exists("Extract-Classify-ACOS"):
+    base_project_dir = os.path.abspath(".")
+    save_dir = base_project_dir
+    print(f"💾 Mode Lokal Aktif (Current Dir): {base_project_dir}")
+elif os.path.exists("../Extract-Classify-ACOS"):
+    base_project_dir = os.path.abspath("..")
+    save_dir = base_project_dir
+    print(f"💾 Mode Lokal Aktif (Parent Dir): {base_project_dir}")
+else:
+    base_project_dir = os.path.abspath("ACOS")
+    os.makedirs(base_project_dir, exist_ok=True)
+    save_dir = base_project_dir
+    print(f"💾 Inisialisasi folder ACOS lokal: {base_project_dir}")
+
+# 2. Auto-clone repositori ACOS jika folder inti belum tersedia
+extract_dir = os.path.join(base_project_dir, "Extract-Classify-ACOS")
+if not os.path.exists(extract_dir):
+    print(f"📥 Repositori belum ditemukan. Mengkloning ACOS ke {base_project_dir}...")
+    !git clone https://github.com/haisyamalawwab/ACOS.git /tmp/ACOS_clone
+    !cp -r /tmp/ACOS_clone/* "{base_project_dir}/"
+    !rm -rf /tmp/ACOS_clone
+    print("✅ Repositori berhasil disinkronkan.")
+
+data_root = os.path.join(base_project_dir, "data")
+notebooks_dir = os.path.join(base_project_dir, "notebooks")
+
+# 3. Masukkan direktori penting ke sys.path
+for p in [base_project_dir, extract_dir, notebooks_dir]:
+    if os.path.exists(p) and p not in sys.path:
+        sys.path.insert(0, p)
+
+# 4. Import colab_utils dengan mekanisme fallback unduh otomatis
+try:
+    from colab_utils import (
+        setup_timestamped_run_dir, download_bert_pretrained, analyze_and_plot_eda,
+        plot_training_history, export_benchmark_tables_and_plots,
+        display_quadruple_dataframe, df_to_markdown, export_step_table,
+        MarkdownReport, SubtaskMetricCapture, plot_subtask_metrics,
+        features_step1, features_step2, pair_examples_from_file,
+        resolve_eval_pair_file, unpack_model_output,
+    )
+except ModuleNotFoundError:
+    import urllib.request
+    print("⚠️ Mengunduh modul colab_utils.py langsung dari GitHub...")
+    raw_url = "https://raw.githubusercontent.com/haisyamalawwab/ACOS/main/notebooks/colab_utils.py"
+    target_utils = os.path.join(base_project_dir, "colab_utils.py")
+    urllib.request.urlretrieve(raw_url, target_utils)
+    if base_project_dir not in sys.path:
+        sys.path.insert(0, base_project_dir)
+    from colab_utils import (
+        setup_timestamped_run_dir, download_bert_pretrained, analyze_and_plot_eda,
+        plot_training_history, export_benchmark_tables_and_plots,
+        display_quadruple_dataframe, df_to_markdown, export_step_table,
+        MarkdownReport, SubtaskMetricCapture, plot_subtask_metrics,
+        features_step1, features_step2, pair_examples_from_file,
+        resolve_eval_pair_file, unpack_model_output,
+    )
+
+print(f"📂 Base Project Directory : {base_project_dir}")
+print(f"📁 Extract & Model Dir     : {extract_dir}")
+print(f"📁 Dataset Data Dir        : {data_root}")
+print(f"📁 Output & Save Directory : {save_dir}")
+
+==================================================
+
+=== CELL 5 (markdown) ===
+## 3. Master Pipeline Parameters, BERT Caching & Session Manifest
+
+==================================================
+
+=== CELL 6 (code) ===
+# Pilihan Domain Dataset: 'rest16' (Restaurant-ACOS) atau 'laptop' (Laptop-ACOS)
+DOMAIN = "rest16"
+
+# Hyperparameter Pelatihan
+MAX_SEQ_LENGTH = 128
+STEP1_BATCH_SIZE = 24
+STEP2_BATCH_SIZE = 16
+STEP1_LR = 2e-5
+STEP2_LR = 5e-5
+NUM_EPOCHS = 15      # 15 epoch optimal untuk Colab GPU T4/A100 (Default paper: 30)
+SEED = 42
+
+# Reproducibility seeding
+random.seed(SEED)
+np.random.seed(SEED)
+torch.manual_seed(SEED)
+if torch.cuda.is_available():
+    torch.cuda.manual_seed_all(SEED)
+
+active_save_dir = save_dir if 'save_dir' in locals() else base_project_dir
+
+# 1. Inisialisasi direktori sesi berbasis timestamp (DDMMYYYY_HMS)
+results_base = os.path.join(active_save_dir, "results")
+session_dirs = setup_timestamped_run_dir(base_dir=results_base, domain=DOMAIN)
+
+# 2. Unduh dan cache model pretrained BERT (HuggingFace Hub)
+bert_cache_dir = os.path.join(active_save_dir, "bert_base_uncased")
+download_bert_pretrained(target_dir=bert_cache_dir)
+
+print(f"\n📁 Active Session Folder: {session_dirs['root']}")
+plots_dir = session_dirs["plots"]
+csv_dir = session_dirs["csv"]
+md_dir = session_dirs["md"]
+logs_dir = session_dirs["logs"]
+
+# Inisialisasi Akumulator Laporan Markdown
+rep = MarkdownReport(
+    f"00 - Master Pipeline ACOS End-to-End [{DOMAIN.upper()}]",
+    md_dir,
+    filename="00_master_pipeline.md",
+    meta={
+        "domain": DOMAIN, "epochs": NUM_EPOCHS,
+        "step1_batch": STEP1_BATCH_SIZE, "step2_batch": STEP2_BATCH_SIZE,
+        "step1_lr": STEP1_LR, "step2_lr": STEP2_LR,
+        "max_seq_length": MAX_SEQ_LENGTH, "seed": SEED,
+        "device": str(device), "session_dir": session_dirs["root"],
+    },
+)
+
+# Helper Manifest MCP (Model Context Protocol Status Logger)
+def update_mcp_manifest(status_str, stage_num, extra_info=None):
+    manifest_path = os.path.join(session_dirs["root"], "session_manifest.json")
+    manifest_data = {
+        "session_id": os.path.basename(session_dirs["root"]),
+        "status": status_str,
+        "stage": stage_num,
+        "domain": DOMAIN,
+        "device": str(device),
+        "device_name": torch.cuda.get_device_name(0) if torch.cuda.is_available() else "CPU",
+        "hyperparameters": {
+            "epochs": NUM_EPOCHS,
+            "max_seq_length": MAX_SEQ_LENGTH,
+            "step1_batch_size": STEP1_BATCH_SIZE,
+            "step2_batch_size": STEP2_BATCH_SIZE,
+            "step1_lr": STEP1_LR,
+            "step2_lr": STEP2_LR,
+            "seed": SEED
+        },
+        "session_dirs": session_dirs,
+        "last_updated": datetime.now().isoformat()
+    }
+    if extra_info:
+        manifest_data.update(extra_info)
+    with open(manifest_path, "w", encoding="utf-8") as mf:
+        json.dump(manifest_data, mf, indent=2)
+    return manifest_path
+
+m_path = update_mcp_manifest("INITIALIZED", 1)
+print(f"📡 MCP Session Manifest diinisialisasi: {m_path}")
+
+# Konfigurasi Tabel
+df_cfg = pd.DataFrame([
+    {"Parameter": "domain", "Nilai": DOMAIN},
+    {"Parameter": "num_epochs", "Nilai": NUM_EPOCHS},
+    {"Parameter": "step1_batch_size", "Nilai": STEP1_BATCH_SIZE},
+    {"Parameter": "step2_batch_size", "Nilai": STEP2_BATCH_SIZE},
+    {"Parameter": "step1_learning_rate", "Nilai": STEP1_LR},
+    {"Parameter": "step2_learning_rate", "Nilai": STEP2_LR},
+    {"Parameter": "max_seq_length", "Nilai": MAX_SEQ_LENGTH},
+    {"Parameter": "seed", "Nilai": SEED},
+    {"Parameter": "device", "Nilai": str(device)},
+])
+rep.section("1. Konfigurasi pipeline")
+export_step_table(df_cfg, name="master_00_konfigurasi", csv_dir=csv_dir, md_dir=md_dir,
+                  title=f"Konfigurasi Master Pipeline ({DOMAIN.upper()})")
+rep.table(df_cfg, caption="Hyperparameter")
+
+==================================================
+
+=== CELL 7 (markdown) ===
+## 4. Exploratory Data Analysis (EDA) & Publication Visualizations
+
+==================================================
+
+=== CELL 8 (code) ===
+# Eksekusi Analisis Data Eksploratif
+df_stats, df_records = analyze_and_plot_eda(
+    data_dir=base_project_dir,
+    domain=DOMAIN,
+    output_plots_dir=plots_dir,
+    output_csv_dir=csv_dir,
+)
+
+rep.section("2. Eksplorasi data")
+if df_stats is None or df_stats.empty:
+    print("⚠️ [Peringatan] Statistik EDA kosong: pastikan folder data/ tersedia.")
+    rep.text("Statistik EDA kosong; folder `data/` tidak ditemukan.")
+else:
+    export_step_table(df_stats, name="master_01_statistik_dataset", csv_dir=csv_dir, md_dir=md_dir,
+                      title=f"Statistik Dataset {DOMAIN.upper()} per Split")
+    rep.table(df_stats, caption="Statistik per split")
+
+    n = len(df_records)
+    df_ringkas = pd.DataFrame([{
+        "Total_Quadruple": n,
+        "Implicit_Aspect": int(df_records["Is_Implicit_Aspect"].sum()),
+        "Implicit_Opinion": int(df_records["Is_Implicit_Opinion"].sum()),
+        "Keduanya_Implicit": int((df_records["Is_Implicit_Aspect"] & df_records["Is_Implicit_Opinion"]).sum()),
+        "Kategori_Unik": int(df_records["Category"].nunique()),
+        "Panjang_Kalimat_Median": float(df_records["Text_Length"].median()),
+    }])
+    export_step_table(df_ringkas, name="master_02_ringkasan_eda", csv_dir=csv_dir, md_dir=md_dir,
+                      title=f"Ringkasan EDA ({DOMAIN.upper()})")
+    rep.table(df_ringkas, caption="Ringkasan EDA")
+
+    from IPython.display import Image, display
+    for fname, cap in [
+        ("01_eda_dataset_distribution.png", "Komposisi dataset & explicit vs implicit"),
+        ("02_eda_category_sentiment.png", "Kategori teratas & polaritas sentimen"),
+        ("02b_eda_length_and_implicit_combo.png", "Panjang kalimat & kombinasi implicit"),
+        ("02c_eda_category_sentiment_heatmap.png", "Heatmap kategori x sentimen"),
+    ]:
+        p = os.path.join(plots_dir, fname)
+        if os.path.exists(p):
+            display(Image(p))
+            rep.image(p, cap)
+
+update_mcp_manifest("EDA_COMPLETED", 2, {"total_quadruples": int(df_ringkas["Total_Quadruple"].values[0]) if not df_ringkas.empty else 0})
+print("✅ EDA selesai dan grafik visualisasi 300 DPI tersimpan.")
+
+==================================================
+
+=== CELL 9 (markdown) ===
+### 4b. Diagnostik Lokasi Dataset & Tokenized Data
+
+==================================================
+
+=== CELL 10 (code) ===
+# Diagnostik pelacakan data adaptif (Lokal & Colab)
+print("--- Diagnostik Struktur Data Repositori ---")
+search_locations = [base_project_dir, data_root, extract_dir, "/content", "/content/drive/MyDrive/ACOS"]
+checked = set()
+
+for s_dir in search_locations:
+    if not os.path.exists(s_dir) or s_dir in checked:
+        continue
+    checked.add(s_dir)
+    for root, dirs, files in os.walk(s_dir):
+        if '.git' in dirs: dirs.remove('.git')
+        if '__pycache__' in dirs: dirs.remove('__pycache__')
+        
+        if 'Restaurant-ACOS' in dirs or 'Laptop-ACOS' in dirs:
+            print(f"✅ Ditemukan dataset mentah di : {root}")
+        if 'tokenized_data' in dirs:
+            tok_path = os.path.join(root, 'tokenized_data')
+            print(f"✅ Ditemukan tokenized_data di : {tok_path}")
+            print(f"   Sampel file: {os.listdir(tok_path)[:4]}")
+
+==================================================
+
+=== CELL 11 (markdown) ===
+## 5. Step 1: Aspect & Opinion Co-Extraction (BERT-CRF Training & Checkpointing)
+Melatih model `BertForQuadABSA` (BERT Encoder + Linear-Chain CRF + Dual Implicit Heads). Checkpoint model terbaik disimpan ke `checkpoints/step1_best/`.
+
+==================================================
+
+=== CELL 12 (code) ===
+from modeling import BertForQuadABSA
+from bert_utils.tokenization import BertTokenizer
+from bert_utils.optimization import BertAdam
+from run_classifier_dataset_utils import processors, output_modes
+from eval_metrics import pred_eval
+from torch.utils.data import TensorDataset, DataLoader, RandomSampler, SequentialSampler
+from tqdm import tqdm
+
+# Bersihkan memori GPU sebelum instansiasi model
+if torch.cuda.is_available():
+    torch.cuda.empty_cache()
+
+tokenizer = BertTokenizer.from_pretrained(bert_cache_dir, do_lower_case=True)
+processor_step1 = processors["quad"]()
+label_list_step1 = processor_step1.get_labels(DOMAIN)
+num_labels_step1 = len(label_list_step1[1])
+label_map_seq = {label: i for i, label in enumerate(label_list_step1[1])}
+
+# 1. Muat Data Evaluasi (Dev/Test)
+eval_examples_1 = processor_step1.get_dev_examples(extract_dir, DOMAIN)
+eval_features_1 = features_step1(eval_examples_1, label_list_step1, MAX_SEQ_LENGTH, tokenizer, output_modes["quad"], "quad")
+
+ev_ids = torch.tensor([f.aspect_input_ids for f in eval_features_1], dtype=torch.long)
+ev_mask = torch.tensor([f.aspect_input_mask for f in eval_features_1], dtype=torch.long)
+ev_seg = torch.tensor([f.aspect_segment_ids for f in eval_features_1], dtype=torch.long)
+ev_lbl = torch.tensor([f.aspect_ids for f in eval_features_1], dtype=torch.long)
+ev_imp_a = torch.tensor([f.exist_imp_aspect for f in eval_features_1], dtype=torch.long)
+ev_imp_o = torch.tensor([f.exist_imp_opinion for f in eval_features_1], dtype=torch.long)
+ev_len = torch.tensor([f.tokens_len for f in eval_features_1], dtype=torch.long)
+eval_data_1 = TensorDataset(ev_len, ev_ids, ev_mask, ev_lbl, ev_seg, ev_imp_a, ev_imp_o)
+
+pin_mem = torch.cuda.is_available()
+num_work = 0 if sys.platform.startswith('win') else 2
+
+eval_loader_1 = DataLoader(
+    eval_data_1, sampler=SequentialSampler(eval_data_1),
+    batch_size=16, pin_memory=pin_mem, num_workers=num_work
+)
+
+# 2. Muat Ground Truth (Gold)
+eval_gold_1 = []
+with open(os.path.join(extract_dir, "tokenized_data", f"{DOMAIN}_test_quad_bert.tsv"), "r", encoding="utf-8") as f:
+    for line in f:
+        line = line.strip().split("\t")
+        cur_text = tokenizer.convert_tokens_to_ids(line[0].split(" "))
+        aspect_labels = [label_map_seq['O'] for _ in range(MAX_SEQ_LENGTH)]
+        cur_imp_a, cur_imp_o = 0, 0
+        for quad in line[1:]:
+            cur_aspect, cur_opinion = quad.split(' ')[0], quad.split(' ')[-1]
+            a_st, a_ed = int(cur_aspect.split(',')[0]), int(cur_aspect.split(',')[1])
+            if a_ed != -1:
+                aspect_labels[a_st] = label_map_seq['B-A']
+                for i in range(a_st+1, a_ed): aspect_labels[i] = label_map_seq['I-A']
+            else: cur_imp_a = 1
+            o_st, o_ed = int(cur_opinion.split(',')[0]), int(cur_opinion.split(',')[1])
+            if o_ed != -1:
+                aspect_labels[o_st] = label_map_seq['B-O']
+                for i in range(o_st+1, o_ed): aspect_labels[i] = label_map_seq['I-O']
+            else: cur_imp_o = 1
+        eval_gold_1.append([cur_text, [aspect_labels, cur_imp_a, cur_imp_o]])
+eval_gold_1 = [[e[0] for e in eval_gold_1], [item for e in eval_gold_1 for item in e[1]]]
+
+# 3. Instansiasi Model Step 1
+model_step1 = BertForQuadABSA.from_pretrained(bert_cache_dir, num_labels=num_labels_step1).to(device)
+
+# 4. Muat Data Training
+train_examples_1 = processor_step1.get_train_examples(extract_dir, DOMAIN)
+train_features_1 = features_step1(train_examples_1, label_list_step1, MAX_SEQ_LENGTH, tokenizer, output_modes["quad"], "quad")
+tr_data_1 = TensorDataset(
+    torch.tensor([f.tokens_len for f in train_features_1], dtype=torch.long),
+    torch.tensor([f.aspect_input_ids for f in train_features_1], dtype=torch.long),
+    torch.tensor([f.aspect_input_mask for f in train_features_1], dtype=torch.long),
+    torch.tensor([f.aspect_ids for f in train_features_1], dtype=torch.long),
+    torch.tensor([f.aspect_segment_ids for f in train_features_1], dtype=torch.long),
+    torch.tensor([f.exist_imp_aspect for f in train_features_1], dtype=torch.long),
+    torch.tensor([f.exist_imp_opinion for f in train_features_1], dtype=torch.long)
+)
+train_loader_1 = DataLoader(
+    tr_data_1, sampler=RandomSampler(tr_data_1),
+    batch_size=STEP1_BATCH_SIZE, pin_memory=pin_mem, num_workers=num_work
+)
+
+# 5. Optimizer Setup
+num_train_steps_1 = len(train_loader_1) * NUM_EPOCHS
+param_opt = list(model_step1.named_parameters())
+no_decay = ['bias', 'LayerNorm.bias', 'LayerNorm.weight']
+opt_grouped = [
+    {'params': [p for n, p in param_opt if not any(nd in n for nd in no_decay)], 'weight_decay': 0.01},
+    {'params': [p for n, p in param_opt if any(nd in n for nd in no_decay)], 'weight_decay': 0.0}
+]
+optimizer_1 = BertAdam(opt_grouped, lr=STEP1_LR, warmup=0.1, t_total=num_train_steps_1)
+
+print(f"🚀 Memulai Training Step 1 BERT-CRF ({NUM_EPOCHS} Epochs pada {device})...")
+class ArgsH:
+    def __init__(self):
+        self.output_dir = session_dirs["logs"]
+        self.max_seq_length = MAX_SEQ_LENGTH
+args_h = ArgsH()
+import logging
+logger = logging.getLogger("Step1")
+
+best_step1_f1 = 0.0
+step1_history = []
+
+for epoch in range(1, NUM_EPOCHS + 1):
+    model_step1.train()
+    t_loss = 0.0
+    for step, batch in enumerate(tqdm(train_loader_1, desc=f"Step 1 Epoch {epoch}/{NUM_EPOCHS}", leave=False)):
+        batch = tuple(t.to(device) for t in batch)
+        _len, _ids, _mask, _lbls, _seg, _imp_a, _imp_o = batch
+        out1 = model_step1(aspect_input_ids=_ids, aspect_labels=_lbls, aspect_token_type_ids=_seg, aspect_attention_mask=_mask, exist_imp_aspect=_imp_a, exist_imp_opinion=_imp_o)
+        loss, _ = unpack_model_output(out1)
+        loss.backward()
+        optimizer_1.step()
+        optimizer_1.zero_grad()
+        t_loss += loss.item()
+
+    avg_loss = t_loss / len(train_loader_1)
+    model_step1.eval()
+    val_res = pred_eval(epoch, args_h, logger, tokenizer, model_step1, eval_loader_1, eval_gold_1, label_list_step1, device, "quad", eval_type='test')
+    val_f1 = val_res.get('micro-F1', 0.0)
+    
+    # Track Peak VRAM
+    peak_vram = torch.cuda.max_memory_allocated(device) / (1024 ** 2) if torch.cuda.is_available() else 0.0
+    print(f"Epoch {epoch:02d} | Loss: {avg_loss:.4f} | Test Micro-F1: {val_f1*100:.2f}% | Peak VRAM: {peak_vram:.1f} MB")
+    
+    step1_history.append({
+        "epoch": epoch, "loss": avg_loss,
+        "precision": val_res.get('precision', 0.0),
+        "recall": val_res.get('recall', 0.0),
+        "micro-F1": val_f1,
+        "peak_vram_mb": round(peak_vram, 2)
+    })
+
+    # Simpan Checkpoint Model Terbaik
+    if val_f1 > best_step1_f1:
+        best_step1_f1 = val_f1
+        print(f"🔥 Menyimpan model Step 1 terbaik ke {session_dirs['step1_checkpoint']}...")
+        torch.save(model_step1.state_dict(), os.path.join(session_dirs["step1_checkpoint"], "pytorch_model.bin"))
+        model_step1.config.to_json_file(os.path.join(session_dirs["step1_checkpoint"], "config.json"))
+        tokenizer.save_vocabulary(session_dirs["step1_checkpoint"])
+
+# Ekspor Plot & CSV Riwayat Step 1
+plot_training_history(
+    step1_history, task_name="Step 1 (BERT-CRF)",
+    output_plot_path=os.path.join(session_dirs["plots"], "03_step1_training_loss_f1_curve.png"),
+    output_csv_path=os.path.join(session_dirs["csv"], "step1_training_history.csv")
+)
+
+# Laporan & Tabel Step 1
+rep.section("3. Step 1: ekstraksi aspect & opinion")
+df_s1 = pd.DataFrame(step1_history)
+if not df_s1.empty:
+    df_s1_pct = df_s1.copy()
+    for c in ["precision", "recall", "micro-F1"]:
+        if c in df_s1_pct.columns:
+            df_s1_pct[c] = (df_s1_pct[c] * 100).round(2)
+    export_step_table(df_s1_pct, name="master_03_step1_riwayat", csv_dir=csv_dir, md_dir=md_dir,
+                      title=f"Riwayat Training Step 1 ({DOMAIN.upper()})",
+                      notes="Metrik dihitung pada test set tiap epoch.",
+                      max_rows_md=NUM_EPOCHS)
+    rep.table(df_s1_pct, max_rows=NUM_EPOCHS, caption="Metrik step 1 per epoch")
+
+    best1 = df_s1_pct.loc[df_s1_pct["micro-F1"].idxmax()]
+    rep.kv({
+        "epoch_terbaik": int(best1["epoch"]),
+        "micro-F1_terbaik": f"{best1['micro-F1']:.2f}%",
+        "checkpoint": session_dirs["step1_checkpoint"],
+    })
+    print(f"✅ Step 1 selesai. Micro-F1 terbaik: {best1['micro-F1']:.2f}% (Epoch {int(best1['epoch'])})")
+
+_p1 = os.path.join(plots_dir, "03_step1_training_loss_f1_curve.png")
+if os.path.exists(_p1):
+    from IPython.display import Image, display
+    display(Image(_p1))
+    rep.image(_p1, "Kurva training step 1")
+
+update_mcp_manifest("STEP1_COMPLETED", 3, {
+    "step1_best_micro_f1": float(best_step1_f1 * 100),
+    "step1_checkpoint": session_dirs["step1_checkpoint"]
+})
+
+==================================================
+
+=== CELL 13 (markdown) ===
+## 6. Smart State Checkpoint Saver (`pipeline_state.pkl`)
+
+==================================================
+
+=== CELL 14 (code) ===
+# Simpan status variabel pipeline ke file pickle untuk pemulihan cepat
+checkpoint_state_path = os.path.join(session_dirs["root"], "pipeline_state.pkl")
+
+pipeline_state = {
+    "DOMAIN": DOMAIN,
+    "base_project_dir": base_project_dir,
+    "extract_dir": extract_dir,
+    "data_root": data_root,
+    "bert_cache_dir": bert_cache_dir,
+    "session_dirs": session_dirs,
+    "MAX_SEQ_LENGTH": MAX_SEQ_LENGTH,
+    "NUM_EPOCHS": NUM_EPOCHS,
+    "STEP2_BATCH_SIZE": STEP2_BATCH_SIZE,
+    "STEP2_LR": STEP2_LR,
+    "SEED": SEED,
+    "device_str": str(device)
+}
+
+with open(checkpoint_state_path, "wb") as f:
+    pickle.dump(pipeline_state, f)
+
+print(f"✅ Pipeline State berhasil disimpan ke: {checkpoint_state_path}")
+print("ℹ️ Jika runtime Colab terputus, jalankan sel pemulihan di bawah ini untuk melanjutkan langsung ke Step 2.")
+
+==================================================
+
+=== CELL 15 (markdown) ===
+### 6b. Smart State Recovery (Gunakan Sel Ini Jika Kernel Reconnect / Restart)
+
+==================================================
+
+=== CELL 16 (code) ===
+# Sel Pemulihan Cerdas: Otomatis mendeteksi sesi aktif terakhir
+def auto_find_latest_state(search_base):
+    if not os.path.exists(search_base): return None
+    candidates = []
+    for root, dirs, files in os.walk(search_base):
+        if "pipeline_state.pkl" in files:
+            p = os.path.join(root, "pipeline_state.pkl")
+            candidates.append((os.path.getmtime(p), p))
+    if candidates:
+        candidates.sort(reverse=True)
+        return candidates[0][1]
+    return None
+
+# Prioritas path state
+target_state_path = None
+if 'checkpoint_state_path' in globals() and os.path.exists(checkpoint_state_path):
+    target_state_path = checkpoint_state_path
+else:
+    # Cari di results_base saat ini
+    target_state_path = auto_find_latest_state(results_base if 'results_base' in globals() else os.path.join(base_project_dir, "Output", "results"))
+    if not target_state_path and os.path.exists("/content/drive/MyDrive/ACOS/Output/results"):
+        target_state_path = auto_find_latest_state("/content/drive/MyDrive/ACOS/Output/results")
+
+if target_state_path and os.path.exists(target_state_path):
+    with open(target_state_path, "rb") as f:
+        loaded_state = pickle.load(f)
+
+    DOMAIN = loaded_state.get("DOMAIN", "rest16")
+    base_project_dir = loaded_state.get("base_project_dir", base_project_dir if 'base_project_dir' in globals() else ".")
+    extract_dir = loaded_state.get("extract_dir", os.path.join(base_project_dir, "Extract-Classify-ACOS"))
+    bert_cache_dir = loaded_state.get("bert_cache_dir", os.path.join(base_project_dir, "bert_base_uncased"))
+    session_dirs = loaded_state.get("session_dirs", session_dirs if 'session_dirs' in globals() else {})
+    MAX_SEQ_LENGTH = loaded_state.get("MAX_SEQ_LENGTH", 128)
+    NUM_EPOCHS = loaded_state.get("NUM_EPOCHS", 15)
+    STEP2_BATCH_SIZE = loaded_state.get("STEP2_BATCH_SIZE", 16)
+    STEP2_LR = loaded_state.get("STEP2_LR", 5e-5)
+    SEED = loaded_state.get("SEED", 42)
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+    print(f"✅ Berhasil memulihkan state dari: {target_state_path}")
+    print(f"📁 Session Dir : {session_dirs.get('root')}")
+    print(f"📌 DOMAIN      : {DOMAIN} | Device: {device}")
+else:
+    print(f"ℹ️ Berkas state belum ditemukan (Lanjutkan eksekusi normal dari sel atas).")
+
+==================================================
+
+=== CELL 17 (markdown) ===
+## 7. Candidate Pair Generation Bridge
+Membaca berkas `pred4pipeline.txt` dari Step 1 dan membentuk pasangan kartesian $(a, o)$ dengan penanganan entitas implisit `[-1, -1]`.
+
+==================================================
+
+=== CELL 18 (code) ===
+import codecs as cs
+pred_file = os.path.join(session_dirs["logs"], "pred4pipeline.txt")
+target_tokenized_tsv = os.path.join(extract_dir, "tokenized_data", f"{DOMAIN}_test_pair_1st.tsv")
+
+with cs.open(pred_file, 'r', encoding='utf-8') as f:
+    lines = f.readlines()
+
+pair_records = []
+with cs.open(target_tokenized_tsv, 'w', encoding='utf-8') as wf:
+    for idx, line in enumerate(lines):
+        asp, opi = [], []
+        parts = line.strip().split('\t')
+        if len(parts) <= 1: continue
+        text = parts[0]
+        for ele in parts[1:]:
+            if ele.startswith('a'): asp.append(ele[2:])
+            else: opi.append(ele[2:])
+        if not asp: asp.append('-1,-1')
+        if not opi: opi.append('-1,-1')
+        for pa in asp:
+            for po in opi:
+                wf.write(f"{text}####{pa} {po}\n")
+                pair_records.append({"Text": text, "Aspect_Span": pa, "Opinion_Span": po})
+
+df_pairs = pd.DataFrame(pair_records)
+df_pairs.to_csv(os.path.join(session_dirs["csv"], "candidate_pairs_summary.csv"), index=False)
+print(f"✅ Terbentuk {len(df_pairs)} Pasangan Kandidat untuk Step 2. Tersimpan di {target_tokenized_tsv}.")
+
+# Laporan & Distribusi Pasangan
+rep.section("4. Jembatan: pasangan kandidat")
+if df_pairs.empty:
+    rep.text("Tidak ada pasangan kandidat yang terbentuk.")
+else:
+    df_pairs["Is_Implicit_Aspect"] = df_pairs["Aspect_Span"] == "-1,-1"
+    df_pairs["Is_Implicit_Opinion"] = df_pairs["Opinion_Span"] == "-1,-1"
+    df_pairs["Pair_Type"] = (
+        df_pairs["Is_Implicit_Aspect"].map({True: "Implicit", False: "Explicit"}) + "-"
+        + df_pairs["Is_Implicit_Opinion"].map({True: "Implicit", False: "Explicit"})
+    )
+    n_pair = len(df_pairs)
+    df_tipe = df_pairs["Pair_Type"].value_counts().rename_axis("Tipe_Pasangan").reset_index(name="Jumlah")
+    df_tipe["Persen"] = (df_tipe["Jumlah"] / n_pair * 100).round(2)
+
+    export_step_table(df_tipe, name="master_04_tipe_pasangan", csv_dir=csv_dir, md_dir=md_dir,
+                      title=f"Distribusi Tipe Pasangan Kandidat ({DOMAIN.upper()})",
+                      notes=f"Total {n_pair} pasangan dari cross-product aspect x opinion.")
+    rep.table(df_tipe, caption="Tipe pasangan")
+
+    export_step_table(df_pairs.head(20), name="master_05_preview_pasangan",
+                      csv_dir=csv_dir, md_dir=md_dir,
+                      title=f"Preview 20 Pasangan Kandidat ({DOMAIN.upper()})", max_rows_md=20)
+
+    plt.figure(figsize=(9, 5))
+    _w = ["#3498db", "#9b59b6", "#e67e22", "#e74c3c"][:len(df_tipe)]
+    _b = plt.bar(df_tipe["Tipe_Pasangan"], df_tipe["Jumlah"], color=_w, edgecolor="black", alpha=0.88)
+    for b, v in zip(_b, df_tipe["Jumlah"]):
+        plt.text(b.get_x() + b.get_width() / 2, v, f"{v:,}\n({v/n_pair*100:.1f}%)",
+                 ha="center", va="bottom", fontsize=9, fontweight="bold")
+    plt.title(f"[{DOMAIN.upper()}] Pasangan Kandidat Step 1 -> Step 2", fontsize=12, fontweight="bold")
+    plt.ylabel("Jumlah pasangan")
+    plt.margins(y=0.18)
+    plt.grid(axis="y", linestyle="--", alpha=0.7)
+    plt.tight_layout()
+    _pp = os.path.join(plots_dir, "04_candidate_pairs_distribution.png")
+    plt.savefig(_pp, dpi=300)
+    plt.show()
+    plt.close()
+    rep.image(_pp, "Distribusi tipe pasangan kandidat")
+
+update_mcp_manifest("CANDIDATE_PAIRS_GENERATED", 4, {"candidate_pairs_count": len(df_pairs)})
+
+==================================================
+
+=== CELL 19 (markdown) ===
+## 8. Step 2: Category & Sentiment Classification Training & Checkpointing
+Melatih model `CategorySentiClassification` multi-label pada pasangan kandidat $(a, o)$. Model terbaik disimpan ke `checkpoints/step2_best/`.
+
+==================================================
+
+=== CELL 20 (code) ===
+from modeling import CategorySentiClassification
+from dataset_utils import read_pair_gold
+from eval_metrics import pair_eval
+
+# Bersihkan memori GPU sebelum instansiasi model Step 2
+if torch.cuda.is_available():
+    torch.cuda.empty_cache()
+
+# Monkey-patch BertTokenizer untuk penanganan diagnostik KeyError
+from bert_utils.tokenization import BertTokenizer
+import logging
+
+def patched_convert_tokens_to_ids(self, tokens):
+    if tokens is None: return None
+    if isinstance(tokens, str):
+        try: return self.vocab[tokens]
+        except KeyError:
+            print(f"⚠️ Token di luar vocab: {ascii(tokens)}")
+            return self.vocab.get('[UNK]', 100)
+    ids = []
+    for token in tokens:
+        try: ids.append(self.vocab[token])
+        except KeyError:
+            ids.append(self.vocab.get('[UNK]', 100))
+    if len(ids) > self.max_len:
+        logging.getLogger(__name__).warning(f"Seq len ({len(ids)}) > max ({self.max_len})")
+    return ids
+
+BertTokenizer.convert_tokens_to_ids = patched_convert_tokens_to_ids
+
+from run_classifier_dataset_utils import processors, output_modes
+processor_step2 = processors["categorysenti"]()
+label_list_step2 = processor_step2.get_labels(DOMAIN)
+num_labels_step2 = len(label_list_step2[0])
+
+# 1. Muat Fitur Evaluasi Step 2 dari Pasangan Kandidat Step 1
+tokenized_dir = os.path.join(extract_dir, "tokenized_data")
+eval_pair_file, pakai_1st = resolve_eval_pair_file(tokenized_dir, DOMAIN, prefer_1st=True)
+eval_examples_2 = pair_examples_from_file(processor_step2, eval_pair_file, set_type="test")
+eval_features_2 = features_step2(eval_examples_2, label_list_step2, MAX_SEQ_LENGTH, tokenizer, output_modes["categorysenti"])
+
+ev2_data = TensorDataset(
+    torch.tensor([f.tokens_len for f in eval_features_2], dtype=torch.long),
+    torch.tensor([f.aspect_input_ids for f in eval_features_2], dtype=torch.long),
+    torch.tensor([f.aspect_input_mask for f in eval_features_2], dtype=torch.long),
+    torch.tensor([f.aspect_segment_ids for f in eval_features_2], dtype=torch.long),
+    torch.tensor([f.candidate_aspect for f in eval_features_2], dtype=torch.long),
+    torch.tensor([f.candidate_opinion for f in eval_features_2], dtype=torch.long),
+    torch.tensor([f.label_id for f in eval_features_2], dtype=torch.float)
+)
+eval_loader_2 = DataLoader(ev2_data, sampler=SequentialSampler(ev2_data), batch_size=16, pin_memory=pin_mem, num_workers=num_work)
+
+# 2. Muat Ground Truth (Gold) Step 2
+class ArgsProxy:
+    def __init__(self): self.bert_model = bert_cache_dir; self.do_lower_case = True
+with open(os.path.join(extract_dir, "tokenized_data", f"{DOMAIN}_test_pair.tsv"), "r", encoding="utf-8") as f:
+    eval_gold_2 = read_pair_gold(f.readlines(), ArgsProxy())
+
+# 3. Instansiasi Model Step 2
+model_step2 = CategorySentiClassification.from_pretrained(bert_cache_dir, num_labels=num_labels_step2).to(device)
+
+# 4. Muat Data Training Step 2
+train_examples_2 = processor_step2.get_train_examples(extract_dir, DOMAIN)
+train_features_2 = features_step2(train_examples_2, label_list_step2, MAX_SEQ_LENGTH, tokenizer, output_modes["categorysenti"])
+tr2_data = TensorDataset(
+    torch.tensor([f.tokens_len for f in train_features_2], dtype=torch.long),
+    torch.tensor([f.aspect_input_ids for f in train_features_2], dtype=torch.long),
+    torch.tensor([f.aspect_input_mask for f in train_features_2], dtype=torch.long),
+    torch.tensor([f.aspect_segment_ids for f in train_features_2], dtype=torch.long),
+    torch.tensor([f.candidate_aspect for f in train_features_2], dtype=torch.long),
+    torch.tensor([f.candidate_opinion for f in train_features_2], dtype=torch.long),
+    torch.tensor([f.label_id for f in train_features_2], dtype=torch.float)
+)
+train_loader_2 = DataLoader(tr2_data, sampler=RandomSampler(tr2_data), batch_size=STEP2_BATCH_SIZE, pin_memory=pin_mem, num_workers=num_work)
+
+# 5. Optimizer Setup
+from bert_utils.optimization import BertAdam
+num_train_steps_2 = len(train_loader_2) * NUM_EPOCHS
+param_opt2 = list(model_step2.named_parameters())
+no_decay = ['bias', 'LayerNorm.bias', 'LayerNorm.weight']
+opt_grouped2 = [
+    {'params': [p for n, p in param_opt2 if not any(nd in n for nd in no_decay)], 'weight_decay': 0.01},
+    {'params': [p for n, p in param_opt2 if any(nd in n for nd in no_decay)], 'weight_decay': 0.0}
+]
+optimizer_2 = BertAdam(opt_grouped2, lr=STEP2_LR, warmup=0.1, t_total=num_train_steps_2)
+
+print(f"🚀 Memulai Training Step 2 Klasifikasi Kategori & Sentimen ({NUM_EPOCHS} Epochs pada {device})...")
+logger2 = logging.getLogger("Step2")
+best_step2_f1 = 0.0
+step2_history = []
+
+for epoch in range(1, NUM_EPOCHS + 1):
+    model_step2.train()
+    t_loss = 0.0
+    for step, batch in enumerate(tqdm(train_loader_2, desc=f"Step 2 Epoch {epoch}/{NUM_EPOCHS}", leave=False)):
+        batch = tuple(t.to(device) for t in batch)
+        _len, _ids, _mask, _seg, _cand_a, _cand_o, _lbls = batch
+        out2 = model_step2(tokenizer, epoch, aspect_input_ids=_ids, aspect_token_type_ids=_seg, aspect_attention_mask=_mask, candidate_aspect=_cand_a, candidate_opinion=_cand_o, label_id=_lbls)
+        loss, _ = unpack_model_output(out2)
+        loss.backward()
+        optimizer_2.step()
+        optimizer_2.zero_grad()
+        t_loss += loss.item()
+
+    avg_loss = t_loss / len(train_loader_2)
+    model_step2.eval()
+    val_res = pair_eval(epoch, args_h, logger2, tokenizer, model_step2, eval_loader_2, eval_gold_2, label_list_step2, device, "categorysenti", eval_type='test')
+    val_f1 = val_res.get('micro-F1', 0.0)
+    peak_vram2 = torch.cuda.max_memory_allocated(device) / (1024 ** 2) if torch.cuda.is_available() else 0.0
+    
+    print(f"Epoch {epoch:02d} | Loss: {avg_loss:.4f} | Test Micro-F1: {val_f1*100:.2f}% | Peak VRAM: {peak_vram2:.1f} MB")
+    step2_history.append({
+        "epoch": epoch, "loss": avg_loss,
+        "precision": val_res.get('precision', 0.0),
+        "recall": val_res.get('recall', 0.0),
+        "micro-F1": val_f1,
+        "peak_vram_mb": round(peak_vram2, 2)
+    })
+
+    if val_f1 > best_step2_f1:
+        best_step2_f1 = val_f1
+        print(f"🔥 Menyimpan model Step 2 terbaik ke {session_dirs['step2_checkpoint']}...")
+        torch.save(model_step2.state_dict(), os.path.join(session_dirs["step2_checkpoint"], "pytorch_model.bin"))
+        model_step2.config.to_json_file(os.path.join(session_dirs["step2_checkpoint"], "config.json"))
+        tokenizer.save_vocabulary(session_dirs["step2_checkpoint"])
+
+# Ekspor Plot & CSV Riwayat Step 2
+plot_training_history(
+    step2_history, task_name="Step 2 (Category-Sentiment)",
+    output_plot_path=os.path.join(session_dirs["plots"], "04_step2_training_loss_f1_curve.png"),
+    output_csv_path=os.path.join(session_dirs["csv"], "step2_training_history.csv")
+)
+
+# Laporan & Tabel Step 2
+rep.section("5. Step 2: klasifikasi category & sentiment")
+df_s2 = pd.DataFrame(step2_history)
+if not df_s2.empty:
+    df_s2_pct = df_s2.copy()
+    for c in ["precision", "recall", "micro-F1"]:
+        if c in df_s2_pct.columns:
+            df_s2_pct[c] = (df_s2_pct[c] * 100).round(2)
+    export_step_table(df_s2_pct, name="master_06_step2_riwayat", csv_dir=csv_dir, md_dir=md_dir,
+                      title=f"Riwayat Training Step 2 ({DOMAIN.upper()})",
+                      notes=("Metrik pada level quadruple lengkap. Sumber kandidat: "
+                             f"{'prediksi step 1' if pakai_1st else 'gold pair'}."),
+                      max_rows_md=NUM_EPOCHS)
+    rep.table(df_s2_pct, max_rows=NUM_EPOCHS, caption="Metrik step 2 per epoch")
+
+    best2 = df_s2_pct.loc[df_s2_pct["micro-F1"].idxmax()]
+    rep.kv({
+        "epoch_terbaik": int(best2["epoch"]),
+        "micro-F1_terbaik": f"{best2['micro-F1']:.2f}%",
+        "checkpoint": session_dirs["step2_checkpoint"],
+    })
+    print(f"✅ Step 2 selesai. Micro-F1 terbaik: {best2['micro-F1']:.2f}% (Epoch {int(best2['epoch'])})")
+
+_p2 = os.path.join(plots_dir, "04_step2_training_loss_f1_curve.png")
+if os.path.exists(_p2):
+    from IPython.display import Image, display
+    display(Image(_p2))
+    rep.image(_p2, "Kurva training step 2")
+
+update_mcp_manifest("STEP2_COMPLETED", 5, {
+    "step2_best_micro_f1": float(best_step2_f1 * 100),
+    "step2_checkpoint": session_dirs["step2_checkpoint"]
+})
+
+==================================================
+
+=== CELL 21 (markdown) ===
+## 9. Final Evaluation & 15 Sub-Tasks Benchmark Dashboard
+
+==================================================
+
+=== CELL 22 (code) ===
+# Evaluasi Final Memakai Checkpoint Model Step 2 Terbaik
+model_step2_best = CategorySentiClassification.from_pretrained(
+    session_dirs["step2_checkpoint"], num_labels=num_labels_step2).to(device)
+model_step2_best.eval()
+
+logger_final = logging.getLogger("Final_Eval")
+with SubtaskMetricCapture(logger_final) as cap:
+    final_res = pair_eval("final", args_h, logger_final, tokenizer, model_step2_best,
+                          eval_loader_2, eval_gold_2, label_list_step2, device,
+                          "categorysenti", eval_type="test")
+
+subtask_metrics = cap.to_dict()
+df_subtasks = cap.to_frame()
+
+rep.section("6. Hasil akhir pipeline")
+df_overall = pd.DataFrame([{
+    "Metrik": k, "Nilai": v, "Persen": round(v * 100, 2),
+} for k, v in final_res.items()])
+export_step_table(df_overall, name="master_07_metrik_quadruple_final",
+                  csv_dir=csv_dir, md_dir=md_dir,
+                  title=f"Metrik Akhir Ekstraksi Quadruple ({DOMAIN.upper()})",
+                  notes=("Sumber kandidat: "
+                         f"{'prediksi step 1 (skor pipeline penuh)' if pakai_1st else 'gold pair (step 2 terisolasi)'}."))
+rep.table(df_overall, caption="Metrik quadruple akhir")
+
+print("\n🏆 Metrik Quadruple Akhir:")
+for k, v in final_res.items():
+    print(f"   {k:15s}: {v*100:.2f}%")
+
+if not df_subtasks.empty:
+    df_sub_pct = df_subtasks.copy()
+    for c in ["Precision", "Recall", "Micro_F1"]:
+        df_sub_pct[c] = (df_sub_pct[c] * 100).round(2)
+
+    rep.section("7. Metrik per sub-task")
+    export_step_table(df_sub_pct, name="master_08_metrik_subtask", csv_dir=csv_dir, md_dir=md_dir,
+                      title=f"Metrik per Sub-Task ({DOMAIN.upper()}) - {len(df_sub_pct)} kombinasi",
+                      notes="Diambil dari keluaran pair_eval sesi ini, bukan angka yang ditulis manual.",
+                      max_rows_md=20)
+    rep.table(df_sub_pct, max_rows=20, caption="Metrik per sub-task")
+
+    _ps = os.path.join(plots_dir, "05_benchmark_subtasks_f1.png")
+    plot_subtask_metrics(df_subtasks, _ps, title=f"[{DOMAIN.upper()}] Micro-F1 per Sub-Task")
+    rep.image(_ps, "Micro-F1 per sub-task")
+
+    df_agg = (df_subtasks.groupby("N_Elements")
+              .agg(Jumlah_Subtask=("Subtask", "count"),
+                   Micro_F1_Rata2=("Micro_F1", "mean"),
+                   Micro_F1_Min=("Micro_F1", "min"),
+                   Micro_F1_Maks=("Micro_F1", "max"))
+              .reset_index())
+    for c in ["Micro_F1_Rata2", "Micro_F1_Min", "Micro_F1_Maks"]:
+        df_agg[c] = (df_agg[c] * 100).round(2)
+    export_step_table(df_agg, name="master_09_agregasi_elemen", csv_dir=csv_dir, md_dir=md_dir,
+                      title=f"Micro-F1 Menurut Jumlah Elemen ({DOMAIN.upper()})")
+    rep.table(df_agg, caption="Agregasi per jumlah elemen")
+
+metrics_json = os.path.join(logs_dir, "master_metrics.json")
+with open(metrics_json, "w", encoding="utf-8") as jf:
+    json.dump({"overall": final_res, "subtasks": subtask_metrics,
+               "step1_history": step1_history, "step2_history": step2_history,
+               "sumber_kandidat": "step1" if pakai_1st else "gold"}, jf, indent=2)
+print(f"📊 JSON metrik pipeline lengkap tersimpan: {metrics_json}")
+
+update_mcp_manifest("FINAL_EVAL_COMPLETED", 6, {
+    "final_metrics": final_res,
+    "metrics_json_path": metrics_json
+})
+
+==================================================
+
+=== CELL 23 (markdown) ===
+## 10. Live Interactive Inference Demo pada Teks Ulasan Bebas
+
+==================================================
+
+=== CELL 24 (code) ===
+import re as _re
+
+# Muat model Step 1 terbaik untuk inferensi live
+model_step1_best = BertForQuadABSA.from_pretrained(
+    session_dirs["step1_checkpoint"], num_labels=num_labels_step1).to(device)
+model_step1_best.eval()
+
+_catsenti_labels = label_list_step2[0]
+
+def _spans_dari_tag(tag_ids):
+    s = "".join(str(t) for t in tag_ids)
+    aspects = [(m.start() - 1, m.end() - 1) for m in _re.finditer(r"32*", s)]
+    opinions = [(m.start() - 1, m.end() - 1) for m in _re.finditer(r"54*", s)]
+    return aspects, opinions
+
+def analyze_review_quadruples(review_text, domain=None, ambang=0.0, tampilkan_proses=True):
+    """Ekstraksi quadruple dua tahap untuk satu teks ulasan bebas."""
+    domain = domain or DOMAIN
+    max_len = MAX_SEQ_LENGTH
+
+    tokens = tokenizer.tokenize(review_text.lower())[: max_len - 2]
+    input_tokens = ["[CLS]"] + tokens + ["[SEP]"]
+    input_ids = tokenizer.convert_tokens_to_ids(input_tokens)
+    attn = [1] * len(input_ids)
+    seg = [0] * len(input_ids)
+    while len(input_ids) < max_len:
+        input_ids.append(0)
+        attn.append(0)
+        seg.append(0)
+
+    t_ids = torch.tensor([input_ids], dtype=torch.long).to(device)
+    t_attn = torch.tensor([attn], dtype=torch.long).to(device)
+    t_seg = torch.tensor([seg], dtype=torch.long).to(device)
+    t_dummy = torch.zeros((1, max_len), dtype=torch.long).to(device)
+    t_zero = torch.zeros(1, dtype=torch.long).to(device)
+
+    with torch.no_grad():
+        out1 = model_step1_best(
+            aspect_input_ids=t_ids, aspect_labels=t_dummy,
+            aspect_token_type_ids=t_seg, aspect_attention_mask=t_attn,
+            exist_imp_aspect=t_zero, exist_imp_opinion=t_zero,
+        )
+    _, logits1 = unpack_model_output(out1)
+    pred_tags, imp_a_logit, imp_o_logit = logits1
+    imp_aspect = int(imp_a_logit.argmax(-1).item()) == 1
+    imp_opinion = int(imp_o_logit.argmax(-1).item()) == 1
+
+    aspects, opinions = _spans_dari_tag(pred_tags[0])
+    if imp_aspect or not aspects:
+        aspects = aspects + [(-1, -1)]
+    if imp_opinion or not opinions:
+        opinions = opinions + [(-1, -1)]
+
+    if tampilkan_proses:
+        print(f"\nTeks Review : {review_text}")
+        print(f"Tokens      : {tokens}")
+        print(f"Aspect Spans: {aspects} (implicit={imp_aspect})")
+        print(f"Opinion Span: {opinions} (implicit={imp_opinion})")
+
+    hasil = []
+    for (a_st, a_ed) in aspects:
+        for (o_st, o_ed) in opinions:
+            cand_a = [0] * max_len
+            cand_o = [0] * max_len
+            if a_st == -1:
+                cand_a[0] = 1
+            else:
+                for i in range(a_st + 1, a_ed + 1):
+                    if i < max_len: cand_a[i] = 1
+            if o_st == -1:
+                cand_o[len(tokens) + 1] = 1
+            else:
+                for i in range(o_st + 1, o_ed + 1):
+                    if i < max_len: cand_o[i] = 1
+
+            with torch.no_grad():
+                out2 = model_step2_best(
+                    tokenizer, 0,
+                    aspect_input_ids=t_ids,
+                    aspect_token_type_ids=t_seg,
+                    aspect_attention_mask=t_attn,
+                    candidate_aspect=torch.tensor([cand_a], dtype=torch.long).to(device),
+                    candidate_opinion=torch.tensor([cand_o], dtype=torch.long).to(device),
+                    label_id=torch.zeros((1, num_labels_step2), dtype=torch.float).to(device),
+                )
+            _, logits2 = unpack_model_output(out2)
+            skor = logits2[0][0].detach().cpu().numpy()
+
+            aktif = [i for i, v in enumerate(skor) if v > ambang] or [int(skor.argmax())]
+            asp_txt = "[IMPLICIT]" if a_st == -1 else " ".join(tokens[a_st:a_ed])
+            opi_txt = "[IMPLICIT]" if o_st == -1 else " ".join(tokens[o_st:o_ed])
+
+            for idx in aktif:
+                kategori, sentimen = _catsenti_labels[idx].rsplit("#", 1)
+                hasil.append({
+                    "Aspect": asp_txt,
+                    "Aspect_Span": f"{a_st},{a_ed}",
+                    "Category": kategori,
+                    "Opinion": opi_txt,
+                    "Opinion_Span": f"{o_st},{o_ed}",
+                    "Sentiment": {"0": "negative", "1": "neutral", "2": "positive"}.get(sentimen, sentimen),
+                    "Skor_Logit": round(float(skor[idx]), 4),
+                    "Is_Implicit_Aspect": a_st == -1,
+                    "Is_Implicit_Opinion": o_st == -1,
+                })
+
+    df = pd.DataFrame(hasil)
+    if not df.empty:
+        df = df.sort_values("Skor_Logit", ascending=False).reset_index(drop=True)
+    return df
+
+# Contoh Pengujian Live Review
+sample_review = "The sushi was fresh and delicious, but the service was slow."
+df_infer = analyze_review_quadruples(sample_review, domain=DOMAIN)
+
+rep.section("8. Contoh inferensi")
+rep.text(f"Teks: `{sample_review}`")
+if not df_infer.empty:
+    export_step_table(df_infer, name="master_10_contoh_inferensi", csv_dir=csv_dir, md_dir=md_dir,
+                      title="Quadruple Hasil Inferensi Contoh",
+                      notes="Skor_Logit adalah keluaran mentah sebelum sigmoid; ambang default 0.0.",
+                      max_rows_md=20)
+    rep.table(df_infer, max_rows=20, caption="Quadruple hasil inferensi")
+    display(df_infer)
+
+==================================================
+
+=== CELL 25 (markdown) ===
+## 11. Ringkasan Seluruh Artefak & Finalisasi Sesi
+
+==================================================
+
+=== CELL 26 (code) ===
+def _list_dir(label, path):
+    rows = []
+    if os.path.isdir(path):
+        for f in sorted(os.listdir(path)):
+            fp = os.path.join(path, f)
+            if os.path.isfile(fp):
+                rows.append({"Jenis": label, "Nama": f, "Ukuran_KB": round(os.path.getsize(fp) / 1024, 1)})
+    return rows
+
+ckpt_rows = []
+for root, _dirs, files in os.walk(session_dirs["checkpoints"]):
+    for f in files:
+        fp = os.path.join(root, f)
+        ckpt_rows.append({
+            "Jenis": "Checkpoint",
+            "Nama": os.path.relpath(fp, session_dirs["checkpoints"]),
+            "Ukuran_KB": round(os.path.getsize(fp) / 1024, 1),
+        })
+
+df_art = pd.DataFrame(
+    ckpt_rows + _list_dir("CSV", csv_dir) + _list_dir("Plot", plots_dir)
+    + _list_dir("Markdown", md_dir) + _list_dir("Log", logs_dir)
+)
+
+rep.section("9. Artefak sesi")
+if not df_art.empty:
+    export_step_table(df_art, name="master_11_daftar_artefak", csv_dir=csv_dir, md_dir=md_dir,
+                      title="Daftar Artefak Master Pipeline", max_rows_md=200)
+    rep.table(df_art, max_rows=200, caption="Artefak sesi")
+
+rep.section("10. Batasan").text(
+    f"- Semua metrik berasal dari eksekusi sesi ini pada domain `{DOMAIN}`.\n"
+    f"- Sumber kandidat evaluasi step 2: {'prediksi step 1' if pakai_1st else 'gold pair'}.\n"
+    f"- Jumlah epoch: {NUM_EPOCHS} (paper memakai 30).\n"
+    "- Angka tidak dibandingkan langsung dengan paper karena konfigurasi berbeda."
+)
+rep.text(f"Sesi: `{session_dirs['root']}`")
+report_path = rep.save()
+
+# Update final MCP Manifest
+update_mcp_manifest("SESSION_FINISHED", 8, {
+    "total_artifacts": len(df_art),
+    "report_markdown_path": report_path
+})
+
+print(f"\n🎉 Pipeline Berhasil Selesai Sepenuhnya!")
+print(f"📁 Direktori Sesi : {session_dirs['root']}")
+print(f"📄 Laporan MD     : {report_path}")
+print(f"📦 Total Artefak  : {len(df_art)} berkas tersimpan.")
+
+==================================================
+
