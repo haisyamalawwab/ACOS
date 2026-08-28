@@ -1,0 +1,56 @@
+{
+  "name": "demo_resto_id",
+  "output_dir": "output/demo_resto_id",
+  "data": {
+    "raw_dir": "data/Demo-Resto-ID",
+    "work_dir": "work",
+    "domain": "resto_id",
+    "schema": "quint",
+    "category_set": "resto_id",
+    "sentiment_set": "acos",
+    "emotion_set": "emot_id_netral",
+    "max_seq_length": 32,
+    "tagging": "bio",
+    "subword_limit": 30,
+    "max_unk_ratio": 0.05
+  },
+  "tokenizer": {
+    "kind": "whitespace",
+    "path": "",
+    "do_lower_case": true,
+    "options": {}
+  },
+  "encoder": {
+    "kind": "indobert",
+    "model_name_or_path": "indobenchmark/indobert-base-p1",
+    "local_dir": "",
+    "hidden_size": 768,
+    "freeze": false,
+    "options": {}
+  },
+  "heads": {
+    "span_head": "crf",
+    "implicit_head": "linear",
+    "label_mode": "factored",
+    "label_head": "span_pool",
+    "dropout": 0.1,
+    "options": {}
+  },
+  "train": {
+    "stage": "extraction",
+    "epochs": 1,
+    "train_batch_size": 4,
+    "eval_batch_size": 8,
+    "learning_rate": 2e-05,
+    "warmup_proportion": 0.1,
+    "weight_decay": 0.01,
+    "gradient_accumulation_steps": 1,
+    "max_grad_norm": 1.0,
+    "seed": 13,
+    "fp16": false,
+    "device": "auto",
+    "select_metric": "f1",
+    "loss_weights": {}
+  },
+  "notes": ""
+}
