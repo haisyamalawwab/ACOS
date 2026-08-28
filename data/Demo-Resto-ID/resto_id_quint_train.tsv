@@ -1,0 +1,12 @@
+makanan nya enak sekali tapi pelayanan nya lambat banget	0,1 MAKANAN#KUALITAS 2 2,4 senang	5,6 PELAYANAN#UMUM 0 7,9 marah
+tempat nya nyaman dan bersih , cocok untuk keluarga	0,1 SUASANA#UMUM 2 2,3 senang
+harga nya mahal untuk porsi sekecil ini	0,1 RESTORAN#HARGA 0 2,3 sedih
+saya selalu kembali ke sini setiap minggu	-1,-1 RESTORAN#UMUM 2 1,3 cinta
+kopi nya pahit sekali , tidak seperti biasanya	0,1 MINUMAN#KUALITAS 0 2,4 sedih
+tidak akan pernah datang lagi ke tempat ini	-1,-1 RESTORAN#UMUM 0 -1,-1 marah
+pilihan menu nya sedikit tapi rasa nya mantap	0,2 MAKANAN#PILIHAN 1 3,4 netral	5,6 MAKANAN#KUALITAS 2 7,8 senang
+lokasi nya susah dicari dan parkir nya sempit	0,1 LOKASI#UMUM 0 2,4 marah
+pelayan nya ramah sekali , membuat saya nyaman	0,1 PELAYANAN#UMUM 2 2,4 senang
+jus nya segar dan harga nya murah	0,1 MINUMAN#KUALITAS 2 2,3 senang	4,5 MINUMAN#HARGA 2 6,7 senang
+saya khawatir soal kebersihan dapur nya	-1,-1 RESTORAN#LAINNYA 0 1,3 takut
+restoran favorit saya sejak dulu	-1,-1 RESTORAN#UMUM 2 0,2 cinta
