@@ -414,11 +414,20 @@ with step_stage("8a. Inisialisasi Step 2: patch tokenizer, label, path", 5) as s
                     fn[dt] += len(gold[text])
         for i in range(5):
             print("tp: {}. fp: {}. fn: {}.".format(tp[i], fp[i], fn[i]))
-            p = 0 if tp[i] + fp[i] == 0 else 1.0 * tp[i] / (tp[i] + fp[i])
-            r = 0 if tp[i] + fn[i] == 0 else 1.0 * tp[i] / (tp[i] + fn[i])
-            f = 0 if p + r == 0 else 2 * p * r / (p + r)
-            print(i, ': ', {'precision': p, 'recall': r, 'micro-F1': f})
-        return {'precision': p, 'recall': r, 'micro-F1': f}
+            p_i = 0 if tp[i] + fp[i] == 0 else 1.0 * tp[i] / (tp[i] + fp[i])
+            r_i = 0 if tp[i] + fn[i] == 0 else 1.0 * tp[i] / (tp[i] + fn[i])
+            f_i = 0 if p_i + r_i == 0 else 2 * p_i * r_i / (p_i + r_i)
+            print(i, ': ', {'precision': p_i, 'recall': r_i, 'micro-F1': f_i})
+        # Jumlahkan semua difficulty type → satu set metrik agregat
+        # (sebelumnya return di luar loop hanya mengembalikan iterasi terakhir i=4)
+        tp_sum = float(sum(tp))
+        fp_sum = float(sum(fp))
+        fn_sum = float(sum(fn))
+        p = 0 if tp_sum + fp_sum == 0 else 1.0 * tp_sum / (tp_sum + fp_sum)
+        r = 0 if tp_sum + fn_sum == 0 else 1.0 * tp_sum / (tp_sum + fn_sum)
+        f = 0 if p + r == 0 else 2 * p * r / (p + r)
+        return {'precision': p, 'recall': r, 'micro-F1': f,
+                'tp': tp_sum, 'fp': fp_sum, 'fn': fn_sum}
 
     _em.measureQuad_imp = _safe_measureQuad_imp
     st.step("eval_metrics.measureQuad_imp dipatch (defensif terhadap OOV/mismatched text)")
