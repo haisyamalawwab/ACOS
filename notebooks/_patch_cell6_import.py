@@ -29,10 +29,12 @@ TARGETS = (
 
 OLD_MARKER = "except ModuleNotFoundError:"
 NEW_MARKER = "REQUIRED_UTILS = ("
-# Sel dikenali lewat pola lama MAUPUN pola baru. Kalau hanya pola lama yang
-# dipakai, replay setelah patch berhasil akan melaporkan "tidak ditemukan" —
-# aman, tapi menyesatkan; yang benar adalah "sudah memakai versi baru".
-CELL_MARKERS = ("Masukkan direktori penting ke sys.path", NEW_MARKER)
+# Titik potong. Di PRO.ipynb sel ini juga memuat seluruh tangga deteksi path,
+# auto-clone, dan assignment base_project_dir/save_dir/data_root; hanya bagian
+# dari baris ini ke bawah yang boleh diganti. Di STAGED dan PRO_Resume sel itu
+# memang berisi bagian ini saja, jadi potongannya kebetulan seluruh sel.
+SPLIT_MARKER = "# 3. Masukkan direktori penting ke sys.path"
+CELL_MARKERS = (SPLIT_MARKER, NEW_MARKER)
 
 
 def cell_body() -> str:
@@ -83,8 +85,14 @@ def patch(path: str, body: str) -> str:
         return f"sel {idx} sudah memakai versi baru — dilewati"
     if OLD_MARKER not in current:
         return f"sel {idx} tidak cocok pola lama; tidak diubah"
+    if SPLIT_MARKER not in current:
+        return f"sel {idx} tidak punya titik potong; tidak diubah"
 
-    nb["cells"][idx]["source"] = source_lines(body)
+    # Pertahankan apa pun yang ada di atas titik potong. Di PRO.ipynb itu adalah
+    # deteksi path dan auto-clone yang menghasilkan base_project_dir; membuangnya
+    # akan membuat sel pengganti merujuk variabel yang tidak pernah dibuat.
+    prefix = current[:current.index(SPLIT_MARKER)]
+    nb["cells"][idx]["source"] = source_lines(prefix + body)
     nb["cells"][idx]["outputs"] = []
     nb["cells"][idx]["execution_count"] = None
 
@@ -92,7 +100,8 @@ def patch(path: str, body: str) -> str:
     if raw.endswith("\n"):
         out += "\n"
     io.open(path, "w", encoding="utf-8", newline="\n").write(out)
-    return f"sel {idx} diganti ({len(body.splitlines())} baris)"
+    kept = len(prefix.splitlines())
+    return f"sel {idx} diganti dari titik potong ({kept} baris awal dipertahankan)"
 
 
 def main() -> int:

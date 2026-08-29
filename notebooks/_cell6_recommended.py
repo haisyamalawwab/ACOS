@@ -34,11 +34,15 @@ REQUIRED_UTILS = (
 )
 
 # 1. Pulihkan variabel path bila cell [5] berhenti sebelum barisnya tercapai
-if "extract_dir" not in globals():
+if "base_project_dir" not in globals() or not base_project_dir:
+    base_project_dir = os.path.abspath(".")
+if "save_dir" not in globals() or not save_dir:
+    save_dir = os.path.join(base_project_dir, "Output")
+if "extract_dir" not in globals() or not extract_dir:
     extract_dir = os.path.join(base_project_dir, "Extract-Classify-ACOS")
-if "notebooks_dir" not in globals():
+if "notebooks_dir" not in globals() or not notebooks_dir:
     notebooks_dir = os.path.join(base_project_dir, "notebooks")
-if "data_root" not in globals():
+if "data_root" not in globals() or not data_root:
     data_root = os.path.join(base_project_dir, "data")
 
 
@@ -88,6 +92,7 @@ if _utils_dir is None:
     for _url in (
         "https://raw.githubusercontent.com/haisyamalawwab/ACOS/main/notebooks/colab_utils.py",
         "https://raw.githubusercontent.com/haisyamalawwab/ACOS/main/colab_utils.py",
+        "https://raw.githubusercontent.com/haisyamalawwab/ACOS/main/Extract-Classify-ACOS/colab_utils.py",
     ):
         try:
             urllib.request.urlretrieve(_url, _target)
@@ -105,7 +110,7 @@ if _utils_dir is None:
             "Salin manual notebooks/colab_utils.py dari repo ke " + base_project_dir)
 
 # 4. Sumber terpilih ditaruh paling depan agar salinan usang tidak membayangi
-for _p in [extract_dir, base_project_dir, _utils_dir]:
+for _p in [notebooks_dir, extract_dir, base_project_dir, _utils_dir]:
     if os.path.isdir(_p):
         _prepend_sys_path(_p)
 
@@ -118,7 +123,7 @@ except ModuleNotFoundError as _e:
     if _dep and _dep != "colab_utils":
         raise RuntimeError(
             f"colab_utils butuh paket '{_dep}' yang belum ter-install. Jalankan "
-            f"cell [1] (pip install) lebih dulu, lalu ulangi cell ini.") from _e
+            f"sel instalasi dependensi lebih dulu, lalu ulangi sel ini.") from _e
     raise
 
 _missing_attr = [n for n in REQUIRED_UTILS if not hasattr(colab_utils, n)]
