@@ -66,6 +66,11 @@ COLAB_UTILS_SYMBOLS: Tuple[str, ...] = (
     "pair_examples_from_file",
     "resolve_eval_pair_file",
     "unpack_model_output",
+    "detect_acos_project_root",
+    "inspect_acos_drive_structure",
+    "verify_session_save_paths",
+    "find_resumable_session",
+    "auto_find_file",
 )
 
 # Modul repo yang diimpor pipeline dari Extract-Classify-ACOS/.
