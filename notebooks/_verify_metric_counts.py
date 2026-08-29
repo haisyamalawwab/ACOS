@@ -165,8 +165,17 @@ check("metrik lama tanpa tp/fp/fn tetap jalan",
                                        "micro-F1": 0.5})) == 3)
 
 print("\n7. SubtaskMetricCapture menangkap tp/fp/fn dari log pair_eval")
-from colab_utils import SubtaskMetricCapture  # noqa: E402
+# colab_utils mengimpor matplotlib/seaborn/torch yang tidak ada di mesin lokal,
+# jadi kelasnya diekstrak dari sumber lalu dieksekusi terpisah.
+import pandas as pd  # noqa: E402
+import re as _re  # noqa: E402
 
+_src = io.open(os.path.join(ROOT, "colab_utils.py"), encoding="utf-8").read()
+_i = _src.index("class SubtaskMetricCapture:")
+_j = _src.index("def plot_subtask_metrics(", _i)
+_ns_cu = {"re": _re, "pd": pd}
+exec(compile(_src[_i:_j], "<colab_utils:SubtaskMetricCapture>", "exec"), _ns_cu)
+SubtaskMetricCapture = _ns_cu["SubtaskMetricCapture"]
 lg = logging.getLogger("verifikasi_pair_eval")
 with SubtaskMetricCapture(lg) as cap:
     # Bentuk log persis seperti pair_eval: logger.info("  {} = {:.2%}", ...)
@@ -195,8 +204,6 @@ check("sub-task tanpa tp/fp/fn tetap menghasilkan baris (NaN)",
       len(cap2.to_frame()) == 1 and cap2.to_frame()["TP"].isna().all())
 
 print("\n8. Agregasi 9b atas kolom TP/FP/FN")
-import pandas as pd  # noqa: E402
-
 df_sub = pd.DataFrame([
     {"Subtask": "category", "N_Elements": 1, "TP": 10.0, "FP": 2.0, "FN": 3.0,
      "Precision": 0.8, "Recall": 0.7, "Micro_F1": 0.75},
