@@ -24,6 +24,353 @@ plt.rcParams['font.sans-serif'] = 'DejaVu Sans'
 plt.rcParams['figure.dpi'] = 300
 
 
+
+# ---------------------------------------------------------------------------
+# Diagnostik & Verifikasi Folder Spesifik Google Drive & Sesi Results
+# ---------------------------------------------------------------------------
+
+def detect_acos_project_root():
+    """
+    Mendeteksi secara cerdas root direktori proyek ACOS pada Google Drive maupun lokal.
+    Memeriksa:
+    1. /content/drive/MyDrive/ACOS
+    2. /content/drive/MyDrive/ACOS-ASLI
+    3. Seluruh folder *ACOS* di /content/drive/MyDrive
+    4. /content/ACOS (Colab ephemeral)
+    5. Direktori kerja aktif / parent lokal
+    Mengembalikan tuple: (base_project_dir, is_colab, has_drive, is_writable)
+    """
+    is_colab = 'google.colab' in sys.modules or os.path.exists('/content')
+    has_drive = os.path.exists('/content/drive/MyDrive')
+    
+    candidates = []
+    if has_drive:
+        candidates.extend([
+            '/content/drive/MyDrive/ACOS',
+            '/content/drive/MyDrive/ACOS-ASLI',
+        ])
+        try:
+            for item in sorted(os.listdir('/content/drive/MyDrive')):
+                if 'acos' in item.lower():
+                    p = os.path.join('/content/drive/MyDrive', item)
+                    if os.path.isdir(p) and p not in candidates:
+                        candidates.append(p)
+        except Exception:
+            pass
+
+    candidates.extend([
+        '/content/ACOS',
+        os.path.abspath('.'),
+        os.path.abspath('..'),
+    ])
+
+    base_dir = None
+    for cand in candidates:
+        if os.path.isdir(cand):
+            if os.path.exists(os.path.join(cand, 'Extract-Classify-ACOS')) or os.path.exists(os.path.join(cand, 'data')):
+                base_dir = cand
+                break
+    if not base_dir:
+        base_dir = os.path.abspath('.')
+
+    probe_file = os.path.join(base_dir, '.probe_write.tmp')
+    is_writable = False
+    try:
+        with open(probe_file, 'w') as f:
+            f.write('probe')
+        os.remove(probe_file)
+        is_writable = True
+    except Exception:
+        is_writable = False
+
+    return base_dir, is_colab, has_drive, is_writable
+
+
+def inspect_acos_drive_structure(base_project_dir='.', domain='rest16', verbose=True):
+    """
+    Melakukan audit mendalam terhadap seluruh struktur folder spesifik di ACOS Drive/Lokal.
+    Menyusun laporan tabular:
+    - Core codebase & tokenized data
+    - Pretrained BERT cache (3 files)
+    - Dataset raw (train/dev/test splits)
+    - Riwayat folder sesi (results / Output/results):
+      * Checkpoint step 1 & step 2
+      * Candidate pairs & pred4pipeline.txt
+      * Metrics master_metrics.json & state
+      * Health score (0-6)
+    - Status izin simpan (write access)
+    """
+    base_project_dir = os.path.abspath(base_project_dir)
+    is_colab = 'google.colab' in sys.modules or os.path.exists('/content')
+    has_drive = os.path.exists('/content/drive/MyDrive')
+    
+    report = {
+        'base_project_dir': base_project_dir,
+        'is_colab': is_colab,
+        'has_drive': has_drive,
+        'core_folders': {},
+        'datasets': {},
+        'bert_cache': {},
+        'session_history': []
+    }
+    
+    # 1. Core folders
+    core_items = {
+        'Extract-Classify-ACOS': os.path.join(base_project_dir, 'Extract-Classify-ACOS'),
+        'tokenized_data': os.path.join(base_project_dir, 'Extract-Classify-ACOS', 'tokenized_data'),
+        'data': os.path.join(base_project_dir, 'data'),
+        'bert_cache': os.path.join(base_project_dir, 'bert_base_uncased'),
+        'Output': os.path.join(base_project_dir, 'Output'),
+        'results': os.path.join(base_project_dir, 'Output', 'results') if os.path.exists(os.path.join(base_project_dir, 'Output')) else os.path.join(base_project_dir, 'results')
+    }
+    for k, p in core_items.items():
+        report['core_folders'][k] = {
+            'path': p,
+            'exists': os.path.exists(p),
+            'is_dir': os.path.isdir(p)
+        }
+
+    # 2. Datasets
+    for d in ['Restaurant-ACOS', 'Laptop-ACOS']:
+        dp = os.path.join(base_project_dir, 'data', d)
+        exists = os.path.isdir(dp)
+        splits = {}
+        if exists:
+            for s in ['train', 'dev', 'test']:
+                for fn in sorted(os.listdir(dp)):
+                    if s in fn.lower() and fn.endswith('.tsv'):
+                        fp = os.path.join(dp, fn)
+                        splits[s] = {'file': fn, 'size_kb': round(os.path.getsize(fp) / 1024, 1)}
+        report['datasets'][d] = {'path': dp, 'exists': exists, 'splits': splits}
+
+    # 3. BERT Cache
+    bp = os.path.join(base_project_dir, 'bert_base_uncased')
+    if os.path.isdir(bp):
+        b_files = {}
+        for fn in ['config.json', 'pytorch_model.bin', 'vocab.txt']:
+            fp = os.path.join(bp, fn)
+            b_files[fn] = {'exists': os.path.exists(fp), 'size_mb': round(os.path.getsize(fp) / (1024 ** 2), 2) if os.path.exists(fp) else 0}
+        report['bert_cache'] = {'path': bp, 'files': b_files, 'complete': all(f['exists'] for f in b_files.values())}
+    else:
+        report['bert_cache'] = {'path': bp, 'exists': False, 'complete': False}
+
+    # 4. Scan Session History across Drive and local
+    res_candidates = [
+        os.path.join(base_project_dir, 'Output', 'results'),
+        os.path.join(base_project_dir, 'results'),
+        '/content/drive/MyDrive/ACOS/Output/results',
+        '/content/drive/MyDrive/ACOS/results',
+        '/content/drive/MyDrive/ACOS-ASLI/Output/results',
+        '/content/drive/MyDrive/ACOS-ASLI/results',
+    ]
+    seen_dirs = set()
+    for rc in res_candidates:
+        if not os.path.isdir(rc):
+            continue
+        for item in sorted(os.listdir(rc)):
+            sp = os.path.join(rc, item)
+            if not os.path.isdir(sp) or sp in seen_dirs:
+                continue
+            seen_dirs.add(sp)
+            
+            s1_bin = os.path.join(sp, 'checkpoints', 'step1_best', 'pytorch_model.bin')
+            s2_bin = os.path.join(sp, 'checkpoints', 'step2_best', 'pytorch_model.bin')
+            pred_txt = os.path.join(sp, 'logs', 'pred4pipeline.txt')
+            metrics_json = os.path.join(sp, 'logs', 'master_metrics.json')
+            state_pkl = os.path.join(sp, 'pipeline_state.pkl')
+            s1_csv = os.path.join(sp, 'csv', 'step1_training_history.csv')
+            s2_csv = os.path.join(sp, 'csv', 'step2_training_history.csv')
+            
+            score = sum([
+                os.path.exists(state_pkl),
+                os.path.exists(s1_bin) and os.path.getsize(s1_bin) > 1024 * 1024,
+                os.path.exists(pred_txt) and os.path.getsize(pred_txt) > 0,
+                os.path.exists(s2_bin) and os.path.getsize(s2_bin) > 1024 * 1024,
+                os.path.exists(metrics_json),
+                os.path.exists(s1_csv) or os.path.exists(s2_csv)
+            ])
+            
+            sess_info = {
+                'session_name': item,
+                'path': sp,
+                'domain_match': item.startswith(f'{domain}_'),
+                'score': score,
+                'step1_model': os.path.exists(s1_bin) and os.path.getsize(s1_bin) > 1024 * 1024,
+                'pred4pipeline': os.path.exists(pred_txt) and os.path.getsize(pred_txt) > 0,
+                'step2_model': os.path.exists(s2_bin) and os.path.getsize(s2_bin) > 1024 * 1024,
+                'metrics': os.path.exists(metrics_json),
+                'state': os.path.exists(state_pkl),
+                'mtime': os.path.getmtime(sp)
+            }
+            report['session_history'].append(sess_info)
+
+    # Sort session history: domain match first, then score desc, then mtime desc
+    report['session_history'].sort(key=lambda s: (s['domain_match'], s['score'], s['mtime']), reverse=True)
+
+    if verbose:
+        bpd = report['base_project_dir']
+        env_name = 'Google Colab' if report['is_colab'] else 'Lokal'
+        print('=' * 78)
+        print('🔍 DIAGNOSTIK STRUKTUR FOLDER & ARTEFAK ACOS')
+        print('=' * 78)
+        print(f"📁 Root Direktori Proyek : {bpd}")
+        print(f"🖥️  Lingkungan Runtime   : {env_name} (Drive Mount: {'Aktif' if report['has_drive'] else 'Tidak Aktif'})")
+        
+        # Core folders check
+        print("\n📂 Status Folder Utama:")
+        for k, v in report['core_folders'].items():
+            status = '✅ Ada' if v['exists'] else '❌ Belum Ada'
+            print(f"   - {k:<22}: {status} ({v['path']})")
+            
+        # Datasets check
+        print("\n📊 Status Dataset:")
+        for d, v in report['datasets'].items():
+            if v['exists']:
+                split_str = ', '.join(f"{sk}: {sv['file']} ({sv['size_kb']} KB)" for sk, sv in v['splits'].items())
+                print(f"   - {d:<16}: ✅ Ada [{split_str}]")
+            else:
+                print(f"   - {d:<16}: ❌ Tidak ditemukan di {v['path']}")
+                
+        # BERT cache
+        bc = report['bert_cache']
+        if bc.get('complete'):
+            sz_total = sum(f['size_mb'] for f in bc['files'].values())
+            print(f"\n🧠 Pretrained BERT Cache: ✅ Lengkap ({sz_total:.1f} MB) di {bc['path']}")
+        else:
+            print(f"\n🧠 Pretrained BERT Cache: ⚠️ Belum lengkap di {bc['path']}")
+
+        # Session history table
+        n_sess = len(report['session_history'])
+        print(f"\n📦 Riwayat Folder Sesi Output/Results ({n_sess} sesi terdeteksi):")
+        if report['session_history']:
+            for idx, s in enumerate(report['session_history'][:8], 1):
+                match_tag = '🎯 DOMAIN MATCH' if s['domain_match'] else '⚠️ OTHER DOMAIN'
+                s1_tag = 'S1:OK' if s['step1_model'] else 'S1:--'
+                s2_tag = 'S2:OK' if s['step2_model'] else 'S2:--'
+                pred_tag = 'Pred:OK' if s['pred4pipeline'] else 'Pred:--'
+                eval_tag = 'Eval:OK' if s['metrics'] else 'Eval:--'
+                state_tag = 'State:OK' if s['state'] else 'State:--'
+                print(f"   [{idx}] {s['session_name']} | {match_tag} | Skor: {s['score']}/6 | {s1_tag} {pred_tag} {s2_tag} {eval_tag} {state_tag}")
+                print(f"       Path: {s['path']}")
+        else:
+            print("   (Belum ada folder sesi historis di results)")
+        print('=' * 78)
+
+    return report
+
+
+def verify_session_save_paths(session_dirs, domain="rest16"):
+    """
+    Memvalidasi bahwa folder penyimpanan sesi aktif siap, memiliki izin tulis,
+    dan melaporkan dengan jelas apakah penyimpanan berada di Google Drive persisten.
+    """
+    root = session_dirs.get("root", "")
+    is_drive = "/content/drive/MyDrive" in root
+    
+    probes_ok = True
+    for sub in ["logs", "checkpoints", "csv", "plots"]:
+        sp = session_dirs.get(sub, "")
+        if sp:
+            os.makedirs(sp, exist_ok=True)
+            probe = os.path.join(sp, ".write_probe.tmp")
+            try:
+                with open(probe, "w") as f:
+                    f.write("probe")
+                os.remove(probe)
+            except Exception:
+                probes_ok = False
+                
+    status_str = "PERSISTEN (Google Drive)" if is_drive else "LOKAL / EPHEMERAL"
+    print(f"🛡️  Verifikasi Folder Penyimpanan Sesi: {status_str}")
+    print(f"   Root Sesi    : {root}")
+    print(f"   Domain       : {domain}")
+    print(f"   Status Tulis : {'✅ Terverifikasi (Aman)' if probes_ok else '❌ Gagal Izin Tulis'}")
+    if not is_drive and ("google.colab" in sys.modules or os.path.exists("/content")):
+        print("   ⚠️ PERINGATAN: Sesi ini disimpan di storage sementara Colab (/content), bukan Google Drive.")
+        print("      Hasil akan hilang bila runtime disconnect. Sambungkan Drive untuk persistensi permanen.")
+    return probes_ok
+
+
+def find_resumable_session(search_dirs, domain="rest16"):
+    """
+    Mencari folder sesi terbaik untuk domain tertentu dengan memeriksa
+    beberapa kandidat folder results (di Drive maupun lokal).
+    Menjamin domain safety: hanya memilih sesi yang diawali dengan f"{domain}_".
+    """
+    if isinstance(search_dirs, str):
+        search_dirs = [search_dirs]
+        
+    ranked = []
+    seen = set()
+    for base_dir in search_dirs:
+        if not base_dir or not os.path.isdir(base_dir):
+            continue
+        for name in sorted(os.listdir(base_dir)):
+            p = os.path.join(base_dir, name)
+            if not os.path.isdir(p) or p in seen:
+                continue
+            seen.add(p)
+            if not name.startswith(f"{domain}_"):
+                continue
+            
+            s1_bin = os.path.join(p, "checkpoints", "step1_best", "pytorch_model.bin")
+            s2_bin = os.path.join(p, "checkpoints", "step2_best", "pytorch_model.bin")
+            pred_txt = os.path.join(p, "logs", "pred4pipeline.txt")
+            metrics_json = os.path.join(p, "logs", "master_metrics.json")
+            state_pkl = os.path.join(p, "pipeline_state.pkl")
+            
+            score = sum([
+                os.path.exists(state_pkl),
+                os.path.exists(s1_bin) and os.path.getsize(s1_bin) > 1024 * 1024,
+                os.path.exists(pred_txt) and os.path.getsize(pred_txt) > 0,
+                os.path.exists(s2_bin) and os.path.getsize(s2_bin) > 1024 * 1024,
+                os.path.exists(metrics_json),
+            ])
+            if score > 0:
+                ranked.append((score, os.path.getmtime(p), p))
+                
+    if not ranked:
+        return None
+    ranked.sort(reverse=True)
+    best_session = ranked[0][2]
+    return best_session
+
+
+def auto_find_file(filename, search_roots=None, must_contain=None, domain=None, min_size_bytes=0):
+    """
+    Mencari berkas di direktori sesi aktif atau sesi terdahulu dengan filter:
+    - must_contain: memastikan path memuat substring tertentu (mis. 'step1_best')
+    - domain: memastikan tidak mengambil file dari domain lain (mis. laptop saat domain=rest16)
+    - min_size_bytes: memastikan file tidak kosong / corrupted
+    """
+    if search_roots is None:
+        search_roots = []
+    elif isinstance(search_roots, str):
+        search_roots = [search_roots]
+        
+    for sr in search_roots:
+        if not sr or not os.path.exists(sr):
+            continue
+        for root, dirs, files in os.walk(sr):
+            if filename in files:
+                hit = os.path.join(root, filename)
+                norm = hit.replace(os.sep, "/")
+                if must_contain and must_contain not in norm:
+                    continue
+                if domain and f"/{domain}_" not in norm and f"_{domain}/" not in norm and f"/{domain}/" not in norm:
+                    other_domains = ["laptop", "rest16"]
+                    if any(f"/{od}_" in norm for od in other_domains if od != domain):
+                        continue
+                if min_size_bytes > 0:
+                    try:
+                        if os.path.getsize(hit) < min_size_bytes:
+                            continue
+                    except Exception:
+                        continue
+                return hit
+    return None
+
+
 def setup_timestamped_run_dir(base_dir="results", domain="rest16"):
     """
     Creates a unique timestamped session directory with isolated subfolders:
