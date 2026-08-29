@@ -388,6 +388,41 @@ with step_stage("8a. Inisialisasi Step 2: patch tokenizer, label, path", 5) as s
     BertTokenizer.convert_tokens_to_ids = patched_convert_tokens_to_ids
     st.step("BertTokenizer.convert_tokens_to_ids dipatch (OOV → [UNK], dicatat sekali)")
 
+    # Patch evaluasi defensif: cegah KeyError jika pred memuat token/teks di luar gold
+    import eval_metrics as _em
+
+    def _safe_measureQuad_imp(pred, gold, text_type):
+        tp = [.0, .0, .0, .0, .0]
+        fp = [.0, .0, .0, .0, .0]
+        fn = [.0, .0, .0, .0, .0]
+        for text in pred:
+            target_dts = text_type.get(text, [4])
+            for dt in target_dts:
+                cnt = 0
+                if text in gold:
+                    for pair in pred[text]:
+                        if pair in gold[text]:
+                            cnt += 1
+                tp[dt] += cnt
+                fp[dt] += len(pred[text]) - cnt
+                if text in gold:
+                    fn[dt] += len(gold[text]) - cnt
+        for text in gold:
+            target_dts = text_type.get(text, [4])
+            for dt in target_dts:
+                if text not in pred:
+                    fn[dt] += len(gold[text])
+        for i in range(5):
+            print("tp: {}. fp: {}. fn: {}.".format(tp[i], fp[i], fn[i]))
+            p = 0 if tp[i] + fp[i] == 0 else 1.0 * tp[i] / (tp[i] + fp[i])
+            r = 0 if tp[i] + fn[i] == 0 else 1.0 * tp[i] / (tp[i] + fn[i])
+            f = 0 if p + r == 0 else 2 * p * r / (p + r)
+            print(i, ': ', {'precision': p, 'recall': r, 'micro-F1': f})
+        return {'precision': p, 'recall': r, 'micro-F1': f}
+
+    _em.measureQuad_imp = _safe_measureQuad_imp
+    st.step("eval_metrics.measureQuad_imp dipatch (defensif terhadap OOV/mismatched text)")
+
     processor_step2 = processors["categorysenti"]()
     label_list_step2 = processor_step2.get_labels(DOMAIN)
     num_labels_step2 = len(label_list_step2[0])

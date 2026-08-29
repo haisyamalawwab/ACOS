@@ -180,24 +180,9 @@ def measureQuad_imp(pred, gold, text_type):
     fp = [.0, .0, .0, .0, .0]
     fn = [.0, .0, .0, .0, .0]
 
-    # text_set = set()
-    # for text in gold:
-    #     text_set.add(text)
-    # for text in text_set:
-    #     for dt in text_type[text]:
-    #         cnt = 0
-    #         for ele in pred[text]:
-    #             if ele in gold[text]:
-    #                 cnt += 1
-    #         tp[dt] += cnt
-    #         fp[dt] += len(pred[text])-cnt
-
-    #         for ele in gold[text]:
-    #             if ele not in pred[text]:
-    #                 fn[dt] += 1
-
     for text in pred:
-        for dt in text_type[text]:
+        target_dts = text_type.get(text, [4])
+        for dt in target_dts:
             cnt = 0
             if text in gold:
                 for pair in pred[text]:
@@ -208,7 +193,8 @@ def measureQuad_imp(pred, gold, text_type):
             if text in gold:
                 fn[dt] += len(gold[text])-cnt
     for text in gold:
-        for dt in text_type[text]:
+        target_dts = text_type.get(text, [4])
+        for dt in target_dts:
             if text not in pred:
                 fn[dt] += len(gold[text])
 
@@ -374,7 +360,7 @@ def pair_eval(_e, args, logger, tokenizer, model, dataloader, gold, label_list, 
             pipeline_res.write('\n\n')
         for key in preds:
             if key not in golds:
-                pipeline_res.write(ids_to_token[key]+'\n')
+                pipeline_res.write(ids_to_token.get(key, str(key))+'\n')
                 pipeline_res.write('\n')
                 for cur_pair in preds[key]:
                     pipeline_res.write(cur_pair+'\t')
