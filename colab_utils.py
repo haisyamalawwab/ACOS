@@ -344,7 +344,16 @@ def auto_find_file(filename, search_roots=None, must_contain=None, domain=None, 
     - min_size_bytes: memastikan file tidak kosong / corrupted
     """
     if search_roots is None:
-        search_roots = []
+        search_roots = [
+            "results",
+            "Output/results",
+            "/content/drive/MyDrive/ACOS/Output/results",
+            "/content/drive/MyDrive/ACOS/results",
+            "/content/drive/MyDrive/ACOS-ASLI/Output/results",
+            "/content/drive/MyDrive/ACOS-ASLI/results",
+            "/content/ACOS/Output/results",
+            "/content/ACOS/results",
+        ]
     elif isinstance(search_roots, str):
         search_roots = [search_roots]
         

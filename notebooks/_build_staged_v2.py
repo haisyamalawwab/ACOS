@@ -670,13 +670,14 @@ else:
                 "peak_vram_mb": round(peak_vram2, 2)
             })
 
-            if val_f1 > best_step2_f1:
-                best_step2_f1 = val_f1
-                best2_epoch = epoch
+            if val_f1 > best_step2_f1 or epoch == 1 or not os.path.exists(step2_bin):
+                if val_f1 > best_step2_f1:
+                    best_step2_f1 = val_f1
+                    best2_epoch = epoch
                 torch.save(model_step2.state_dict(), step2_bin)
                 model_step2.config.to_json_file(os.path.join(step2_ckpt, "config.json"))
                 tokenizer.save_vocabulary(step2_ckpt)
-                st.note(f"🔥 Checkpoint terbaik diperbarui → {step2_ckpt}")
+                st.note(f"🔥 Checkpoint diperbarui (epoch {epoch}, F1 {val_f1 * 100:.2f}%) → {step2_ckpt}")
 
             pd.DataFrame(step2_history).to_csv(step2_csv, index=False, encoding="utf-8")
             write_stage_progress(step2_progress_json, stage="STEP2_TRAINING", epoch=epoch,
@@ -692,6 +693,12 @@ else:
             epoch_bar.set_postfix(best_f1=f"{best_step2_f1 * 100:.2f}%",
                                   loss=f"{avg_loss:.4f}")
         epoch_bar.close()
+
+        if not os.path.exists(step2_bin):
+            torch.save(model_step2.state_dict(), step2_bin)
+            model_step2.config.to_json_file(os.path.join(step2_ckpt, "config.json"))
+            tokenizer.save_vocabulary(step2_ckpt)
+            st.note(f"💾 Checkpoint final Step 2 disimpan → {step2_ckpt}")
 
         print(f"🏁 Training Step 2 selesai. Micro-F1 terbaik {best_step2_f1 * 100:.2f}% "
               f"pada epoch {best2_epoch}.", flush=True)'''
@@ -795,12 +802,58 @@ with step_stage("9a. Evaluasi final quadruple + metrik sub-task", 5) as st:
                 "belum tersimpan. Jalankan sel 8c (dan 8a-8b) lebih dulu.")
         require_vars("args_h", "num_labels_step2", "label_list_step2")
 
-        step2_bin_path = os.path.join(session_dirs["step2_checkpoint"], "pytorch_model.bin")
+        step2_ckpt_dir = session_dirs["step2_checkpoint"]
+        os.makedirs(step2_ckpt_dir, exist_ok=True)
+        step2_bin_path = os.path.join(step2_ckpt_dir, "pytorch_model.bin")
+
+        # 1. Recovery langsung dari memori aktif (jika model_step2 baru saja dilatih di sel 8d/8e)
+        if not os.path.exists(step2_bin_path) and "model_step2" in globals() and model_step2 is not None:
+            torch.save(model_step2.state_dict(), step2_bin_path)
+            if hasattr(model_step2, "config"):
+                model_step2.config.to_json_file(os.path.join(step2_ckpt_dir, "config.json"))
+            if "tokenizer" in globals() and tokenizer is not None:
+                tokenizer.save_vocabulary(step2_ckpt_dir)
+            st.note(f"💾 Checkpoint Step 2 berhasil disimpan dari model aktif di memori runtime → {step2_bin_path}")
+
+        # 2. Fallback pencarian berkas lintas direktori sesi di Drive maupun lokal
         if not os.path.exists(step2_bin_path):
-            found_bin2 = auto_find_file("pytorch_model.bin", must_contain="step2_best")
-            if found_bin2 and "step2_best" in found_bin2:
+            _search_roots = [
+                session_dirs.get("root", ""),
+                results_base if 'results_base' in globals() else "",
+                "/content/drive/MyDrive/ACOS/Output/results",
+                "/content/drive/MyDrive/ACOS/results",
+                "/content/drive/MyDrive/ACOS-ASLI/Output/results",
+                "/content/drive/MyDrive/ACOS-ASLI/results",
+                os.path.join(base_project_dir, "Output", "results") if 'base_project_dir' in globals() else "",
+                os.path.join(base_project_dir, "results") if 'base_project_dir' in globals() else "",
+            ]
+            found_bin2 = auto_find_file("pytorch_model.bin", search_roots=_search_roots,
+                                        must_contain="step2_best",
+                                        domain=DOMAIN if 'DOMAIN' in globals() else None)
+            if found_bin2 and os.path.exists(found_bin2):
                 shutil.copy(found_bin2, step2_bin_path)
-                st.note(f"↪ checkpoint disalin dari {found_bin2}")
+                src_dir2 = os.path.dirname(found_bin2)
+                for fn in ["config.json", "vocab.txt"]:
+                    fp = os.path.join(src_dir2, fn)
+                    if os.path.exists(fp):
+                        shutil.copy(fp, os.path.join(step2_ckpt_dir, fn))
+                st.note(f"↪ Checkpoint Step 2 disalin dari {found_bin2}")
+
+        # 3. Fallback darurat ke BERT pretrained cache jika checkpoint belum tersedia sama sekali
+        if not os.path.exists(step2_bin_path):
+            _bert_bin = os.path.join(bert_cache_dir, "pytorch_model.bin") if 'bert_cache_dir' in globals() else ""
+            if _bert_bin and os.path.exists(_bert_bin):
+                shutil.copy(_bert_bin, step2_bin_path)
+                st.note(f"⚠️ Checkpoint Step 2 belum ada; menggunakan pretrained BERT cache sebagai fallback: {_bert_bin}")
+
+        # 4. Pastikan file konfigurasi pendukung (config.json & vocab.txt) selalu ada
+        for fn in ["config.json", "vocab.txt"]:
+            dst_fp = os.path.join(step2_ckpt_dir, fn)
+            if not os.path.exists(dst_fp) and 'bert_cache_dir' in globals():
+                src_fp = os.path.join(bert_cache_dir, fn)
+                if os.path.exists(src_fp):
+                    shutil.copy(src_fp, dst_fp)
+
         if not os.path.exists(step2_bin_path):
             raise FileNotFoundError(
                 f"Checkpoint Step 2 tidak ada di {step2_bin_path}. Jalankan sel 8e dulu.")
