@@ -66,11 +66,23 @@ terbaca dari Drive bila tab Colab tertutup. Sel yang mahal melewati dirinya send
 saat artefaknya sudah ada.
 
 Jalankan sel 1b sekali setelah setiap restart kernel — semua sel tahap
-bergantung padanya."""
+bergantung padanya.
+
+**Metrik mentah**: sel 1b mendefinisikan `patch_eval_metrics_counts()` yang dipanggil di
+sel 5a dan 8a, sehingga TP/FP/FN ikut dikembalikan oleh `measureQuad`/`measureQuad_imp`.
+Hitungan itu disimpan ke `csv/step*_training_history.csv`, `logs/step*_progress.json`,
+`logs/step*_run_result.json`, dan `logs/master_metrics.json`, lalu ditampilkan pada tabel
+`master_03`, `master_06`, `master_07`, `master_08`, dan `master_09`."""
 
 MD_TRACKER = """### 1b. Pelacak Progres Bertahap (`step_stage`)
 Definisi dipakai oleh seluruh sel tahap di bawah. **Wajib dijalankan ulang setiap kali
-kernel di-restart**, sebelum melompat ke Step 1/2 atau evaluasi."""
+kernel di-restart**, sebelum melompat ke Step 1/2 atau evaluasi.
+
+Sel ini juga mendefinisikan `patch_eval_metrics_counts()` — patch yang membuat
+`measureQuad`/`measureQuad_imp` ikut mengembalikan **TP, FP, FN** di samping
+precision/recall/micro-F1, sehingga hitungan mentah bisa disimpan ke CSV/JSON dan
+ditampilkan di tabel hasil. Patch-nya dipanggil dari sel 5a dan 8a (setelah
+`sys.path` memuat `Extract-Classify-ACOS`), bukan di sini."""
 
 CODE_TRACKER = '''import time
 
@@ -129,7 +141,143 @@ def write_stage_progress(path, **fields):
     return path
 
 
-print("🛠️  step_stage, require_vars, write_stage_progress siap dipakai seluruh tahap.")'''
+# Kolom hitungan mentah dilaporkan apa adanya; hanya kolom laju yang dipersenkan.
+METRIC_COUNT_COLS = ("tp", "fp", "fn")
+METRIC_RATE_COLS = ("precision", "recall", "micro-F1", "f1")
+
+
+def patch_eval_metrics_counts():
+    """Membuat `measureQuad` & `measureQuad_imp` ikut mengembalikan tp/fp/fn.
+
+    Versi upstream mencetak ketiga hitungan itu lalu membuangnya, sehingga
+    `pred_eval`/`pair_eval` hanya meneruskan precision/recall/micro-F1 dan
+    notebook tidak pernah bisa menyimpan hitungan mentahnya. Patch ini juga
+    memperbaiki dua cacat upstream sekaligus: `measureQuad_imp` melakukan
+    `return` di luar loop (hanya slot difficulty terakhir yang terbawa) dan
+    melempar KeyError untuk teks prediksi yang tidak ada di `text_type`.
+    """
+    import eval_metrics as _em
+
+    if getattr(_em, "_ACOS_COUNTS_PATCHED", False):
+        return _em
+
+    def _prf(tp, fp, fn):
+        p = 0.0 if tp + fp == 0 else 1.0 * tp / (tp + fp)
+        r = 0.0 if tp + fn == 0 else 1.0 * tp / (tp + fn)
+        f = 0.0 if p + r == 0 else 2 * p * r / (p + r)
+        return {"precision": p, "recall": r, "micro-F1": f,
+                "tp": float(tp), "fp": float(fp), "fn": float(fn)}
+
+    def measureQuad(pred, gold):
+        tp = fp = fn = 0.0
+        for text in pred:
+            cnt = 0
+            if text in gold:
+                for pair in pred[text]:
+                    if pair in gold[text]:
+                        cnt += 1
+            tp += cnt
+            fp += len(pred[text]) - cnt
+            if text in gold:
+                fn += len(gold[text]) - cnt
+        for text in gold:
+            if text not in pred:
+                fn += len(gold[text])
+        print("tp: {}. fp: {}. fn: {}.".format(tp, fp, fn))
+        return _prf(tp, fp, fn)
+
+    def measureQuad_imp(pred, gold, text_type):
+        tp = [.0] * 5
+        fp = [.0] * 5
+        fn = [.0] * 5
+        for text in pred:
+            for dt in text_type.get(text, [4]):
+                cnt = 0
+                if text in gold:
+                    for pair in pred[text]:
+                        if pair in gold[text]:
+                            cnt += 1
+                tp[dt] += cnt
+                fp[dt] += len(pred[text]) - cnt
+                if text in gold:
+                    fn[dt] += len(gold[text]) - cnt
+        for text in gold:
+            for dt in text_type.get(text, [4]):
+                if text not in pred:
+                    fn[dt] += len(gold[text])
+
+        per_dt = []
+        for i in range(5):
+            print("tp: {}. fp: {}. fn: {}.".format(tp[i], fp[i], fn[i]))
+            slot = _prf(tp[i], fp[i], fn[i])
+            print(i, ': ', slot)
+            per_dt.append(slot)
+        # Agregat seluruh slot difficulty. Upstream me-return di luar loop
+        # sehingga hanya slot i=4 yang terbawa.
+        res = _prf(sum(tp), sum(fp), sum(fn))
+        # `pair_eval` mem-format tiap nilai dengan {:.2%}, jadi nilai non-skalar
+        # tidak boleh masuk dict ini; rincian per slot disimpan di modul.
+        _em.LAST_DIFFICULTY_BREAKDOWN = per_dt
+        return res
+
+    _em.measureQuad = measureQuad
+    _em.measureQuad_imp = measureQuad_imp
+    _em.LAST_DIFFICULTY_BREAKDOWN = []
+    _em._ACOS_COUNTS_PATCHED = True
+    return _em
+
+
+def history_display_frame(history, epochs_col="epoch"):
+    """Riwayat per epoch → DataFrame siap tabel: hitungan mentah + kolom persen."""
+    df = pd.DataFrame(history)
+    if df.empty:
+        return df
+    for c in METRIC_RATE_COLS:
+        if c in df.columns and pd.to_numeric(df[c], errors="coerce").max() <= 1.0:
+            df[c] = (pd.to_numeric(df[c], errors="coerce") * 100).round(2)
+    rename = {"tp": "TP", "fp": "FP", "fn": "FN", "precision": "Precision_%",
+              "recall": "Recall_%", "micro-F1": "Micro_F1_%"}
+    df = df.rename(columns={k: v for k, v in rename.items() if k in df.columns})
+    order = [epochs_col, "loss", "TP", "FP", "FN",
+             "Precision_%", "Recall_%", "Micro_F1_%"]
+    cols = [c for c in order if c in df.columns]
+    return df[cols + [c for c in df.columns if c not in cols]]
+
+
+def metrics_display_frame(res):
+    """Satu dict metrik → tabel dua-jenis: hitungan mentah dan laju dalam persen."""
+    rows = []
+    for k, v in res.items():
+        if not isinstance(v, (int, float)):
+            continue
+        is_count = k in METRIC_COUNT_COLS
+        rows.append({"Metrik": {"tp": "TP", "fp": "FP", "fn": "FN"}.get(k, k),
+                     "Jenis": "hitungan" if is_count else "laju",
+                     "Nilai": float(v),
+                     "Tampil": (f"{float(v):.0f}" if is_count
+                                else f"{float(v) * 100:.2f}%")})
+    df = pd.DataFrame(rows)
+    if not df.empty:
+        df = df.sort_values("Jenis", ascending=False).reset_index(drop=True)
+    return df
+
+
+def best_epoch_row(history, f1_key="micro-F1"):
+    """Baris epoch terbaik dari riwayat, apa pun skala kolom F1 yang tersimpan."""
+    df = pd.DataFrame(history)
+    if df.empty or f1_key not in df.columns:
+        return {}, 0.0, 0
+    f1 = pd.to_numeric(df[f1_key], errors="coerce")
+    idx = int(f1.idxmax())
+    best_f1 = float(f1.max())
+    if best_f1 > 1.0:  # riwayat lama menyimpan persen
+        best_f1 /= 100.0
+    epoch = int(df.loc[idx].get("epoch", idx + 1))
+    return df.loc[idx].to_dict(), best_f1, epoch
+
+
+print("🛠️  step_stage, require_vars, write_stage_progress, patch_eval_metrics_counts, "
+      "history_display_frame, metrics_display_frame, best_epoch_row siap dipakai.")'''
 
 CODE_5A_V2 = '''require_vars("step_stage", "session_dirs", "bert_cache_dir", "DOMAIN")
 
@@ -144,7 +292,7 @@ from tqdm.auto import tqdm
 # Toggle Melatih Ulang (Set True jika ingin melatih ulang dari awal)
 FORCE_RETRAIN_STEP1 = False
 
-with step_stage("5a. Inisialisasi Step 1: tokenizer, label, path", 5) as st:
+with step_stage("5a. Inisialisasi Step 1: tokenizer, patch metrik, label, path", 6) as st:
     if torch.cuda.is_available():
         torch.cuda.empty_cache()
         try:
@@ -158,6 +306,10 @@ with step_stage("5a. Inisialisasi Step 1: tokenizer, label, path", 5) as st:
 
     tokenizer = BertTokenizer.from_pretrained(bert_cache_dir, do_lower_case=True)
     st.step(f"Tokenizer dimuat: {len(tokenizer.vocab):,} entri vocab dari {bert_cache_dir}")
+
+    _em1 = patch_eval_metrics_counts()
+    st.step("eval_metrics dipatch: measureQuad & measureQuad_imp kini mengembalikan "
+            "tp/fp/fn (+ agregat semua slot difficulty)")
 
     processor_step1 = processors["quad"]()
     label_list_step1 = processor_step1.get_labels(DOMAIN)
@@ -174,6 +326,175 @@ with step_stage("5a. Inisialisasi Step 1: tokenizer, label, path", 5) as st:
     st.step(f"Checkpoint  : {step1_ckpt}")
     st.step(f"Prediksi    : {pred_file} | FORCE_RETRAIN_STEP1={FORCE_RETRAIN_STEP1} | "
             f"epoch target={NUM_EPOCHS}")'''
+
+CODE_5E_V2 = '''require_vars("step_stage", "STEP1_SKIP_TRAINING")
+
+if STEP1_SKIP_TRAINING:
+    print("⏩ 5e dilewati — training Step 1 tidak dijalankan (cache hit).")
+    print(f"   Micro-F1 terbaik tersimpan: {best_step1_f1 * 100:.2f}% (epoch {best1_epoch})")
+else:
+    require_vars("model_step1", "optimizer_1", "train_loader_1", "eval_loader_1")
+    with step_stage(f"5e. Training Step 1 BERT-CRF — {NUM_EPOCHS} epoch pada {device}",
+                    NUM_EPOCHS) as st:
+        best_step1_f1 = 0.0
+        best1_epoch = 1
+        step1_history = []
+
+        epoch_bar = tqdm(range(1, NUM_EPOCHS + 1), desc="Step 1 epoch", unit="epoch")
+        for epoch in epoch_bar:
+            model_step1.train()
+            t_loss = 0.0
+            batch_bar = tqdm(train_loader_1, desc=f"  epoch {epoch}/{NUM_EPOCHS}",
+                             unit="batch", leave=False)
+            for step, batch in enumerate(batch_bar, 1):
+                batch = tuple(t.to(device) for t in batch)
+                _len, _ids, _mask, _lbls, _seg, _imp_a, _imp_o = batch
+                out1 = model_step1(aspect_input_ids=_ids, aspect_labels=_lbls,
+                                   aspect_token_type_ids=_seg, aspect_attention_mask=_mask,
+                                   exist_imp_aspect=_imp_a, exist_imp_opinion=_imp_o)
+                loss, _ = unpack_model_output(out1)
+                loss.backward()
+                optimizer_1.step()
+                optimizer_1.zero_grad()
+                t_loss += loss.item()
+                if step % 10 == 0 or step == len(train_loader_1):
+                    batch_bar.set_postfix(loss=f"{t_loss / step:.4f}")
+            batch_bar.close()
+
+            avg_loss = t_loss / len(train_loader_1)
+            model_step1.eval()
+            print(f"   Epoch {epoch:02d}: evaluasi test set ({len(eval_loader_1)} batch)...",
+                  flush=True)
+            val_res = pred_eval(epoch, args_h, logger, tokenizer, model_step1, eval_loader_1,
+                                eval_gold_1, label_list_step1, device, "quad", eval_type='test')
+            val_f1 = val_res.get('micro-F1', 0.0)
+            # tp/fp/fn tersedia karena patch_eval_metrics_counts() di sel 5a.
+            val_tp = float(val_res.get('tp', float('nan')))
+            val_fp = float(val_res.get('fp', float('nan')))
+            val_fn = float(val_res.get('fn', float('nan')))
+
+            peak_vram = torch.cuda.max_memory_allocated(device) / (1024 ** 2) if torch.cuda.is_available() else 0.0
+            st.step(f"Epoch {epoch:02d} | loss {avg_loss:.4f} | TP {val_tp:.0f} FP {val_fp:.0f} "
+                    f"FN {val_fn:.0f} | P {val_res.get('precision', 0.0) * 100:.2f}% "
+                    f"| R {val_res.get('recall', 0.0) * 100:.2f}% "
+                    f"| F1 {val_f1 * 100:.2f}% | peak VRAM {peak_vram:.0f} MB")
+
+            step1_history.append({
+                "epoch": epoch, "loss": avg_loss,
+                "tp": val_tp, "fp": val_fp, "fn": val_fn,
+                "precision": val_res.get('precision', 0.0),
+                "recall": val_res.get('recall', 0.0),
+                "micro-F1": val_f1,
+                "peak_vram_mb": round(peak_vram, 2)
+            })
+
+            if val_f1 > best_step1_f1:
+                best_step1_f1 = val_f1
+                best1_epoch = epoch
+                torch.save(model_step1.state_dict(), step1_bin)
+                model_step1.config.to_json_file(os.path.join(step1_ckpt, "config.json"))
+                tokenizer.save_vocabulary(step1_ckpt)
+                st.note(f"🔥 Checkpoint terbaik diperbarui → {step1_ckpt}")
+
+            # Jejak progres yang bertahan meski runtime terputus di tengah training.
+            pd.DataFrame(step1_history).to_csv(step1_csv, index=False, encoding="utf-8")
+            write_stage_progress(step1_progress_json, stage="STEP1_TRAINING",
+                                 epoch=epoch, total_epochs=NUM_EPOCHS,
+                                 last_loss=avg_loss, last_tp=val_tp, last_fp=val_fp,
+                                 last_fn=val_fn, last_micro_f1=val_f1,
+                                 best_micro_f1=best_step1_f1,
+                                 best_epoch=best1_epoch,
+                                 peak_vram_mb=round(peak_vram, 2))
+            update_mcp_manifest("STEP1_TRAINING", 3, {
+                "step1_epoch_progress": f"{epoch}/{NUM_EPOCHS}",
+                "step1_best_micro_f1": float(best_step1_f1 * 100),
+                "step1_best_epoch": best1_epoch,
+            })
+            epoch_bar.set_postfix(best_f1=f"{best_step1_f1 * 100:.2f}%", loss=f"{avg_loss:.4f}")
+        epoch_bar.close()
+
+        print(f"🏁 Training selesai. Micro-F1 terbaik {best_step1_f1 * 100:.2f}% "
+              f"pada epoch {best1_epoch}.", flush=True)
+
+# Ringkasan satu berkas untuk kedua cabang (training maupun cache hit).
+step1_run_json = os.path.join(session_dirs["logs"], "step1_run_result.json")
+_best_row1, _best_f1_1, _best_ep1 = best_epoch_row(globals().get("step1_history", []))
+with open(step1_run_json, "w", encoding="utf-8") as _jf:
+    json.dump({
+        "mode": "cache_hit" if STEP1_SKIP_TRAINING else "trained",
+        "domain": DOMAIN,
+        "total_epochs_target": NUM_EPOCHS,
+        "epochs_recorded": len(globals().get("step1_history", [])),
+        "best_epoch": _best_ep1 or best1_epoch,
+        "best_micro_f1": _best_f1_1,
+        "best_micro_f1_pct": round(_best_f1_1 * 100, 2),
+        "best_row": _best_row1,
+        "history": globals().get("step1_history", []),
+        "checkpoint": step1_ckpt,
+        "csv": step1_csv,
+        "saved_at": datetime.now().isoformat(),
+    }, _jf, indent=2)
+print(f"🧾 Ringkasan run Step 1 (termasuk TP/FP/FN per epoch) → {step1_run_json}")'''
+
+CODE_5F_V2 = '''require_vars("step_stage", "step1_history", "best_step1_f1", "best1_epoch")
+
+with step_stage("5f. Plot, tabel laporan, manifest & state Step 1", 5) as st:
+    _p1 = os.path.join(plots_dir, "03_step1_training_loss_f1_curve.png")
+    if step1_history:
+        plot_training_history(
+            step1_history, task_name="Step 1 (BERT-CRF)",
+            output_plot_path=_p1,
+            output_csv_path=step1_csv
+        )
+        st.step(f"Plot & CSV riwayat ditulis ({len(step1_history)} epoch)")
+    else:
+        st.step("Riwayat kosong — plot dilewati")
+
+    rep.section("3. Step 1: ekstraksi aspect & opinion")
+    df_s1_tabel = history_display_frame(step1_history)
+    if not df_s1_tabel.empty:
+        _kolom_hitung = [c for c in ("TP", "FP", "FN") if c in df_s1_tabel.columns]
+        export_step_table(df_s1_tabel, name="master_03_step1_riwayat", csv_dir=csv_dir,
+                          md_dir=md_dir,
+                          title=f"Riwayat Training Step 1 ({DOMAIN.upper()})",
+                          notes=("Metrik dihitung pada test set tiap epoch. "
+                                 + ("TP/FP/FN adalah hitungan mentah span aspect/opinion; "
+                                    "Precision/Recall/Micro-F1 dalam persen."
+                                    if _kolom_hitung else
+                                    "Kolom TP/FP/FN tidak ada — sel 5a belum dijalankan "
+                                    "pada run yang menghasilkan riwayat ini.")),
+                          max_rows_md=NUM_EPOCHS)
+        rep.table(df_s1_tabel, max_rows=NUM_EPOCHS, caption="Metrik step 1 per epoch")
+        st.step(f"Tabel master_03_step1_riwayat diekspor ({len(df_s1_tabel)} baris, "
+                f"kolom hitungan: {', '.join(_kolom_hitung) or 'tidak ada'})")
+
+        _row1, _f1_1, _ep1 = best_epoch_row(step1_history)
+        rep.kv({
+            "epoch_terbaik": _ep1 or best1_epoch,
+            "micro-F1_terbaik": f"{_f1_1 * 100:.2f}%",
+            "TP_FP_FN_epoch_terbaik": (
+                f"{_row1.get('tp', float('nan')):.0f} / {_row1.get('fp', float('nan')):.0f} / "
+                f"{_row1.get('fn', float('nan')):.0f}" if "tp" in _row1 else "tidak tercatat"),
+            "checkpoint": step1_ckpt,
+        })
+        st.step(f"Micro-F1 terbaik {_f1_1 * 100:.2f}% (epoch {_ep1 or best1_epoch})")
+    else:
+        st.step("Tabel riwayat dilewati (tidak ada metrik per epoch)")
+
+    if os.path.exists(_p1):
+        from IPython.display import Image, display
+        display(Image(_p1))
+        rep.image(_p1, "Kurva training step 1")
+
+    update_mcp_manifest("STEP1_COMPLETED", 3, {
+        "step1_best_micro_f1": float(best_step1_f1 * 100 if best_step1_f1 <= 1.0 else best_step1_f1),
+        "step1_checkpoint": step1_ckpt
+    })
+    st.step("session_manifest.json → STEP1_COMPLETED")
+
+    save_pipeline_state({"best_step1_f1": best_step1_f1, "best_step1_epoch": best1_epoch})
+    st.step(f"pipeline_state.pkl diperbarui | pred4pipeline.txt: "
+            f"{'ada' if os.path.exists(pred_file) else 'BELUM ADA'}")'''
 
 MD_7A = """## 7. Jembatan Pasangan Kandidat (Step 1 → Step 2)
 
@@ -351,7 +672,7 @@ import logging
 # Toggle Melatih Ulang Step 2 (Set True jika ingin memaksa melatih ulang)
 FORCE_RETRAIN_STEP2 = False
 
-with step_stage("8a. Inisialisasi Step 2: patch tokenizer, label, path", 5) as st:
+with step_stage("8a. Inisialisasi Step 2: patch tokenizer, patch metrik, label, path", 6) as st:
     if torch.cuda.is_available():
         torch.cuda.empty_cache()
         st.step(f"GPU cache dibersihkan | {torch.cuda.get_device_name(0)}")
@@ -388,49 +709,12 @@ with step_stage("8a. Inisialisasi Step 2: patch tokenizer, label, path", 5) as s
     BertTokenizer.convert_tokens_to_ids = patched_convert_tokens_to_ids
     st.step("BertTokenizer.convert_tokens_to_ids dipatch (OOV → [UNK], dicatat sekali)")
 
-    # Patch evaluasi defensif: cegah KeyError jika pred memuat token/teks di luar gold
-    import eval_metrics as _em
-
-    def _safe_measureQuad_imp(pred, gold, text_type):
-        tp = [.0, .0, .0, .0, .0]
-        fp = [.0, .0, .0, .0, .0]
-        fn = [.0, .0, .0, .0, .0]
-        for text in pred:
-            target_dts = text_type.get(text, [4])
-            for dt in target_dts:
-                cnt = 0
-                if text in gold:
-                    for pair in pred[text]:
-                        if pair in gold[text]:
-                            cnt += 1
-                tp[dt] += cnt
-                fp[dt] += len(pred[text]) - cnt
-                if text in gold:
-                    fn[dt] += len(gold[text]) - cnt
-        for text in gold:
-            target_dts = text_type.get(text, [4])
-            for dt in target_dts:
-                if text not in pred:
-                    fn[dt] += len(gold[text])
-        for i in range(5):
-            print("tp: {}. fp: {}. fn: {}.".format(tp[i], fp[i], fn[i]))
-            p_i = 0 if tp[i] + fp[i] == 0 else 1.0 * tp[i] / (tp[i] + fp[i])
-            r_i = 0 if tp[i] + fn[i] == 0 else 1.0 * tp[i] / (tp[i] + fn[i])
-            f_i = 0 if p_i + r_i == 0 else 2 * p_i * r_i / (p_i + r_i)
-            print(i, ': ', {'precision': p_i, 'recall': r_i, 'micro-F1': f_i})
-        # Jumlahkan semua difficulty type → satu set metrik agregat
-        # (sebelumnya return di luar loop hanya mengembalikan iterasi terakhir i=4)
-        tp_sum = float(sum(tp))
-        fp_sum = float(sum(fp))
-        fn_sum = float(sum(fn))
-        p = 0 if tp_sum + fp_sum == 0 else 1.0 * tp_sum / (tp_sum + fp_sum)
-        r = 0 if tp_sum + fn_sum == 0 else 1.0 * tp_sum / (tp_sum + fn_sum)
-        f = 0 if p + r == 0 else 2 * p * r / (p + r)
-        return {'precision': p, 'recall': r, 'micro-F1': f,
-                'tp': tp_sum, 'fp': fp_sum, 'fn': fn_sum}
-
-    _em.measureQuad_imp = _safe_measureQuad_imp
-    st.step("eval_metrics.measureQuad_imp dipatch (defensif terhadap OOV/mismatched text)")
+    # Patch evaluasi: measureQuad & measureQuad_imp ikut mengembalikan tp/fp/fn,
+    # sekaligus defensif terhadap teks prediksi di luar gold (KeyError text_type)
+    # dan memperbaiki return-di-luar-loop pada measureQuad_imp.
+    _em2 = patch_eval_metrics_counts()
+    st.step("eval_metrics dipatch: tp/fp/fn ikut dikembalikan, agregat semua slot "
+            "difficulty, aman terhadap OOV/mismatched text")
 
     processor_step2 = processors["categorysenti"]()
     label_list_step2 = processor_step2.get_labels(DOMAIN)
@@ -504,9 +788,12 @@ with step_stage("8b. Deteksi cache Step 2 (sesi aktif lalu sesi lama)", 4) as st
         if os.path.exists(step2_csv):
             df_s2_saved = pd.read_csv(step2_csv)
             step2_history = df_s2_saved.to_dict('records')
-            best_step2_f1 = float(df_s2_saved["micro-F1"].max() / 100.0) if "micro-F1" in df_s2_saved else 0.0
-            best2_epoch = int(df_s2_saved.loc[df_s2_saved["micro-F1"].idxmax()]["epoch"]) if "epoch" in df_s2_saved else NUM_EPOCHS
-            st.step(f"Riwayat tersimpan: {len(df_s2_saved)} epoch, terbaik epoch {best2_epoch}")
+            _row_c2, best_step2_f1, best2_epoch = best_epoch_row(step2_history)
+            best2_epoch = best2_epoch or NUM_EPOCHS
+            _ada_hitungan = all(c in df_s2_saved.columns for c in ("tp", "fp", "fn"))
+            st.step(f"Riwayat tersimpan: {len(df_s2_saved)} epoch, terbaik epoch {best2_epoch}"
+                    + (" (TP/FP/FN tersedia)" if _ada_hitungan
+                       else " (tanpa kolom TP/FP/FN — CSV dari run lama)"))
             if len(df_s2_saved) < NUM_EPOCHS:
                 st.note(f"⚠️ Riwayat hanya {len(df_s2_saved)}/{NUM_EPOCHS} epoch — "
                         f"checkpoint dari run yang terhenti. Set FORCE_RETRAIN_STEP2=True "
@@ -665,14 +952,20 @@ else:
                                 eval_gold_2, label_list_step2, device, "categorysenti",
                                 eval_type='test')
             val_f1 = val_res.get('micro-F1', 0.0)
+            # tp/fp/fn tersedia karena patch_eval_metrics_counts() di sel 8a.
+            val_tp = float(val_res.get('tp', float('nan')))
+            val_fp = float(val_res.get('fp', float('nan')))
+            val_fn = float(val_res.get('fn', float('nan')))
             peak_vram2 = torch.cuda.max_memory_allocated(device) / (1024 ** 2) if torch.cuda.is_available() else 0.0
 
-            st.step(f"Epoch {epoch:02d} | loss {avg_loss:.4f} | quadruple micro-F1 "
-                    f"{val_f1 * 100:.2f}% | P {val_res.get('precision', 0.0) * 100:.2f}% "
-                    f"| R {val_res.get('recall', 0.0) * 100:.2f}% | peak VRAM {peak_vram2:.0f} MB")
+            st.step(f"Epoch {epoch:02d} | loss {avg_loss:.4f} | TP {val_tp:.0f} FP {val_fp:.0f} "
+                    f"FN {val_fn:.0f} | P {val_res.get('precision', 0.0) * 100:.2f}% "
+                    f"| R {val_res.get('recall', 0.0) * 100:.2f}% "
+                    f"| quadruple micro-F1 {val_f1 * 100:.2f}% | peak VRAM {peak_vram2:.0f} MB")
 
             step2_history.append({
                 "epoch": epoch, "loss": avg_loss,
+                "tp": val_tp, "fp": val_fp, "fn": val_fn,
                 "precision": val_res.get('precision', 0.0),
                 "recall": val_res.get('recall', 0.0),
                 "micro-F1": val_f1,
@@ -691,6 +984,7 @@ else:
             pd.DataFrame(step2_history).to_csv(step2_csv, index=False, encoding="utf-8")
             write_stage_progress(step2_progress_json, stage="STEP2_TRAINING", epoch=epoch,
                                  total_epochs=NUM_EPOCHS, last_loss=avg_loss,
+                                 last_tp=val_tp, last_fp=val_fp, last_fn=val_fn,
                                  last_micro_f1=val_f1, best_micro_f1=best_step2_f1,
                                  best_epoch=best2_epoch,
                                  peak_vram_mb=round(peak_vram2, 2))
@@ -710,7 +1004,28 @@ else:
             st.note(f"💾 Checkpoint final Step 2 disimpan → {step2_ckpt}")
 
         print(f"🏁 Training Step 2 selesai. Micro-F1 terbaik {best_step2_f1 * 100:.2f}% "
-              f"pada epoch {best2_epoch}.", flush=True)'''
+              f"pada epoch {best2_epoch}.", flush=True)
+
+# Ringkasan satu berkas untuk kedua cabang (training maupun cache hit).
+step2_run_json = os.path.join(session_dirs["logs"], "step2_run_result.json")
+_best_row2, _best_f1_2, _best_ep2 = best_epoch_row(globals().get("step2_history", []))
+with open(step2_run_json, "w", encoding="utf-8") as _jf:
+    json.dump({
+        "mode": "cache_hit" if STEP2_SKIP_TRAINING else "trained",
+        "domain": DOMAIN,
+        "total_epochs_target": NUM_EPOCHS,
+        "epochs_recorded": len(globals().get("step2_history", [])),
+        "best_epoch": _best_ep2 or best2_epoch,
+        "best_micro_f1": _best_f1_2,
+        "best_micro_f1_pct": round(_best_f1_2 * 100, 2),
+        "best_row": _best_row2,
+        "history": globals().get("step2_history", []),
+        "checkpoint": step2_ckpt,
+        "csv": step2_csv,
+        "sumber_kandidat": "step1" if globals().get("pakai_1st", True) else "gold",
+        "saved_at": datetime.now().isoformat(),
+    }, _jf, indent=2)
+print(f"🧾 Ringkasan run Step 2 (termasuk TP/FP/FN per epoch) → {step2_run_json}")'''
 
 MD_8F = """### 8f. Plot, Tabel & State Step 2"""
 
@@ -728,30 +1043,35 @@ with step_stage("8f. Plot, tabel laporan, manifest & state Step 2", 5) as st:
         st.step("Riwayat kosong — plot dilewati")
 
     rep.section("5. Step 2: klasifikasi category & sentiment")
-    df_s2 = pd.DataFrame(step2_history)
-    if not df_s2.empty:
-        df_s2_pct = df_s2.copy()
-        for c in ["precision", "recall", "micro-F1"]:
-            if c in df_s2_pct.columns and df_s2_pct[c].max() <= 1.0:
-                df_s2_pct[c] = (df_s2_pct[c] * 100).round(2)
+    df_s2_tabel = history_display_frame(step2_history)
+    if not df_s2_tabel.empty:
+        _kolom_hitung2 = [c for c in ("TP", "FP", "FN") if c in df_s2_tabel.columns]
         _src_txt = 'prediksi step 1' if globals().get('pakai_1st', True) else 'gold pair'
-        export_step_table(df_s2_pct, name="master_06_step2_riwayat", csv_dir=csv_dir,
+        export_step_table(df_s2_tabel, name="master_06_step2_riwayat", csv_dir=csv_dir,
                           md_dir=md_dir,
                           title=f"Riwayat Training Step 2 ({DOMAIN.upper()})",
                           notes=("Metrik pada level quadruple lengkap. Sumber kandidat: "
-                                 f"{_src_txt}."),
+                                 f"{_src_txt}. "
+                                 + ("TP/FP/FN adalah hitungan mentah quadruple; "
+                                    "Precision/Recall/Micro-F1 dalam persen."
+                                    if _kolom_hitung2 else
+                                    "Kolom TP/FP/FN tidak ada — riwayat berasal dari run "
+                                    "sebelum patch metrik di sel 8a.")),
                           max_rows_md=NUM_EPOCHS)
-        rep.table(df_s2_pct, max_rows=NUM_EPOCHS, caption="Metrik step 2 per epoch")
-        st.step(f"Tabel master_06_step2_riwayat diekspor (sumber kandidat: {_src_txt})")
+        rep.table(df_s2_tabel, max_rows=NUM_EPOCHS, caption="Metrik step 2 per epoch")
+        st.step(f"Tabel master_06_step2_riwayat diekspor (sumber kandidat: {_src_txt}, "
+                f"kolom hitungan: {', '.join(_kolom_hitung2) or 'tidak ada'})")
 
-        best2 = df_s2_pct.loc[df_s2_pct["micro-F1"].idxmax()]
+        _row2, _f1_2, _ep2 = best_epoch_row(step2_history)
         rep.kv({
-            "epoch_terbaik": int(best2.get("epoch", best2_epoch)),
-            "micro-F1_terbaik": f"{float(best2['micro-F1']):.2f}%",
+            "epoch_terbaik": _ep2 or best2_epoch,
+            "micro-F1_terbaik": f"{_f1_2 * 100:.2f}%",
+            "TP_FP_FN_epoch_terbaik": (
+                f"{_row2.get('tp', float('nan')):.0f} / {_row2.get('fp', float('nan')):.0f} / "
+                f"{_row2.get('fn', float('nan')):.0f}" if "tp" in _row2 else "tidak tercatat"),
             "checkpoint": step2_ckpt,
         })
-        st.step(f"Micro-F1 terbaik {float(best2['micro-F1']):.2f}% "
-                f"(epoch {int(best2.get('epoch', best2_epoch))})")
+        st.step(f"Micro-F1 terbaik {_f1_2 * 100:.2f}% (epoch {_ep2 or best2_epoch})")
     else:
         st.step("Tabel riwayat dilewati (tidak ada metrik per epoch)")
 
@@ -771,8 +1091,9 @@ MD_9A = """## 9. Evaluasi Final & Benchmark Sub-Task
 
 ### 9a. Evaluasi Quadruple dengan Checkpoint Terbaik
 Memuat checkpoint Step 2 terbaik lalu menjalankan `pair_eval` sekali sambil menangkap
-metrik per sub-task. Hasilnya di-cache ke `logs/master_metrics.json`; set
-`FORCE_REEVAL = True` untuk mengevaluasi ulang."""
+metrik per sub-task. **TP/FP/FN** ikut tersimpan — untuk metrik keseluruhan lewat patch
+`measureQuad`, dan untuk tiap sub-task lewat `SubtaskMetricCapture`. Hasilnya di-cache ke
+`logs/master_metrics.json`; set `FORCE_REEVAL = True` untuk mengevaluasi ulang."""
 
 CODE_9A = '''ensure_objects()
 require_vars("step_stage", "session_dirs")
@@ -797,9 +1118,11 @@ with step_stage("9a. Evaluasi final quadruple + metrik sub-task", 5) as st:
         final_res = cached_all.get("overall", {})
         subtask_metrics = cached_all.get("subtasks", {})
         df_subtasks = pd.DataFrame([
-            {"Subtask": k, "Precision": v.get("precision", 0.0),
-             "Recall": v.get("recall", 0.0), "Micro_F1": v.get("micro-F1", 0.0),
-             "N_Elements": len(k.split())}
+            {"Subtask": k, "N_Elements": len(k.split()),
+             "TP": v.get("tp", float("nan")), "FP": v.get("fp", float("nan")),
+             "FN": v.get("fn", float("nan")),
+             "Precision": v.get("precision", 0.0),
+             "Recall": v.get("recall", 0.0), "Micro_F1": v.get("micro-F1", 0.0)}
             for k, v in subtask_metrics.items()
         ])
         st.step(f"[CACHE HIT] {len(final_res)} metrik keseluruhan, "
@@ -882,54 +1205,81 @@ with step_stage("9a. Evaluasi final quadruple + metrik sub-task", 5) as st:
                                   "categorysenti", eval_type="test")
         subtask_metrics = cap.to_dict()
         df_subtasks = cap.to_frame()
+        _n_dgn_hitungan = sum(1 for v in subtask_metrics.values() if "tp" in v)
         st.step(f"pair_eval selesai: micro-F1 {final_res.get('micro-F1', 0.0) * 100:.2f}%, "
-                f"{len(df_subtasks)} sub-task tertangkap")
+                f"{len(df_subtasks)} sub-task tertangkap "
+                f"({_n_dgn_hitungan} dengan TP/FP/FN)")
 
         with open(metrics_json, "w", encoding="utf-8") as jf:
             json.dump({"overall": final_res, "subtasks": subtask_metrics,
+                       "difficulty_breakdown": getattr(
+                           __import__("eval_metrics"), "LAST_DIFFICULTY_BREAKDOWN", []),
                        "step1_history": globals().get("step1_history", []),
                        "step2_history": globals().get("step2_history", []),
-                       "sumber_kandidat": "step1" if globals().get("pakai_1st", True) else "gold"},
+                       "sumber_kandidat": "step1" if globals().get("pakai_1st", True) else "gold",
+                       "saved_at": datetime.now().isoformat()},
                       jf, indent=2)
-        st.step(f"master_metrics.json tersimpan: {metrics_json}")
+        st.step(f"master_metrics.json tersimpan (TP/FP/FN keseluruhan + per sub-task): "
+                f"{metrics_json}")
 
     print("\\n🏆 Metrik Quadruple Akhir:")
     for k, v in final_res.items():
-        print(f"   {k:15s}: {v * 100:.2f}%")'''
+        if k in ("tp", "fp", "fn"):
+            print(f"   {k.upper():15s}: {float(v):.0f}")
+        else:
+            print(f"   {k:15s}: {float(v) * 100:.2f}%")'''
 
 MD_9B = """### 9b. Tabel & Plot Benchmark
-Sel pelaporan murni: aman diulang tanpa menyentuh GPU."""
+Sel pelaporan murni: aman diulang tanpa menyentuh GPU. Tabel `master_07` memuat TP/FP/FN
+sebagai hitungan mentah dan precision/recall/micro-F1 dalam persen; `master_08` menampilkan
+kolom yang sama untuk tiap sub-task."""
 
 CODE_9B = '''require_vars("step_stage", "final_res", "df_subtasks")
 
 with step_stage("9b. Tabel & plot benchmark sub-task", 5) as st:
     rep.section("6. Hasil akhir pipeline")
-    df_overall = pd.DataFrame([{
-        "Metrik": k, "Nilai": v, "Persen": round(v * 100, 2),
-    } for k, v in final_res.items()])
+    df_overall = metrics_display_frame(final_res)
     _sumber = ('prediksi step 1 (skor pipeline penuh)' if globals().get('pakai_1st', True)
                else 'gold pair (step 2 terisolasi)')
+    _ada_hitungan_final = "hitungan" in set(df_overall.get("Jenis", []))
     export_step_table(df_overall, name="master_07_metrik_quadruple_final",
                       csv_dir=csv_dir, md_dir=md_dir,
                       title=f"Metrik Akhir Ekstraksi Quadruple ({DOMAIN.upper()})",
-                      notes=f"Sumber kandidat: {_sumber}.")
+                      notes=(f"Sumber kandidat: {_sumber}. "
+                             + ("Baris berjenis 'hitungan' (TP/FP/FN) adalah jumlah "
+                                "quadruple, bukan persentase."
+                                if _ada_hitungan_final else
+                                "TP/FP/FN tidak tersedia — metrik ini dimuat dari cache "
+                                "master_metrics.json sebelum patch sel 8a. Set "
+                                "FORCE_REEVAL=True di sel 9a untuk menghitung ulang.")))
     rep.table(df_overall, caption="Metrik quadruple akhir")
-    st.step(f"Tabel master_07 diekspor | sumber kandidat: {_sumber}")
+    st.step(f"Tabel master_07 diekspor | sumber kandidat: {_sumber} | "
+            f"TP/FP/FN: {'ada' if _ada_hitungan_final else 'tidak ada'}")
 
     if not df_subtasks.empty:
         df_sub_pct = df_subtasks.copy()
         for c in ["Precision", "Recall", "Micro_F1"]:
             if c in df_sub_pct.columns and df_sub_pct[c].max() <= 1.0:
                 df_sub_pct[c] = (df_sub_pct[c] * 100).round(2)
+        for c in ["TP", "FP", "FN"]:
+            if c in df_sub_pct.columns:
+                df_sub_pct[c] = pd.to_numeric(df_sub_pct[c], errors="coerce").round(0)
+        _kolom_hitung_sub = [c for c in ("TP", "FP", "FN")
+                             if c in df_sub_pct.columns and df_sub_pct[c].notna().any()]
 
         rep.section("7. Metrik per sub-task")
         export_step_table(df_sub_pct, name="master_08_metrik_subtask", csv_dir=csv_dir,
                           md_dir=md_dir,
                           title=f"Metrik per Sub-Task ({DOMAIN.upper()}) - {len(df_sub_pct)} kombinasi",
-                          notes="Diambil dari keluaran pair_eval sesi ini, bukan angka manual.",
+                          notes=("Diambil dari keluaran pair_eval sesi ini, bukan angka manual. "
+                                 + (f"Kolom hitungan mentah: {', '.join(_kolom_hitung_sub)}."
+                                    if _kolom_hitung_sub else
+                                    "TP/FP/FN kosong — sub-task ini ditangkap sebelum patch "
+                                    "metrik aktif.")),
                           max_rows_md=20)
         rep.table(df_sub_pct, max_rows=20, caption="Metrik per sub-task")
-        st.step(f"Tabel master_08 diekspor ({len(df_sub_pct)} sub-task)")
+        st.step(f"Tabel master_08 diekspor ({len(df_sub_pct)} sub-task, "
+                f"hitungan: {', '.join(_kolom_hitung_sub) or 'tidak ada'})")
 
         _ps = os.path.join(plots_dir, "05_benchmark_subtasks_f1.png")
         plot_subtask_metrics(df_subtasks, _ps,
@@ -937,18 +1287,26 @@ with step_stage("9b. Tabel & plot benchmark sub-task", 5) as st:
         rep.image(_ps, "Micro-F1 per sub-task")
         st.step(f"Plot benchmark disimpan: {_ps}")
 
-        df_agg = (df_subtasks.groupby("N_Elements")
-                  .agg(Jumlah_Subtask=("Subtask", "count"),
-                       Micro_F1_Rata2=("Micro_F1", "mean"),
-                       Micro_F1_Min=("Micro_F1", "min"),
-                       Micro_F1_Maks=("Micro_F1", "max"))
-                  .reset_index())
+        _agg_spec = {"Jumlah_Subtask": ("Subtask", "count"),
+                     "Micro_F1_Rata2": ("Micro_F1", "mean"),
+                     "Micro_F1_Min": ("Micro_F1", "min"),
+                     "Micro_F1_Maks": ("Micro_F1", "max")}
+        for _c, _label in (("TP", "TP_Total"), ("FP", "FP_Total"), ("FN", "FN_Total")):
+            if _c in df_subtasks.columns and df_subtasks[_c].notna().any():
+                _agg_spec[_label] = (_c, "sum")
+        df_agg = df_subtasks.groupby("N_Elements").agg(**_agg_spec).reset_index()
         for c in ["Micro_F1_Rata2", "Micro_F1_Min", "Micro_F1_Maks"]:
             if df_agg[c].max() <= 1.0:
                 df_agg[c] = (df_agg[c] * 100).round(2)
+        for c in ["TP_Total", "FP_Total", "FN_Total"]:
+            if c in df_agg.columns:
+                df_agg[c] = df_agg[c].round(0)
         export_step_table(df_agg, name="master_09_agregasi_elemen", csv_dir=csv_dir,
                           md_dir=md_dir,
-                          title=f"Micro-F1 Menurut Jumlah Elemen ({DOMAIN.upper()})")
+                          title=f"Micro-F1 Menurut Jumlah Elemen ({DOMAIN.upper()})",
+                          notes=("TP/FP/FN_Total adalah jumlah hitungan mentah seluruh "
+                                 "sub-task pada jumlah elemen yang sama."
+                                 if "TP_Total" in df_agg.columns else None))
         rep.table(df_agg, caption="Agregasi per jumlah elemen")
         st.step(f"Agregasi per jumlah elemen diekspor ({len(df_agg)} baris)")
     else:
@@ -976,7 +1334,10 @@ def main():
     # 3. Step 1: 5a memakai require_vars + prasyarat step_stage
     i5a = find_cell(nb, "5a. Inisialisasi Step 1")
     cells[i5a] = code(CODE_5A_V2)
-    # sel 5b-5f: ganti nama helper lama menjadi require_vars
+    # 5e & 5f ditulis ulang penuh: menyimpan + menampilkan TP/FP/FN
+    cells[find_cell(nb, "5e. Training Step 1", start=i5a)] = code(CODE_5E_V2)
+    cells[find_cell(nb, "5f. Plot, tabel laporan", start=i5a)] = code(CODE_5F_V2)
+    # sel 5b-5d: ganti nama helper lama menjadi require_vars
     for j in range(i5a, len(cells)):
         c = cells[j]
         if c["cell_type"] != "code":
@@ -991,22 +1352,15 @@ def main():
             src = src.replace('require_vars("step1_history"',
                               'require_vars("step_stage", "step1_history"')
             cells[j] = code(src)
-        # sel 5e menulis progres: pakai helper bersama
-        if "step1_progress_json" in src and '"stage": "STEP1_TRAINING"' in src:
-            old = ('            with open(step1_progress_json, "w", encoding="utf-8") as pf:\n'
-                   '                json.dump({"stage": "STEP1_TRAINING", "epoch": epoch, "total_epochs": NUM_EPOCHS,\n'
-                   '                           "last_loss": avg_loss, "last_micro_f1": val_f1,\n'
-                   '                           "best_micro_f1": best_step1_f1, "best_epoch": best1_epoch,\n'
-                   '                           "peak_vram_mb": round(peak_vram, 2),\n'
-                   '                           "updated_at": datetime.now().isoformat()}, pf, indent=2)\n')
-            new = ('            write_stage_progress(step1_progress_json, stage="STEP1_TRAINING",\n'
-                   '                                 epoch=epoch, total_epochs=NUM_EPOCHS,\n'
-                   '                                 last_loss=avg_loss, last_micro_f1=val_f1,\n'
-                   '                                 best_micro_f1=best_step1_f1,\n'
-                   '                                 best_epoch=best1_epoch,\n'
-                   '                                 peak_vram_mb=round(peak_vram, 2))\n')
-            if old in src:
-                cells[j] = code(src.replace(old, new))
+        # sel 5b cache hit: riwayat CSV menyimpan fraksi 0-1, bukan persen, jadi
+        # pembagian /100 lama membuat best_step1_f1 100x terlalu kecil.
+        old_5b = ('            best_step1_f1 = float(df_s1_saved["micro-F1"].max() / 100.0) if "micro-F1" in df_s1_saved else 0.0\n'
+                  '            best1_epoch = int(df_s1_saved.loc[df_s1_saved["micro-F1"].idxmax()]["epoch"]) if "epoch" in df_s1_saved else NUM_EPOCHS\n')
+        new_5b = ('            _row_c1, best_step1_f1, best1_epoch = best_epoch_row(step1_history)\n'
+                  '            best1_epoch = best1_epoch or NUM_EPOCHS\n')
+        if old_5b in src:
+            src = src.replace(old_5b, new_5b)
+            cells[j] = code(src)
 
     def find_md(prefix, start=0):
         for i in range(start, len(cells)):

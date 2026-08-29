@@ -936,13 +936,19 @@ class SubtaskMetricCapture:
     tersebut dan mengubahnya menjadi DataFrame, sehingga notebook memakai angka
     hasil evaluasi nyata alih-alih angka yang ditulis manual.
 
+    Bila `measureQuad_imp` sudah dipatch agar ikut mengembalikan tp/fp/fn
+    (`patch_eval_metrics_counts`), hitungan mentah itu juga tertangkap.
+    `pair_eval` mem-format setiap nilai dengan `{:.2%}`, jadi tp=123 tercatat
+    sebagai "12300.00%" dan dipulihkan lewat pembagian 100 yang sama.
+
     with SubtaskMetricCapture(logger) as cap:
         res = pair_eval(..., eval_type='test')
     df = cap.to_frame()
     """
 
     _HEAD = re.compile(r"\*{5}\s*(.+?)\s*results\s*\*{5}")
-    _METRIC = re.compile(r"^\s*(precision|recall|micro-F1)\s*=\s*([0-9.]+)%?\s*$")
+    _METRIC = re.compile(r"^\s*(precision|recall|micro-F1|tp|fp|fn)\s*=\s*([0-9.]+)%?\s*$")
+    _COUNT_KEYS = ("tp", "fp", "fn")
     # pair_eval juga me-log blok "***** Test results *****" / "***** Eval results *****"
     # untuk metrik quadruple keseluruhan. Blok itu bukan sub-task, jadi diabaikan
     # agar tidak muncul sebagai baris tambahan di tabel sub-task.
@@ -1004,13 +1010,17 @@ class SubtaskMetricCapture:
     def to_frame(self):
         rows = []
         for name, m in self.to_dict().items():
-            rows.append({
+            row = {
                 "Subtask": name,
                 "N_Elements": len(name.split()),
+                "TP": m.get("tp", float("nan")),
+                "FP": m.get("fp", float("nan")),
+                "FN": m.get("fn", float("nan")),
                 "Precision": m.get("precision", float("nan")),
                 "Recall": m.get("recall", float("nan")),
                 "Micro_F1": m.get("micro-F1", float("nan")),
-            })
+            }
+            rows.append(row)
         df = pd.DataFrame(rows)
         if not df.empty:
             df = df.sort_values(["N_Elements", "Micro_F1"], ascending=[True, False]).reset_index(drop=True)
