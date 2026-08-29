@@ -1102,6 +1102,7 @@ require_vars("step_stage", "session_dirs")
 FORCE_REEVAL = False
 
 import logging
+import eval_metrics as _em_final
 from modeling import CategorySentiClassification
 from eval_metrics import pair_eval
 from colab_utils import SubtaskMetricCapture, plot_subtask_metrics
@@ -1198,6 +1199,9 @@ with step_stage("9a. Evaluasi final quadruple + metrik sub-task", 5) as st:
         st.step(f"Model terbaik dimuat ke {device} dan diset ke mode eval")
 
         logger_final = logging.getLogger("Final_Eval")
+        # Idempoten: 8a biasanya sudah memasangnya, tapi 9a bisa dijalankan
+        # setelah restart kernel tanpa melewati 8a.
+        patch_eval_metrics_counts()
         print(f"   Menjalankan pair_eval pada {len(eval_loader_2)} batch...", flush=True)
         with SubtaskMetricCapture(logger_final) as cap:
             final_res = pair_eval("final", args_h, logger_final, tokenizer, model_step2_best,
@@ -1213,7 +1217,7 @@ with step_stage("9a. Evaluasi final quadruple + metrik sub-task", 5) as st:
         with open(metrics_json, "w", encoding="utf-8") as jf:
             json.dump({"overall": final_res, "subtasks": subtask_metrics,
                        "difficulty_breakdown": getattr(
-                           __import__("eval_metrics"), "LAST_DIFFICULTY_BREAKDOWN", []),
+                           _em_final, "LAST_DIFFICULTY_BREAKDOWN", []),
                        "step1_history": globals().get("step1_history", []),
                        "step2_history": globals().get("step2_history", []),
                        "sumber_kandidat": "step1" if globals().get("pakai_1st", True) else "gold",
