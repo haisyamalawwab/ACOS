@@ -946,33 +946,40 @@ def main():
             if old in src:
                 cells[j] = code(src.replace(old, new))
 
+    def find_md(prefix, start=0):
+        for i in range(start, len(cells)):
+            c = cells[i]
+            if c["cell_type"] != "markdown":
+                continue
+            src = "".join(c["source"]).strip()
+            if src.startswith(prefix):
+                return i
+        raise LookupError(f"Markdown cell with prefix '{prefix}' not found")
+
     # 4. Jembatan pasangan → 7a + 7b
-    i7 = find_cell(nb, "target_tokenized_tsv", "TAG_RE")
-    md7 = i7 - 1 if cells[i7 - 1]["cell_type"] == "markdown" else None
-    cells[i7:i7 + 1] = [code(CODE_7A), md(MD_7B), code(CODE_7B)]
-    if md7 is not None:
-        cells[md7] = md(MD_7A)
+    md7 = find_md("## 7.")
+    md8 = find_md("## 8.")
+    cells[md7:md8] = [md(MD_7A), code(CODE_7A), md(MD_7B), code(CODE_7B)]
 
     # 5. Step 2 → 8a-8f
-    i8 = find_cell(nb, "FORCE_RETRAIN_STEP2", "CategorySentiClassification")
-    md8 = i8 - 1 if cells[i8 - 1]["cell_type"] == "markdown" else None
-    cells[i8:i8 + 1] = [
-        code(CODE_8A),
+    md8_new = find_md("## 8.")
+    md9 = find_md("## 9.")
+    cells[md8_new:md9] = [
+        md(MD_8), code(CODE_8A),
         md(MD_8B), code(CODE_8B),
         md(MD_8C), code(CODE_8C),
         md(MD_8D), code(CODE_8D),
         md(MD_8E), code(CODE_8E),
         md(MD_8F), code(CODE_8F),
     ]
-    if md8 is not None:
-        cells[md8] = md(MD_8)
 
     # 6. Evaluasi final → 9a + 9b
-    i9 = find_cell(nb, "FORCE_REEVAL", "SubtaskMetricCapture")
-    md9 = i9 - 1 if cells[i9 - 1]["cell_type"] == "markdown" else None
-    cells[i9:i9 + 1] = [code(CODE_9A), md(MD_9B), code(CODE_9B)]
-    if md9 is not None:
-        cells[md9] = md(MD_9A)
+    md9_new = find_md("## 9.")
+    md10 = find_md("## 10.")
+    cells[md9_new:md10] = [
+        md(MD_9A), code(CODE_9A),
+        md(MD_9B), code(CODE_9B),
+    ]
 
     with io.open(DST, "w", encoding="utf-8", newline="\n") as f:
         json.dump(nb, f, ensure_ascii=False, indent=1)
