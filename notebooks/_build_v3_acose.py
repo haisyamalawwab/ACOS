@@ -479,6 +479,9 @@ untuk menghitung ulang."""
 CODE_10D = '''require_vars("step_stage", "cfg_acose", "artifacts_acose", "bert_cache_dir",
              "device", "acose_logs_dir")
 
+if "absa5" not in sys.modules and "_ensure_absa5" in globals():
+    _ensure_absa5(base_project_dir if "base_project_dir" in globals() else None)
+
 from absa5.data import cross_product_pairs
 from absa5.engine import evaluate_end_to_end, predict_labels, predict_spans
 from absa5.features import build_encoders
