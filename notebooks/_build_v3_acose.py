@@ -264,6 +264,9 @@ Cache: bila `_prepare.json` sudah ada, artefak dimuat tanpa menghitung ulang."""
 CODE_10B = '''require_vars("step_stage", "acose_root", "acose_raw_dir", "bert_cache_dir",
              "MAX_SEQ_LENGTH", "NUM_EPOCHS", "SEED")
 
+if "absa5" not in sys.modules and "_ensure_absa5" in globals():
+    _ensure_absa5(base_project_dir if "base_project_dir" in globals() else None)
+
 from absa5 import RunConfig
 from absa5.config import (
     DataConfig,
@@ -356,6 +359,9 @@ sel dilewati kecuali `ACOSE_FORCE_RETRAIN=True`."""
 
 CODE_10C = '''require_vars("step_stage", "cfg_acose", "artifacts_acose", "bert_cache_dir",
              "device", "acose_logs_dir", "acose_extr_log", "acose_cls_log")
+
+if "absa5" not in sys.modules and "_ensure_absa5" in globals():
+    _ensure_absa5(base_project_dir if "base_project_dir" in globals() else None)
 
 from absa5.engine import train_classification, train_extraction
 from absa5.features import build_encoders
