@@ -52,6 +52,12 @@ menjalankan ACOSE — ekstraksi quintuple aspect-category-opinion-sentiment-
 | 10d | Evaluasi end-to-end quintuple pada test set | ya | ya (`FORCE_REEVAL_ACOSE`) |
 | 10e | Tabel, plot, manifest, state | tidak | ya |
 
+**Khusus ACOSE, seluruh hasil disimpan di folder Drive sendiri** -
+`/content/drive/MyDrive/ACOSE/<domain>/` (lokal: `Output/ACOSE/<domain>/`) dengan
+subfolder `data`, `annotation`, `extraction`, `classification`, `logs`, `csv`,
+`md`, `plots`. Lokasinya stabil lintas sesi, sehingga cache sel 10a-10e tidak
+tergantung folder sesi ACOS yang aktif.
+
 Keputusan desain yang mengikat tahap ini:
 
 - Tidak ada dataset quintuple publik, jadi kolom emosi di-*bootstrap* lewat
@@ -73,21 +79,64 @@ MD_10A = """## 10. ACOSE: Ekstraksi Quintuple (ACOS + Emosi)
 
 ### 10a. Bootstrap Quad → Quint (Leksikon Emosi)
 Membaca `data/<domain>/rest16_quad_{train,dev,test}.tsv`, menambah kolom emosi
-lewat `absa5.emotion.LexiconEmotionTagger`, dan menulis berkas quint ke
-`<sesi>/acose/data/`. Leksikonnya kata pemicu Indonesia — pada rest16 (Inggris)
+lewat `absa5.emotion.LexiconEmotionTagger`, dan menulis berkas quint ke folder khusus
+`ACOSE/<domain>/data/` di Drive (lihat judul versi V3). Leksikonnya kata pemicu Indonesia — pada rest16 (Inggris)
 hampir semua label datang dari fallback sentimen, dan sel ini melaporkan itu
 apa adanya lewat H(emosi | sentimen) plus verdict redundansinya.
 
 Output tambahan: CSV tugas anotasi (satu baris per tuple, `emotion_final`
-dibiarkan kosong untuk manusia) dan pedoman anotasinya di `<sesi>/acose/annotation/`.
+dibiarkan kosong untuk manusia) dan pedoman anotasinya di `ACOSE/<domain>/annotation/`.
 Cache: dilewati bila berkas quint sudah ada, kecuali `ACOSE_FORCE_BOOTSTRAP=True`."""
 
-CODE_10A = '''require_vars("step_stage", "session_dirs", "base_project_dir", "DOMAIN",
-             "rep", "csv_dir", "md_dir")
+CODE_10A = '''require_vars("step_stage", "base_project_dir", "DOMAIN", "rep")
 
-# Paket absa5 ada di root repo; pastikan bisa diimpor.
-if base_project_dir not in sys.path:
-    sys.path.insert(0, base_project_dir)
+# Paket absa5 ada di root repo; pastikan bisa diimpor secara otomatis & robust.
+def _ensure_absa5(base_dir):
+    import importlib, os, shutil, subprocess, sys
+    try:
+        import absa5
+        return
+    except ImportError:
+        pass
+
+    cands = [base_dir] if base_dir else []
+    cands.extend([
+        os.path.join(base_dir, "ACOS") if base_dir else None,
+        "/content/drive/MyDrive/ACOS",
+        "/content/drive/MyDrive/ACOS-ASLI",
+        "/content/ACOS",
+        "/content",
+        os.path.abspath("."),
+        os.path.abspath(".."),
+    ])
+    for cand in cands:
+        if cand and os.path.isdir(os.path.join(cand, "absa5")):
+            if cand not in sys.path:
+                sys.path.insert(0, cand)
+            try:
+                import absa5
+                print(f"✅ Paket absa5 berhasil dimuat dari: {cand}")
+                return
+            except ImportError:
+                pass
+
+    print("⚠️ Paket absa5 belum ada di direktori lokal / Google Drive.")
+    print("📥 Mengunduh paket absa5 dari GitHub ke direktori proyek...")
+    tmp_clone = "/tmp/ACOS_absa5_clone"
+    if os.path.exists(tmp_clone):
+        shutil.rmtree(tmp_clone, ignore_errors=True)
+    subprocess.run(["git", "clone", "--depth", "1", "https://github.com/haisyamalawwab/ACOS.git", tmp_clone], check=True)
+    src_absa5 = os.path.join(tmp_clone, "absa5")
+    if os.path.isdir(src_absa5):
+        target = base_dir if (base_dir and os.path.isdir(base_dir)) else os.path.abspath(".")
+        dst_absa5 = os.path.join(target, "absa5")
+        shutil.copytree(src_absa5, dst_absa5, dirs_exist_ok=True)
+        if target not in sys.path:
+            sys.path.insert(0, target)
+        print(f"✅ Paket absa5 berhasil disinkronkan ke: {dst_absa5}")
+    shutil.rmtree(tmp_clone, ignore_errors=True)
+
+_ensure_absa5(base_project_dir)
 
 from absa5 import get_schema
 from absa5.data import read_records
@@ -114,10 +163,21 @@ with step_stage("10a. Bootstrap quad → quint: leksikon emosi + tugas anotasi",
             f"sel yang tidak trainable pada jumlah data semacam ini.")
     raw_dir_src = os.path.join(base_project_dir, "data", DOMAIN_DIR_MAP[DOMAIN])
 
-    acose_root = os.path.join(session_dirs["root"], "acose")
+    # Khusus ACOSE: seluruh hasil disimpan di folder Drive "ACOSE" yang berdiri
+    # sendiri (stabil lintas sesi), bukan di dalam folder sesi pipeline ACOS.
+    if os.path.exists("/content/drive/MyDrive"):
+        acose_save_dir = "/content/drive/MyDrive/ACOSE"
+    else:
+        acose_save_dir = os.path.join(base_project_dir, "Output", "ACOSE")
+    acose_root = os.path.join(acose_save_dir, DOMAIN)
     acose_raw_dir = os.path.join(acose_root, "data")
     acose_annot_dir = os.path.join(acose_root, "annotation")
-    for _d in (acose_raw_dir, acose_annot_dir):
+    acose_logs_dir = os.path.join(acose_root, "logs")
+    acose_csv_dir = os.path.join(acose_root, "csv")
+    acose_md_dir = os.path.join(acose_root, "md")
+    acose_plots_dir = os.path.join(acose_root, "plots")
+    for _d in (acose_raw_dir, acose_annot_dir, acose_logs_dir, acose_csv_dir,
+               acose_md_dir, acose_plots_dir):
         os.makedirs(_d, exist_ok=True)
 
     emotion_labels = list(EMOTIONS.get(ACOSE_EMOTION_SET))
@@ -179,8 +239,8 @@ with step_stage("10a. Bootstrap quad → quint: leksikon emosi + tugas anotasi",
          "Total_Tuple": acose_bootstrap_reports[s]["tuples"]}
         for s in ("train", "dev", "test")
     ])
-    export_step_table(df_emosi, name="master_10_acose_distribusi_emosi", csv_dir=csv_dir,
-                      md_dir=md_dir,
+    export_step_table(df_emosi, name="master_10_acose_distribusi_emosi",
+                      csv_dir=acose_csv_dir, md_dir=acose_md_dir,
                       title=f"Distribusi Emosi Hasil Bootstrap ({DOMAIN.upper()})",
                       notes=("Label dari leksikon, status suggested. Verdict redundansi "
                              "train: " + _verdict))
@@ -281,7 +341,7 @@ with step_stage("10b. Konfigurasi run ACOSE + persiapan data quint", 6) as st:
     acose_cls_dir = os.path.join(acose_root, "classification")
     acose_extr_log = os.path.join(acose_extr_dir, "train_log.json")
     acose_cls_log = os.path.join(acose_cls_dir, "train_log.json")
-    acose_progress_json = os.path.join(session_dirs["logs"], "acose_progress.json")'''
+    acose_progress_json = os.path.join(acose_logs_dir, "acose_progress.json")'''
 
 MD_10C = """### 10c. Training ACOSE: Ekstraksi Span + Klasifikasi Label
 Dua tahap `absa5` di atas backbone yang sama dengan Step 1/2 (cache BERT),
@@ -295,7 +355,7 @@ bila `extraction/train_log.json` dan `classification/train_log.json` sudah ada,
 sel dilewati kecuali `ACOSE_FORCE_RETRAIN=True`."""
 
 CODE_10C = '''require_vars("step_stage", "cfg_acose", "artifacts_acose", "bert_cache_dir",
-             "device", "session_dirs", "acose_extr_log", "acose_cls_log")
+             "device", "acose_logs_dir", "acose_extr_log", "acose_cls_log")
 
 from absa5.engine import train_classification, train_extraction
 from absa5.features import build_encoders
@@ -407,10 +467,11 @@ MD_10D = """### 10d. Evaluasi End-to-End Quintuple
 Prediksi span dari checkpoint ekstraksi terbaik → cross-product kandidat →
 prediksi label (termasuk emosi) → skor `absa5.metrics.evaluate` dengan semua
 subset elemen (hingga 5 elemen) dan bucket implisitnya. Hasil di-cache ke
-`logs/acose_metrics.json`; set `FORCE_REEVAL_ACOSE = True` untuk menghitung ulang."""
+`<ACOSE>/<domain>/logs/acose_metrics.json`; set `FORCE_REEVAL_ACOSE = True`
+untuk menghitung ulang."""
 
 CODE_10D = '''require_vars("step_stage", "cfg_acose", "artifacts_acose", "bert_cache_dir",
-             "device", "session_dirs")
+             "device", "acose_logs_dir")
 
 from absa5.data import cross_product_pairs
 from absa5.engine import evaluate_end_to_end, predict_labels, predict_spans
@@ -421,7 +482,7 @@ from absa5.schema import get_schema
 
 # Toggle: True = evaluasi ulang meski acose_metrics.json sudah ada.
 FORCE_REEVAL_ACOSE = False
-acose_metrics_json = os.path.join(session_dirs["logs"], "acose_metrics.json")
+acose_metrics_json = os.path.join(acose_logs_dir, "acose_metrics.json")
 
 
 def _pairs_from_span_preds_ac(span_preds, span_elements):
@@ -499,11 +560,12 @@ with step_stage("10d. Evaluasi end-to-end quintuple ACOSE", 6) as st:
 MD_10E = """### 10e. Tabel, Plot & State ACOSE
 Sel pelaporan murni (tanpa torch): tabel metrik per sub-task dan bucket
 implisit ke `master_11`/`master_12`, plot distribusi emosi dan F1 sub-task,
-lalu manifest dan `pipeline_state.pkl`. Aman diulang."""
+lalu manifest dan `pipeline_state.pkl`. Semua berkas laporan ditulis ke folder
+`ACOSE/<domain>/{csv,md,plots,logs}` di Drive, terpisah dari sesi ACOS. Aman diulang."""
 
 CODE_10E = '''require_vars("step_stage", "acose_root", "acose_raw_dir", "emotion_labels",
-             "acose_bootstrap_reports", "acose_metrics_json", "session_dirs",
-             "csv_dir", "md_dir", "plots_dir")
+             "acose_bootstrap_reports", "acose_metrics_json",
+             "acose_logs_dir", "acose_csv_dir", "acose_md_dir", "acose_plots_dir")
 
 with step_stage("10e. Tabel, plot & state ACOSE", 7) as st:
     if not os.path.exists(acose_metrics_json):
@@ -549,7 +611,7 @@ with step_stage("10e. Tabel, plot & state ACOSE", 7) as st:
     if not df_sub_ac.empty:
         df_sub_ac = df_sub_ac.sort_values(["N_Elemen", "Subtask"]).reset_index(drop=True)
         export_step_table(df_sub_ac, name="master_11_acose_metrik_subset",
-                          csv_dir=csv_dir, md_dir=md_dir,
+                          csv_dir=acose_csv_dir, md_dir=acose_md_dir,
                           title=f"Metrik Quintuple per Sub-Task ({DOMAIN.upper()})",
                           notes=("Proyeksi tuple ke subset elemen; subtask 5 elemen adalah "
                                  "quintuple penuh. Emosi dari leksikon (suggested)."),
@@ -567,14 +629,14 @@ with step_stage("10e. Tabel, plot & state ACOSE", 7) as st:
     ])
     if not df_bucket_ac.empty:
         export_step_table(df_bucket_ac, name="master_12_acose_bucket_implisit",
-                          csv_dir=csv_dir, md_dir=md_dir,
+                          csv_dir=acose_csv_dir, md_dir=acose_md_dir,
                           title=f"Metrik Quintuple per Bucket Implisit ({DOMAIN.upper()})",
                           notes="Bucket pada tuple penuh 5 elemen (explicit vs implicit).")
         rep.table(df_bucket_ac, caption="Metrik quintuple per bucket implisit")
         st.step(f"Tabel master_12_acose_bucket_implisit diekspor ({len(df_bucket_ac)} bucket)")
 
     # Plot 1: distribusi emosi hasil bootstrap per split.
-    _pl1 = os.path.join(plots_dir, "06_acose_emotion_distribution.png")
+    _pl1 = os.path.join(acose_plots_dir, "06_acose_emotion_distribution.png")
     df_emosi_plot = pd.DataFrame([
         {"Split": s.capitalize(),
          **{lab: acose_bootstrap_reports[s]["distribution"].get(lab, 0)
@@ -598,7 +660,7 @@ with step_stage("10e. Tabel, plot & state ACOSE", 7) as st:
 
     # Plot 2: micro-F1 per sub-task, dikelompokkan jumlah elemen.
     if not df_sub_ac.empty:
-        _pl2 = os.path.join(plots_dir, "07_acose_subset_f1.png")
+        _pl2 = os.path.join(acose_plots_dir, "07_acose_subset_f1.png")
         _df_top = df_sub_ac.sort_values("Micro_F1_%", ascending=False).head(15)
         plt.figure(figsize=(10, 6))
         _colors = plt.cm.viridis(_df_top["N_Elemen"] / max(df_sub_ac["N_Elemen"].max(), 1))
@@ -621,7 +683,7 @@ with step_stage("10e. Tabel, plot & state ACOSE", 7) as st:
         st.step(f"Plot F1 sub-task disimpan: {_pl2}")
 
     # Ringkasan run satu berkas: konfigurasi, data, riwayat training, metrik.
-    acose_run_json = os.path.join(session_dirs["logs"], "acose_run_result.json")
+    acose_run_json = os.path.join(acose_logs_dir, "acose_run_result.json")
     _hist_ext, _hist_cls = [], []
     for _lg, _d in ((acose_extr_log, "extraction"), (acose_cls_log, "classification")):
         if os.path.exists(_lg):
