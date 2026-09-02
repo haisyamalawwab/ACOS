@@ -145,6 +145,7 @@ from absa5.emotion import (
     export_annotation_tasks,
     extend_file,
 )
+from absa5.selftest import run_gates
 from absa5.taxonomy import EMOTIONS
 
 # Toggle: True = bootstrap ulang meski berkas quint sudah ada.
@@ -155,7 +156,7 @@ ACOSE_EMOTION_SET = "emot_id_netral"
 
 DOMAIN_DIR_MAP = {"rest16": "Restaurant-ACOS", "laptop": "Laptop-ACOS"}
 
-with step_stage("10a. Bootstrap quad → quint: leksikon emosi + tugas anotasi", 8) as st:
+with step_stage("10a. Bootstrap quad → quint: leksikon emosi + tugas anotasi", 9) as st:
     if DOMAIN not in DOMAIN_DIR_MAP:
         raise RuntimeError(
             f"ACOSE hanya disiapkan untuk DOMAIN 'rest16'. Domain '{DOMAIN}' ditolak "
@@ -180,6 +181,19 @@ with step_stage("10a. Bootstrap quad → quint: leksikon emosi + tugas anotasi",
                acose_md_dir, acose_plots_dir):
         os.makedirs(_d, exist_ok=True)
 
+    # Gerbang kesehatan absa5 sebelum dipakai: paket sudah terimpor di atas,
+    # tetapi kegagalan persiapan/skim data bisa lolos diam-diam (pola yang sama
+    # dengan bug colab_utils). Jalankan selftest torch-free yang relevan dengan
+    # cepat; kalau ada yang gagal, proses berhenti di sini, bukan di tengah run.
+    _g_ok, _g_res = run_gates(
+        base_project_dir, only=["torch_free", "prepare", "decode", "features"])
+    for _g in _g_res:
+        if not _g.passed:
+            raise RuntimeError(
+                f"selftest absa5 gagal '{_g.name}': "
+                + "; ".join(getattr(_g, "messages", []) or []))
+    st.step(f"Selftest absa5 ({len(_g_res)} gerbang) LULUS di {base_project_dir}")
+
     emotion_labels = list(EMOTIONS.get(ACOSE_EMOTION_SET))
     tagger = LexiconEmotionTagger(label_set=ACOSE_EMOTION_SET)
     st.step(f"Tagger '{tagger.name}' siap | label emosi ({len(emotion_labels)}): "
@@ -187,9 +201,10 @@ with step_stage("10a. Bootstrap quad → quint: leksikon emosi + tugas anotasi",
 
     # Penanda identitas folder (singkat): folder ACOSE adalah hasil ABSA5
     # Quintuple Extraction, bukan ACOS 4-elemen biasa.
+    _acose_tag = ("ABSA5 Quintuple Extraction "
+                  "(Aspect, Category, Opinion, Sentiment, Emotion)")
     with open(os.path.join(acose_root, "_ACOSE.txt"), "w", encoding="utf-8") as _mf:
-        _mf.write("ABSA5 Quintuple Extraction (Aspect, Category, Opinion, "
-                  "Sentiment, Emotion)\n")
+        _mf.write(_acose_tag + chr(10))
 
     quint_files, acose_bootstrap_reports = {}, {}
     for split in ("train", "dev", "test"):
@@ -756,12 +771,63 @@ def find_md(cells, prefix, start=0):
     raise LookupError(f"Sel markdown dengan awal '{prefix}' tidak ditemukan")
 
 
+def _fix_shell_magic_in_blocks(src):
+    """Ganti baris shell magic ( !cmd ) yang berindentasi di dalam blok if/for
+    dengan os.system(cmd).
+
+    Colab/IPython menolak line-magic di dalam blok indentasi (SyntaxError saat
+    sel dikompilasi), jadi sel infrastruktur seperti clone repo harus memakai
+    pemanggilan Python. Dipilih os.system karena `os` pasti sudah diimpor di
+    sel-sel tersebut; baris magic di top-level (tanpa indentasi) dibiarkan.
+    """
+    out = []
+    for ln in src.splitlines(keepends=True):
+        stripped = ln.strip()
+        if stripped.startswith("!") and ln[:1].isspace():
+            cmd = stripped[1:].strip()
+            indent = ln[: len(ln) - len(ln.lstrip())]
+            # Jika command memuat ekspresi f-string ({var}), pertahankan
+            # interpolasinya dengan menjadikannya f-string. Kalau tidak ada
+            # kurung kurawal, apa adanya.
+            cmd_repr = repr(cmd)
+            if "{" in cmd and "}" in cmd:
+                cmd_repr = "f" + repr(cmd)
+            out.append(f"{indent}os.system({cmd_repr})\n")
+        else:
+            out.append(ln)
+    return "".join(out)
+
+
+def patch_shell_magic_cells(cells):
+    """Timpa sel kode apa pun (warisan V2) yang memakai shell magic berindentasi
+    dengan versi subprocess — mencegah SyntaxError saat sel dikompilasi di Colab.
+    """
+    n = 0
+    for c in cells:
+        if c["cell_type"] != "code":
+            continue
+        src = "".join(c["source"])
+        if any(ln.lstrip().startswith("!") and ln[:1].isspace()
+               for ln in src.splitlines()):
+            c["source"] = _fix_shell_magic_in_blocks(src)
+            n += 1
+    return n
+
+
 def main():
     # 1. V2 STAGED dibangun ulang dulu agar V3 selalu berdiri di atas V2 mutakhir.
     V2.main()
 
     nb = json.load(io.open(SRC_V2, encoding="utf-8"))
     cells = nb["cells"]
+
+    # 1b. Perbaikan warisan V2: shell-magic berindentasi di dalam blok if/for
+    #     akan membuat sel gagal dikompilasi di Colab (SyntaxError). Ganti ke
+    #     os.system supaya sel infrastruktur (clone/sync) tetap valid. V2 tidak
+    #     disentuh; hanya salinan V3 yang dipatch.
+    n_fix = patch_shell_magic_cells(cells)
+    if n_fix:
+        print(f"  [patch] {n_fix} sel V2 dengan shell-magic berindentasi dikonversi ke os.system")
 
     # 2. Judul: tambahkan penjelasan versi V3.
     head = "".join(cells[0]["source"]).rstrip("\n")

@@ -1588,6 +1588,132 @@ class BertForQuadABSA(BertPreTrainedModel):
         return [total_loss], [pred_tags, imp_aspect_exist, imp_opinion_exist]
 
 
+class BertForQuintupleABSA(BertPreTrainedModel):
+    """ACOSE quintuple model for the tuple aspect/category/opinion/sentiment/emotion.
+
+    Extends the step-1 span machinery of :class:`BertForQuadABSA` (CRF aspect +
+    opinion tagger and the two implicit heads) with a factored label head that
+    scores each label element independently -- category, sentiment and emotion --
+    from the fused aspect-opinion span representation.  Factored, not joint,
+    keeps the head at ``num_category + num_sentiment + num_emotion`` outputs
+    instead of the sparse cross-product, which is the same decision the ``absa5``
+    quintuple stack takes.
+    """
+
+    def __init__(self, config, num_labels=2, num_category=13, num_sentiment=3,
+                 num_emotion=6, output_attentions=False, keep_multihead_output=False):
+        super(BertForQuintupleABSA, self).__init__(config)
+        # category-sentiment module parameters
+        self.output_attentions = output_attentions
+        self.num_labels = [num_labels, 2]
+        self.num_category = num_category
+        self.num_sentiment = num_sentiment
+        self.num_emotion = num_emotion
+        self.bert = BertModel(config, output_attentions=output_attentions,
+                                      keep_multihead_output=keep_multihead_output)
+        self.dropout = nn.Dropout(config.hidden_dropout_prob)
+        self.crf_num = 6
+
+        # span module (aspect + opinion), identical to BertForQuadABSA
+        self.crf = CRF(self.crf_num, batch_first=True)
+        self.dense = DenseLayer(config)
+        self.dense_output = nn.Sequential(
+            nn.Dropout(config.hidden_dropout_prob),
+            nn.Linear(768, self.crf_num)
+        )
+        self.imp_asp_classifier = nn.Sequential(
+            nn.Dropout(config.hidden_dropout_prob),
+            nn.Linear(config.hidden_size, self.num_labels[1])
+        )
+        self.imp_opi_classifier = nn.Sequential(
+            nn.Dropout(config.hidden_dropout_prob),
+            nn.Linear(config.hidden_size, self.num_labels[1])
+        )
+
+        # factored label head: shared fused aspect-opinion representation,
+        # one classifier per label element (category / sentiment / emotion)
+        self.fused = nn.Sequential(
+            nn.Linear(768 * 2, config.hidden_size),
+            nn.Tanh(),
+        )
+        self.category_classifier = nn.Sequential(
+            nn.Dropout(config.hidden_dropout_prob),
+            nn.Linear(config.hidden_size, num_category)
+        )
+        self.sentiment_classifier = nn.Sequential(
+            nn.Dropout(config.hidden_dropout_prob),
+            nn.Linear(config.hidden_size, num_sentiment)
+        )
+        self.emotion_classifier = nn.Sequential(
+            nn.Dropout(config.hidden_dropout_prob),
+            nn.Linear(config.hidden_size, num_emotion)
+        )
+
+        self.apply(self.init_bert_weights)
+
+    def forward(self, aspect_input_ids, aspect_token_type_ids, aspect_attention_mask,
+                aspect_labels=None, candidate_aspect=None, candidate_opinion=None,
+                exist_imp_aspect=None, exist_imp_opinion=None,
+                category_ids=None, sentiment_ids=None, emotion_ids=None):
+
+        pooled_outputs, pooled_output = self.bert(aspect_input_ids, aspect_token_type_ids, aspect_attention_mask,
+        output_all_encoded_layers=False, head_mask=None)
+
+        bs = pooled_output.shape[0]
+        hidden_size = pooled_output.shape[-1]
+
+        # implicit aspect, opinion classification
+        imp_aspect_exist = self.imp_asp_classifier(pooled_output)
+        imp_opinion_exist = self.imp_opi_classifier(pooled_outputs[range(pooled_outputs.shape[0]), torch.sum(aspect_attention_mask, dim=-1)-1])
+
+        # CRF span tagging
+        max_seq_len = aspect_input_ids.size()[1]
+        sequence_output = self.dense_output(pooled_outputs)
+        sequence_output = sequence_output.view(-1, max_seq_len, self.crf_num)
+        ae_loss = - self.crf(sequence_output, aspect_labels, mask=aspect_attention_mask.byte(), reduction='mean')
+        pred_tags = self.crf.decode(sequence_output, mask=aspect_attention_mask.byte())
+
+        # fused aspect-opinion span representation (same pooling as step-2)
+        candidate_aspect_sum = torch.sum(candidate_aspect, -1).float()
+        aspect_denominator = (candidate_aspect_sum + candidate_aspect_sum.eq(0).float()).unsqueeze(-1).repeat(1, hidden_size)
+        candidate_aspect_rep = torch.div(torch.matmul(candidate_aspect.float().unsqueeze(1), pooled_outputs).squeeze(1), aspect_denominator)
+
+        candidate_opinion_sum = torch.sum(candidate_opinion, -1).float()
+        opinion_denominator = (candidate_opinion_sum + candidate_opinion_sum.eq(0).float()).unsqueeze(-1).repeat(1, hidden_size)
+        candidate_opinion_rep = torch.div(torch.matmul(candidate_opinion.float().unsqueeze(1), pooled_outputs).squeeze(1), opinion_denominator)
+
+        fused_feature = torch.cat([candidate_aspect_rep, candidate_opinion_rep], -1)
+        fused_feature = self.fused(self.dropout(fused_feature))
+
+        # factored per-element logits
+        category_logits = self.category_classifier(fused_feature)
+        sentiment_logits = self.sentiment_classifier(fused_feature)
+        emotion_logits = self.emotion_classifier(fused_feature)
+
+        label_loss_fct = BCEWithLogitsLoss()
+        total_loss = ae_loss
+
+        losses = []
+        if exist_imp_aspect is not None:
+            imp_aspect_loss = CrossEntropyLoss()(imp_aspect_exist, exist_imp_aspect.view(-1))
+            losses.append(imp_aspect_loss)
+        if exist_imp_opinion is not None:
+            imp_opinion_loss = CrossEntropyLoss()(imp_opinion_exist, exist_imp_opinion.view(-1))
+            losses.append(imp_opinion_loss)
+        if category_ids is not None:
+            losses.append(label_loss_fct(category_logits.view(-1, self.num_category), category_ids.view(-1, self.num_category).float()))
+        if sentiment_ids is not None:
+            losses.append(label_loss_fct(sentiment_logits.view(-1, self.num_sentiment), sentiment_ids.view(-1, self.num_sentiment).float()))
+        if emotion_ids is not None:
+            losses.append(label_loss_fct(emotion_logits.view(-1, self.num_emotion), emotion_ids.view(-1, self.num_emotion).float()))
+
+        if losses:
+            total_loss = ae_loss + sum(losses)
+
+        return [total_loss], [pred_tags, imp_aspect_exist, imp_opinion_exist,
+                              category_logits, sentiment_logits, emotion_logits]
+
+
 class CategorySentiClassification(BertPreTrainedModel):
 
     def __init__(self, config, num_labels=2, output_attentions=False, keep_multihead_output=False):
