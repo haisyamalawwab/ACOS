@@ -185,6 +185,12 @@ with step_stage("10a. Bootstrap quad → quint: leksikon emosi + tugas anotasi",
     st.step(f"Tagger '{tagger.name}' siap | label emosi ({len(emotion_labels)}): "
             f"{', '.join(emotion_labels)}")
 
+    # Penanda identitas folder (singkat): folder ACOSE adalah hasil ABSA5
+    # Quintuple Extraction, bukan ACOS 4-elemen biasa.
+    with open(os.path.join(acose_root, "_ACOSE.txt"), "w", encoding="utf-8") as _mf:
+        _mf.write("ABSA5 Quintuple Extraction (Aspect, Category, Opinion, "
+                  "Sentiment, Emotion)\n")
+
     quint_files, acose_bootstrap_reports = {}, {}
     for split in ("train", "dev", "test"):
         src = os.path.join(raw_dir_src, f"{DOMAIN}_quad_{split}.tsv")
