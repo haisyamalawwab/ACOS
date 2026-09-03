@@ -5,6 +5,18 @@
 
 ---
 
+> **Sebentar, masalahnya apa?**
+> - **Masalah:** Orang menyebut benda yang sama dengan kata yang berbeda-beda —
+>   "pelayanannya", "karyawannya", "kasirnya", "orangnya". Semuanya soal pelayanan,
+>   tapi tertulis berbeda.
+> - **Kenapa ini berat:** Komputer tidak tahu bahwa keempat kata itu maksudnya sama.
+>   Ia melihat empat hal berbeda, lalu gagal menyimpulkan apa pun yang berguna.
+> - **Solusinya:** Kita siapkan sejumlah "keranjang" bernama resmi, dan semua kata
+>   yang maksudnya sama kita masukkan ke keranjang yang sama. Bab ini
+>   memperkenalkan 13 keranjang itu dan cara memilihnya.
+
+---
+
 ## Sebuah masalah kecil yang ternyata besar
 
 Di bab 022b, kita belajar menemukan **benda** (aspek). Makanan. Pelayanan. Harga.
