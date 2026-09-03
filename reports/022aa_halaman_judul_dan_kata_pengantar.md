@@ -14,7 +14,7 @@ karena penasaran satu hal sederhana: **kenapa orang bisa sangat tidak sepakat
 tentang tempat yang sama?**
 
 Ada yang bilang "makanannya juara", yang lain "biasa aja". Ada yang "pelayanannya
-ramah banget", ada yang "sue, dimarahin terus". Padahal mereka nginap di restoran
+ramah banget", ada yang "sial, dijutekin terus". Padahal mereka makan di restoran
 yang sama, di hari yang sama.
 
 Saya mulai bertanya: kalau saya kumpulkan seribu ulasan seperti ini, apa yang

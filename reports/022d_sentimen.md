@@ -133,7 +133,7 @@ Kalau tidak keduanya → **netral**. Kalau mengeluh → **negatif**. Kalau memuj
 ## Kesan yang ingin saya tinggalkan
 
 Sentimen mungkin yang paling "gampang" di antara lima lapis ACOSE. Tapi jangan
-remahkan — dua peringatan di atas (bukan kekuatan, dan per benda) adalah sumber
+diremehkan — dua peringatan di atas (bukan kekuatan, dan per benda) adalah sumber
 kesalahan paling umum di dunia nyata.
 
 Sekali Anda menguasai kedua peringatan itu, separuh pekerjaan selesai. Dan bersiaplah:
@@ -154,7 +154,7 @@ Karena konsepnya sudah jelas, mari kita intip nama teknisnya sebentar — opsion
 
 - **Di data, polaritas disimpan sebagai angka `0`, `1`, `2`.** Ini peletakan yang
   disepakati: `0` negatif, `1` netral, `2` positif. Ini bukan angka "berat", hanya
-  kode — dan kita memakainya karena formatinya konsisten dengan standar ACOS
+  kode — dan kita memakainya karena formatnya konsisten dengan standar ACOS
   (Cai et al., 2021).
 
 - **Tugas "menentukan salah satu dari beberapa pilihan" disebut *klasifikasi*.** Di

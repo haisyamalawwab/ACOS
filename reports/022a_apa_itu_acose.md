@@ -5,6 +5,17 @@
 
 ---
 
+> **Sebentar, masalahnya apa?**
+> - **Masalah:** Bertanya "ulasan ini positif atau negatif?" hampir selalu gagal,
+>   karena satu ulasan biasanya memuji sebagian hal dan mengeluhkan sebagian lain.
+> - **Kenapa ini berat:** Pemilik usaha jadi tidak tahu harus memperbaiki apa, dan
+>   komputer yang cuma bisa menjawab "positif/negatif" tidak banyak menolong.
+> - **Solusinya:** Pecah tiap penilaian menjadi **lima lapis** yang sudah Anda
+>   kenali secara alami. Bab ini memperkenalkan kelimanya sekaligus — peta besar
+>   sebelum kita masuk ke detailnya satu per satu.
+
+---
+
 ## Sebuah cerita kecil untuk membuka
 
 Pernahkah Anda, setelah beli makanan secara daring, duduk dan membaca semua
@@ -188,7 +199,7 @@ yang tidak wajib, tapi menjelaskan nama-nama yang nanti bisa Anda temui.
 
 Garis besarnya begitu. Jika Anda ingin tetap di jalur yang mudah, langsung saja
 melanjutkan ke bab berikutnya — bagian teknis ini bisa Anda lewati tanpa kehilangan
-alur. 🍚
+alur.
 
 ---
 *Lanjut ke [022b — Aspek & Opini: menemukan benda dan kata rasanya.](./022b_aspek_dan_opini.md)*

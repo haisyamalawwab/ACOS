@@ -222,7 +222,7 @@ ke latihan.
 - **Kenapa ada kelas `netral`?** Ini punya dasar riset serupa dalam bidang emosi:
   banyak data emosi memang butuh kelas "tidak ada emosi" agar hasilnya jujur.
   GoEmotions (Demszky et al., 2020) mempertahankan kelas *neutral* dengan alasan
-  yang sama. Jadi `netral` bukan "capai memilih", melainkan keputusan yang berdasar.
+  yang sama. Jadi `netral` bukan "capek memilih", melainkan keputusan yang berdasar.
 
 Itu dunia teknisnya. Kembali ke jalur santai: lanjut ke 022f untuk cara mencatat.
 
