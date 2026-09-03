@@ -1,114 +1,134 @@
 # Mengajari Mesin Membaca Keluhan dan Pujian
-## Buku Panduan Teknologi Tepat Guna (TTG) — Bagian Pembuka
+## Buku Panduan Teknologi Tepat Guna — Seri 022 · Bagian Pembuka (022aa)
 
-**Seri:** Buku Panduan TTG "ACOSE untuk Semua Orang"
-**Bagian:** 022aa — Halaman Judul & Kata Pengantar
-**Tanggal:** 2026-09-02
-**Proyek:** ACOS-ASLI
-
----
-
-Ada seorang perempuan, sebut saja **Mbak Rara**. Suatu malam dia pulang dari
-makan di restoran baru di dekat kantornya. Sampai rumah, dia buka aplikasi
-ulasan dan menulis panjang lebar: makanannya enak, pelayanannya agak lambat,
-harganya sedikit mahal, tapi tempatnya nyaman banget buat kerja.
-
-Lalu dia menekan kirim.
-
-Di ujung sana, ada seorang pria, **Pak Doni**, pemilik restoran itu. Dia buka
-ponsel, membaca ulasan Mbak Rara, dan tersenyum. "Makasih ya, makanannya
-dipuji," pikirnya. Tapi sedetik kemudian dia menggaruk kepala. "Pelayanannya
-lambat sih... yang mana ya yang harus dibenahi dulu?"
-
-Pak Doni butuh otak komputer untuk merangkum ratusan ulasan jadi satu
-gambaran: apa yang pelanggan puji, apa yang mereka keluhkan, dan bagaimana
-perasaan mereka. Tapi ada masalah — **komputer belum bisa melakukannya untuk
-bahasa Indonesia dengan baik**.
-
-Kenapa? Karena untuk bisa, komputer butuh **banyak sekali contoh**. Ribuan.
-Dan contoh-contoh itu harus dibuat oleh manusia. Manusia seperti Anda, yang
-bisa membaca sebuah kalimat dan merasakan maknanya.
-
-Buku ini hadir untuk mengajak manusia biasa — yang tidak pernah ngoding, tidak
-lulusan IT, tidak "gaptek" — ikut membuat contoh-contoh itu. Ya, buku ini untuk
-**Anda**.
+**Satu kalimat yang membuka seluruh buku ini:**
+> Setiap hari, tanpa sadar, Anda sudah menjadi ahli membaca perasaan orang dari
+> kata-kata. Buku ini cuma mengajak Anda menuangkan keahlian itu ke dalam catatan.
 
 ---
 
-## Apa Itu "Teknologi Tepat Guna"?
+## Mari saya ceritakan kenapa buku ini ada
 
-Kata "Teknologi Tepat Guna" mungkin terdengar berat. Padahal artinya sederhana:
+Beberapa tahun lalu, saya menghabiskan malam-malam membaca ulasan restoran hanya
+karena penasaran satu hal sederhana: **kenapa orang bisa sangat tidak sepakat
+tentang tempat yang sama?**
 
-> Teknologi yang **sederhana**, **murah**, **praktis**, dan **bisa dibuat
-> sendiri** oleh orang banyak — bukan cuma oleh segelintir ahli.
+Ada yang bilang "makanannya juara", yang lain "biasa aja". Ada yang "pelayanannya
+ramah banget", ada yang "sue, dimarahin terus". Padahal mereka nginap di restoran
+yang sama, di hari yang sama.
 
-Dulu, teknologi tepat guna itu identik dengan alat penggiling padi sederhana
-atau pompa air kampung. Kini bentuknya bisa berbeda: **data**.
+Saya mulai bertanya: kalau saya kumpulkan seribu ulasan seperti ini, apa yang
+sebenarnya bisa saya simpulkan? Bukan sekadar "bagus atau buruk" — saya mau tahu
+lebih rinci. *Bagian mana* yang disukai? *Bagian mana* yang bikin orang marah?
+Dan waktu orang bilang "saya kecewa", sebenarnya dia **marah**, **sedih**, atau
+cuma **kecewa biasa**? — ya, ketiganya beda, dan kita akan bahas kenapa.
 
-Kenapa data jadi berharga? Karena di zaman sekarang, data adalah bahan bakunya.
-Dan data yang paling berguna adalah data yang **rapi** — artinya sudah ditandai,
-sudah diberi keterangan, sehingga komputer bisa memakainya.
+Pertanyaan-pertanyaan inilah yang kemudian tumbuh jadi sebuah ilmu. Orang menyebutnya
+dengan istilah panjang: *Analisis Sentimen Berbasis Aspek*. Tenang, Anda tidak
+perlu menghafal istilahnya. Cukup sebut **"membaca ulasan secara rinci."**
 
-Nah, salah satu cara membuat data rapi itu adalah **anotasi**. Kata itu juga
-terdengar menakutkan, padahal sebenarnya... Anda sudah melakukannya.
+Inti ilmunya sangat manusiawi: sebelum komputer bisa membantu merangkum, kita harus
+**menjelaskan kepada komputer apa yang kita lihat**. Di situlah Anda masuk.
 
-Ingat waktu sekolah, guru menyuruh Anda menandai kalimat penting dengan
-stabilo? Itu anotasi. Waktu Anda menulis "foto ini di pantai Ancol" di grup
-keluarga? Itu juga anotasi. Anotasi cuma berarti: **memberi keterangan supaya
-lebih jelas.**
+## Buku ini untuk siapa?
 
-Di buku ini, yang kita beri keterangan adalah **ulasan restoran**. Kita
-menandai makanan mana yang dipuji, pelayanan mana yang dikeluhkan, dan bagaimana
-perasaan penulisnya. Semua pekerjaan yang **manusia jago** — dan komputer
-butuh.
+Jujur: buku ini **bukan** untuk ahli komputer. Ini untuk:
+
+- **Pemilik warung, kafe, atau restoran** yang lelah membaca seribu ulasan satu
+  per satu dan ingin tahu: orang komplain soal apa sih sebenarnya?
+- **Mahasiswa jurusan apa pun** yang mencari ide tugas akhir sederhana tapi
+  bernilai. Membuat data yang rapi dan bisa dipakai banyak orang — itu kontribusi nyata.
+- **Guru dan peneliti** yang ingin mengajarkan bahwa teknologi itu bukan sihir,
+  tapi bisa dibangun dari kerja teliti orang biasa.
+- **Anda** — orang yang tidak pernah "ngoding", tapi punya mata, punya perasaan,
+  dan bisa membaca.
+
+Kalau Anda bisa membaca percakapan di grup WA dan menangkap bahwa si A lagi bad
+mood, maka Anda **sudah memegang semua kemampuan** yang dibutuhkan buku ini. Serius.
+Yang akan kita lakukan hanyalah menyalurkan kemampuan itu ke dalam satu cara
+mencatat yang rapi.
+
+## Apa itu "Teknologi Tepat Guna" (TTG)?
+
+Istilah ini sudah tua. Dulu, Teknologi Tepat Guna identik dengan alat sederhana
+buatan masyarakat: penggiling padi manual, pompa air murah, tungku hemat energi.
+Ciri-cirinya selalu sama:
+
+1. **Sederhana** — tidak butuh alat canggih untuk memakainya.
+2. **Murah** — tidak menguras kantong.
+3. **Praktis** — langsung dipakai di lapangan, bukan cuma di kampus.
+4. **Bisa dibuat sendiri** — tidak melulu bergantung pada pabrik.
+
+Di zaman sekarang ada "bahan mentah" baru yang nilainya luar biasa: **data**.
+Dan membuat data ternyata **tidak butuh keahlian komputer** — ia butuh keahlian
+berbahasa, ketelitian, dan pemahaman manusia. Justru di situlah orang awam bisa
+berperan besar.
+
+Bayangkan ini sebagai **Teknologi Tepat Guna versi digital**: hasilnya bisa
+dipakai banyak orang, dan proses pembuatannya pun bisa dijalankan oleh banyak
+orang biasa. Bukan milik segelintir ahli. Itulah yang saya ajak Anda lakukan.
+
+## Apa arti "anotasi"? Kata yang terdengar menakutkan itu.
+
+Coba ingat masa sekolah. Waktu guru menyuruh Anda **menstabilo kalimat penting**
+dengan warna kuning — itu anotasi. Waktu Anda menandai foto teman dengan nama
+orangnya — itu juga anotasi.
+
+**Anotasi artinya: memberi keterangan, menandai, agar sesuatu menjadi jelas.**
+
+Yang akan kita tandai di buku ini adalah **kata-kata dalam ulasan restoran.** Kita
+menandai:
+
+- Apa yang sedang dibicarakan (makanan? pelayanan? harga? tempat?).
+- Apakah orang itu memuji atau mengeluh.
+- **Bagaimana perasaannya** — dan inilah bagian paling menarik, karena biasanya
+  manusia jauh lebih jago daripada komputer.
+
+## Satu analogi yang akan menemani kita sepanjang buku
+
+Bayangkan seorang sahabat pulang dari restoran, lalu bercerita panjang lebar.
+Saat dia bercerita, otak Anda otomatis bekerja. Anda menyimpulkan: *"Oh, dia suka
+makanannya tapi kecewa sama pelayanannya. Senang, tapi juga sedikit kesal."*
+
+Tanpa disuruh, Anda sudah memisah-misah cerita teman Anda ke beberapa bagian:
+mana tentang makanan, mana tentang pelayanan, mana positif, mana negatif, dan
+perasaan apa yang menyertainya.
+
+**Buku ini hanya meminta Anda melakukan hal yang sama — lalu menuliskannya.**
+
+Kalau Anda bisa menyimpulkan "dia kecewa sama pelayanannya tapi senang sama
+makanannya", Anda sudah menguasai 90% isi buku ini. Sisanya tinggal cara mencatat
+yang rapi supaya komputer ikut paham.
+
+## Bagaimana membaca buku ini
+
+Buku ini disusun bertahap, seperti menaiki anak tangga. Tiap anak tangga pendek,
+dan didesain untuk dibaca santai — seperti mengobrol, bukan membaca buku teks.
+
+- **022a** — Apa itu ACOSE: dari pertanyaan besar, kita pecah jadi lima.
+- **022b** — Aspek & opini: menemukan *benda* dan *kata rasa*-nya.
+- **022c** — Kategori: memberi *nama resmi* pada benda itu.
+- **022d** — Sentimen: suka, biasa aja, atau tidak suka.
+- **022e** — Emosi: perasaan sesungguhnya — tersulit tapi paling menarik.
+- **022f** — Format data: cara mencatat supaya rapi dan bisa dibaca komputer.
+- **022g** — Kasus sulit & tanya jawab: saat bahasa mulai "nakal".
+- **022h** — Di balik layar: kenapa semua ini berharga, dan jujur soal batasannya.
+
+Tiap bagian punya contoh nyata dari data sungguhan di proyek ini, plus **latihan
+kecil** yang menyenangkan. Tidak apa-apa salah. Justru dari salah kita belajar.
+
+## Satu janji sebelum kita mulai
+
+Saya berjanji buku ini tidak akan memakai istilah rumit tanpa menjelaskannya
+dengan cara yang manusiawi. Kalau ada istilah yang membuat dahi berkerut, saya
+ubah dulu jadi bahasa sehari-hari atau beri analogi.
+
+Dan yang paling penting: **tidak ada bagian yang butuh komputer atau internet
+untuk dipahami.** Yang Anda butuhkan cuma kemauan membaca dan melatih mata untuk
+melihat kata-kata dengan cara baru.
+
+Siap? Mari kita mulai dari pertanyaan paling dasar: **kenapa kita repot-repot
+mengajari mesin membaca ulasan?**
 
 ---
-
-## Kisah Yang Akan Kita Ikuti
-
-Sepanjang buku ini, kita akan terus menemani **Mbak Rara dan Pak Doni**.
-
-- Mbak Rara mewakili **Anda**: orang yang baca ulasan dan paham isinya.
-- Pak Doni mewakili **tujuan kita**: orang yang butuh data rapi untuk mengambil
-  keputusan.
-
-Kisahnya dimulai dari satu momen sederhana: Mbak Rara menceritakan pengalaman
-makan sore tadi. Dan dari cerita itu, kita — bersama komputer yang sedang
-belajar — akan membongkar maknanya, satu lapis demi satu lapis.
-
-Kalau di tengah cerita Anda merasa "oh, ini mah simpel, aku udah bisa" — berarti
-Anda benar, dan itu kabar baik. Sebab inti buku ini memang sesederhana itu:
-**membaca cerita orang, lalu mencatat maknanya dengan rapi.** Sesuatu yang Anda
-lakukan secara alami setiap hari.
-
----
-
-## Bagaimana Membaca Buku Ini
-
-Buku ini mengalir seperti novel, dari bagian 022a sampai 022h. Tidak perlu
-dihafal. Baca santai, dan kalau diminta berlatih, coba saja — tidak apa-apa
-salah.
-
-- **022a** — Memulai: kenapa menyimpulkan cerita itu susah untuk komputer.
-- **022b** — Menemukan benda (aspek) dan kata rasanya (opini).
-- **022c** — Memberi nama resmi (kategori) pada benda.
-- **022d** — Menilai suka / biasa / tidak suka (sentimen).
-- **022e** — Meraba perasaan sesungguhnya (emosi).
-- **022f** — Mencatat produksi rapi supaya komputer bisa baca.
-- **022g** — Menghadapi kalimat-kalimat nakal dan tanya-jawab.
-- **022h** — Menjenguk di balik layar: kenapa semua ini berguna.
-
----
-
-Satu janji sebelum kita mulai bertualang: tidak akan ada istilah rumit tanpa
-dijelaskan. Kalau ada kata asing, kami ubah jadi bahasa harian, atau kami
-jelaskan dengan cerita. Dan yang paling penting — **tidak perlu komputer,
-tidak perlu internet.** Cukup Anda, secangkir teh, dan kesediaan melihat
-kalimat dengan mata yang baru.
-
-Sekarang, tarik napas. Kita mulai. Mbak Rara sudah siap bercerita soal
-makannya sore tadi... dan komputer di sisi kita menunggu untuk diajari.
-
----
-
-*Lanjut ke [022a: Memulai — kenapa menyimpulkan cerita itu susah untuk komputer](./022a_apa_itu_acose.md).*
+*Lanjut ke [022a — Apa Itu ACOSE.](./022a_apa_itu_acose.md)*

@@ -1,90 +1,116 @@
-# Bagian 022f — Format Data: Cara Mencatat Supaya Rapi
+# Bagian 022f — Format Data: Bagaimana Mencatat Semuanya
 
 **Seri:** Buku Panduan TTG "ACOSE untuk Semua Orang"
-**Tanggal:** 2026-09-02
-**Sebelumnya:** [022e: Emosi](./022e_emosi.md)
+**Sebelumnya:** [022e — Emosi](./022e_emosi.md)
 
 ---
 
-## Sekarang Kita Belajar Mencatat
+> **Sebentar, masalahnya apa?**
+> - **Masalah:** Kita sudah tahu *apa* yang harus diambil dari sebuah ulasan (lima
+>   lapis ACOSE). Tapi kalau tiap orang mencatat dengan caranya sendiri-sendiri,
+>   hasilnya jadi kacau dan tidak bisa dipakai siapa pun.
+> - **Kenapa ini berat:** Komputer hanya bisa belajar dari data yang *rapi dan
+>   seragam.* Satu orang menulis "makanan" di baris, orang lain menulis "food",
+>   orang lain lagi menulis angka beda — komputer tidak akan pernah paham.
+> - **Solusinya:** Ada satu cara mencatat yang disepakati, sederhana dan konsisten.
+>   Intinya cuma satu: **memberi nomor pada setiap kata dalam kalimat.** Bab ini
+>   membongkar aturan ini sampai tuntas, dengan contoh nyata.
 
-Kita sudah tahu *apa* yang dicari (aspek, opini, kategori, sentimen, emosi).
-Sekarang kita belajar **bagaimana mencatatnya** supaya komputer bisa membacanya.
+---
 
-Percayalah: cara mencatatnya **tidak sulit**. Kuncinya cuma satu aturan:
-**memberi nomor pada tiap kata dalam kalimat.**
+## Puncak dari semua yang sudah kita pelajari
 
-## Aturan #1: Setiap Kata Dapat Nomor, Mulai dari 0
+Kita sudah menguasai kelima lapis: benda (aspek), nama resmi (kategori), kata rasa
+(opini), suka/tidak (sentimen), dan perasaan (emosi). Sekarang tiba saat yang kita
+tunggu-tunggu: **bagaimana menuliskannya** supaya rapi dan bisa dibaca komputer.
 
-Cara menghitung di sini sedikit beda dari biasanya: kita mulai dari **nol**,
-bukan satu. Dan tanda baca seperti koma atau titik **bukan termasuk kata** — kita
-abaikan.
+Kalau selama ini kita "berpikir seperti anotator", sekarang kita "menulis seperti
+anotator." Dan kabar baiknya: **menuliskannya tidak sulit sama sekali.** Hanya ada
+satu hal kecil yang perlu diingat, dan begitu Anda paham, sisanya mengalir.
+
+Hal kecil itu: **memberi nomor pada setiap kata dalam kalimat.** Mari kita bongkar.
+
+## Aturan #1: setiap kata dapat nomor, mulai dari nol
+
+Di sini kita harus melatih satu hal yang sedikit berbeda dari kebiasaan sehari-hari:
+kita menghitung **mulai dari nol**, bukan satu. Dan tanda baca seperti koma atau
+titik **bukan termasuk kata** — kita abaikan.
 
 Ambil kalimat ini:
 
 > `makanan nya enak sekali`
 
-Kita pecah jadi kata-kata dan beri nomor:
+Pecah jadi kata-kata, lalu beri nomor:
 
 | Nomor | 0 | 1 | 2 | 3 |
 |---|---|---|---|---|
 | Kata | makanan | nya | enak | sekali |
 
 Perhatikan: "makanan" dapat angka 0, "nya" angka 1, "enak" angka 2, "sekali"
-angka 3. Ini penting, jadi ulangi sekali lagi: **kata pertama = 0**.
+angka 3. **Kata pertama selalu 0.** Ini aturan pertama yang wajib diingat.
 
-## Aturan #2: Rentang Ditulis "AngkaMulai,AngkaAkhir"
+Kenapa mulai dari nol? Ini salah satu hal yang membuat orang non-teknis bingung
+tapi sebenarnya sangat wajar di dunia komputer — komputer memang suka menghitung
+dari nol. Kita cukup ikut saja; nanti semua jadi konsisten.
 
-Untuk menunjukkan potongan kata (aspek atau opini), kita tulis:
+## Aturan #2: rentang ditulis "AngkaMulai,AngkaAkhir"
+
+Untuk menunjukkan potongan kata (aspek atau opini), kita menulis dua angka:
 
 ```
 angkaMulai,angkaAkhir
 ```
 
-Dengan satu aturan tambahan yang sering bikin bingung: **angkaAkhir artinya "sampai
-sebelum kata ini"** (bukan termasuk). Nama kerennya untuk anak IT: *akhir eksklusif*.
-Mari kita jelaskan dengan contoh agar terang.
+Tapi ada satu aturan tambahan yang paling sering membuat orang tersandung, jadi
+mari kita pahamkan baik-baik: **angkaAkhir artinya "sampai sebelum kata ini" —
+bukan termasuk.**
 
-**Contoh:** kita ingin mencatat "enak sekali" (kata nomor 2 dan 3).
+Istilah kerennya di dunia teknis: *akhir eksklusif.* Tapi jangan takut dengan
+istilahnya — mari kita lihat contohnya sampai benar-benar terang.
+
+**Contoh:** kita ingin menunjuk "enak sekali" — kata nomor 2 dan 3.
 
 - Mulai di kata 2 ("enak").
-- Berhenti *sebelum* kata nomor 4. Karena kata nomor 4 tidak ada (cuma sampai 3),
-  kita tulis 4 sebagai angka akhir.
-- Jadi rentangnya: **`2,4`**.
+- Berhenti *sebelum* kata nomor 4. Kata nomor 4 tidak ada (kalimat kita cuma
+  sampai 3), jadi kita tulis 4 sebagai angka akhir.
+- Rentangnya: **`2,4`.**
 
 Kenapa bukan `2,3`? Karena `2,3` artinya "mulai di 2, berhenti sebelum 3" = cuma
-kata "enak" saja. Sedangkan kita mau dua kata ("enak sekali"), jadi akhirnya harus
-melompat satu lagi ke 4.
+kata "enak" saja. Padahal kita mau dua kata. Jadi akhirnya harus melompat satu lagi
+ke 4.
 
-**Ingat pola ini:**
+**Pola yang perlu diingat:**
 
-| Yang ingin kita tunjuk | Tulis |
+| Yang ingin ditunjuk | Tulis |
 |---|---|
 | 1 kata, kata nomor 0 | `0,1` |
 | 2 kata, kata 0 dan 1 | `0,2` |
 | 3 kata, kata 2,3,4 | `2,5` |
 
-Polanya: **akhir = posisi kata terakhir + 1**.
+Lihat polanya? **Akhir = posisi kata terakhir + 1.** Sekali paham pola ini, sisanya
+mudah.
 
-## Aturan #3: Aspek Tersembunyi Ditulis Petunjuk Khusus
+## Aturan #3: benda tersembunyi ditulis penanda khusus
 
-Kalau aspeknya tersembunyi (tidak tertulis, dari 022b), kita tidak bisa menulis
-angka. Kita pakai penanda khusus:
+Ingat dari 022b, ada kasus di mana benda (aspek) atau kata rasa (opini) **tidak
+tertulis** — tersembunyi. Kalau begitu, kita tidak bisa menunjuk angka. Maka kita
+pakai penanda "alamat rahasia":
 
 ```
 -1,-1
 ```
 
-Ini "alamat rahasia" komputer yang artinya: **tidak ada kata yang ditujuk, tapi
-kita tahu bendanya dari konteks.** Contoh di data sungguhan: kalimat
-"saya selalu kembali ke sini setiap minggu" aspeknya restoran, tapi kata
-"restoran" tidak muncul → aspek ditulis `-1,-1`.
+Artinya: **tidak ada kata yang ditunjuk, tapi kita tahu maksudnya dari konteks.**
+Contoh di data sungguhan: kalimat "saya selalu kembali ke sini setiap minggu" — aspeknya
+restoran, tapi kata "restoran" tidak muncul, jadi aspeknya ditulis `-1,-1`. Opini
+tersembunyi juga pakai `-1,-1` dengan cara yang sama.
 
-Opini tersembunyi juga pakai `-1,-1` dengan cara yang sama.
+Jangan khawatir: `-1,-1` bukan angka "aneh". Ini semacam kode khusus yang disepakati
+untuk menyatakan "ini tersembunyi." Komputer tahu artinya.
 
-## Aturan #4: Sentimen Ditulis Angka
+## Aturan #4: sentimen ditulis angka
 
-Sentimen sudah kita kenal di 022d. Saat mencatat, pakai angka ini:
+Sentimen sudah kita kenal di 022d. Saat mencatat, kita pakai angka:
 
 | Sentimen | Angka |
 |---|---|
@@ -92,19 +118,19 @@ Sentimen sudah kita kenal di 022d. Saat mencatat, pakai angka ini:
 | Netral | `1` |
 | Positif | `2` |
 
-Kenapa 0,1,2? Itu kesepakatan internasional dari peneliti yang membuat tugas
-ini. Kita tinggal ikut saja.
+Kenapa 0, 1, 2? Ini kesepakatan internasional dari para peneliti yang merancang
+tugas ini. Kita tinggal mengikutinya — tidak perlu menemukan ulang.
 
-## Susun Menjadi Satu "Paket" ACOSE
+## Susun menjadi satu "paket" ACOSE
 
-Semua hal yang kita catat untuk satu potongan pembicaraan dirangkai **dalam
-satu baris urut**, begini:
+Semua yang kita catat untuk satu potongan pembicaraan dirangkai **dalam satu baris,
+dengan urutan tetap**:
 
 ```
-aspek  kategori  sentimen  opini  emosi
+aspek   kategori   sentimen   opini   emosi
 ```
 
-Artinya urutannya:
+Urutannya:
 
 1. **aspek** — rentang angka (mis. `0,1` atau `-1,-1`)
 2. **kategori** — salah satu dari 13 (mis. `MAKANAN#KUALITAS`)
@@ -122,43 +148,42 @@ Kalau dibaca: "aspek kata 0-1 (=makanan), kategori kualitas makanan, sentimen
 positif (2), opini kata 2-4 (=enak sekali), emosi senang." Persis analisis kita
 di 022a.
 
-## Satu Kalimat Bisa Punya Banyak Paket
+## Satu kalimat bisa punya banyak paket
 
-Ingat: satu kalimat bisa dinilai di banyak benda. Cara mencatatnya: tulis semua
-paket **berurutan di baris yang sama**, setelah teks kalimatnya.
+Ingat kunci dari 022a: satu kalimat bisa dinilai di banyak benda. Cara mencatatnya:
+tulis semua paket **berurutan di baris yang sama**, setelah teks kalimatnya.
 
-Contoh lengkap dari data sungguhan:
+Contoh lengkap dari data sungguhan di proyek ini:
 
 ```
 makanan nya enak sekali tapi pelayanan nya lambat banget   0,1 MAKANAN#KUALITAS 2 2,4 senang   5,6 PELAYANAN#UMUM 0 7,9 marah
 ```
 
-Mari kita bedah:
+Mari kita bedah perlahan:
 
 - Teks kalimat: `makanan nya enak sekali tapi pelayanan nya lambat banget`
-- Paket 1: `0,1 MAKANAN#KUALITAS 2 2,4 senang` → soal **makanan** (kata 0-1),
-  positif, opini "enak sekali" (2-4), senang.
-- Paket 2: `5,6 PELAYANAN#UMUM 0 7,9 marah` → soal **pelayanan** (kata 5-6),
-  negatif (0), opini "lambat banget" (7-9), marah.
+- **Paket 1:** `0,1 MAKANAN#KUALITAS 2 2,4 senang`
+  → soal **makanan** (kata 0-1), positif, opini "enak sekali" (2-4), senang.
+- **Paket 2:** `5,6 PELAYANAN#UMUM 0 7,9 marah`
+  → soal **pelayanan** (kata 5-6), negatif (0), opini "lambat banget" (7-9), marah.
 
 Dua paket dalam satu baris. Rapi, bukan?
 
-Periksa penomoran kata kedua ("pelayanan" angka 5): dari tabel kata tadi,
-`makanan`=0, `nya`=1, `enak`=2, `sekali`=3, `tapi`=4, `pelayanan`=5. Betul,
-"pelayanan" memang kata nomor 5, "lambat" 7, "banget" 8 → opini `7,9`.
+Kalau Anda penasaran kenapa "pelayanan" dapat angka 5: mari kita hitung bersama.
+`makanan`=0, `nya`=1, `enak`=2, `sekali`=3, `tapi`=4, `pelayanan`=5. Betul!
+Kemudian `nya`=6, `lambat`=7, `banget`=8. Jadi opini "lambat banget" = `7,9`.
+Semua masuk akal.
 
-## Merangkum Semua Aturan Menulis
+## Merangkum semua aturan menulis
 
 1. Setiap kata dapat nomor, **mulai dari 0**; abaikan tanda baca.
-2. Rentang = `mulai,akhir` dengan **akhir eksklusif** (akhir = posisi terakhir+1).
-3. Tersembunyi/implisit = `-1,-1`.
+2. Rentang = `mulai,akhir` dengan **akhir eksklusif** (akhir = posisi terakhir + 1).
+3. Tersembunyi = `-1,-1`.
 4. Sentimen = `0` (negatif), `1` (netral), `2` (positif).
-5. Urutan paket: `aspek kategori sentimen opini emosi`.
+5. Urutan paket: `aspek  kategori  sentimen  opini  emosi`.
 6. Beberapa paket ditulis berurutan setelah teks kalimat.
 
-## Tabel Konversi Cepat (Boleh Dilipat / Ditempel)
-
-Untuk kata-kata yang mau ditunjuk, ingat saja:
+## Tabel konversi cepat (boleh difoto / ditempel)
 
 | Kalau menunjuk | Tulis |
 |---|---|
@@ -169,11 +194,11 @@ Untuk kata-kata yang mau ditunjuk, ingat saja:
 
 ---
 
-**Latihan:** pecah kalimat `kopi nya pahit sekali` jadi kata + nomor, lalu
+**Latihan.** Pecah kalimat `kopi nya pahit sekali` jadi kata + nomor, lalu
 tuliskan satu paket ACOSE yang benar untuk "kopi pahit" dengan sentimen negatif.
-(Kunci: paket: `0,1 MINUMAN#KUALITAS 0 2,4 sedih` — tapi coba selesaikan
-sendiri dulu!)
+
+*(Kunci: `0,1 MINUMAN#KUALITAS 0 2,4 sedih` — tapi coba selesaikan sendiri dulu!
+Petunjuk: kopi=makanan/minuman yang mana? pahit=rasa apa?)*
 
 ---
-
-*Lanjut ke [022g: Kasus sulit dan tanya-jawab](./022g_kasus_sulit_dan_faq.md).*
+*Lanjut ke [022g — Kasus sulit dan tanya-jawab.](./022g_kasus_sulit_dan_faq.md)*

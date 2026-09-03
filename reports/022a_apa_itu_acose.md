@@ -1,134 +1,161 @@
-# Bagian 022a — Apa Itu ACOSE? (Gambaran Besarnya)
+# Bagian 022a — Apa Itu ACOSE? Dari Pertanyaan Besar, Kita Pecah Jadi Lima
 
 **Seri:** Buku Panduan TTG "ACOSE untuk Semua Orang"
-**Tanggal:** 2026-09-02
-**Sebelumnya:** [022aa: Kata Pengantar](./022aa_halaman_judul_dan_kata_pengantar.md)
+**Sebelumnya:** [022aa — Kata Pengantar](./022aa_halaman_judul_dan_kata_pengantar.md)
 
 ---
 
-## Mulai dari Sebuah Pertanyaan Sederhana
+## Sebuah cerita kecil untuk membuka
 
-Bayangkan ini: pemilik restoran "Warung Mbak Sri" buka laman ulasan dan menemukan
-ratusan kalimat seperti:
+Pernahkah Anda, setelah beli makanan secara daring, duduk dan membaca semua
+ulasannya — lalu menyadari betapa **campur aduk** isinya?
+
+> "Makanannya enak banget."
+> "Pengiriman telat."
+> "Bungkusnya rapi."
+> "Pedasnya kebangetan, gue nggak kuat."
+
+Kalau kita cuma bertanya *"ulasan ini positif atau negatif?"*, kita akan bingung.
+Yang mana yang mau dinilai? Makanannya? Pengirimannya? Bungkusnya? Pedasnya?
+
+Inilah yang membuat orang mulai berpikir: **"positif/negatif" saja tidak cukup.**
+Kita butuh cara yang lebih rinci. Kita perlu menandai *bagian mana* dari cerita
+itu yang sedang dibicarakan, dan *bagaimana perasaan orang* tentang bagian itu.
+
+Dari kegelisahan inilah lahir ide yang kita bahas di buku ini. Nama ilmiahnya
+panjang — *Aspect-Category-Opinion-Sentiment-Emotion*, disingkat **ACOSE** — tapi
+jangan takut. Di balik kata-kata itu hanya ada **lima hal yang sangat kita kenal.**
+
+## Lima hal itu ternyata hal yang Anda lakukan setiap hari
+
+Saat Anda mendengar teman bercerita tentang restoran, otak Anda tanpa sadar
+memisah-misah ceritanya menjadi lima lapis (ini persis yang kita lihat di kata
+pengantar). Mari kita namai lima lapis itu satu per satu, dengan bahasa santai:
+
+1. **A — Benda (Aspect).** *Siapa yang sedang dibicarakan?* Makanan? Pelayanan?
+   Harga? Ini "bendanya" — objek yang sedang dinilai.
+
+2. **C — Nama resmi (Category).** *Kalau benda itu mau diberi label, namanya
+   apa?* "Kualitas makanan", "pelayanan", "harga minuman"... Ini cara kita
+   mengelompokkan benda-benda yang mirip ke satu nama yang sama.
+
+3. **O — Kata rasa (Opinion).** *Kata apa yang menunjukkan perasaan orang?*
+   "Enak", "lambat", "mahal"... Ini "kata rasanya" — bukti di dalam teks.
+
+4. **S — Suka / tidak (Sentiment).** *Secara keseluruhan, dia suka, biasa aja,
+   atau nggak suka?* Ini arahnya: positif, netral, atau negatif.
+
+5. **E — Perasaan (Emotion).** *Perasaan yang mana sebenarnya?* Senang, marah,
+   sedih, takut, cinta... Ini lapisan paling dalam, dan perhatian utama buku ini.
+
+Lima lapis ini disatukan menjadi **satu paket** tentang *satu potongan* pembicaraan.
+Bukan tentang seluruh ulasan, melainkan tentang tiap bagian yang dibicarakan.
+
+## Kenapa harus "dibagi" menjadi potongan-potongan? Ini kuncinya.
+
+Di sinilah letak pemahaman terpenting bab ini. Karena manusia biasanya bicara
+**campur aduk**, kita tidak bisa menilai satu kalimat utuh sebagai satu kesatuan.
+Kita harus memecahnya.
+
+Coba lihat kalimat ini:
 
 > "Makanannya enak banget tapi pelayanannya lambat."
 
-Apa yang dia ingin tahu? Pastinya bukan sekadar "orang senang atau tidak".
-Dia ingin tahu **bagian mana** yang disukai (makanan) dan **bagian mana** yang
-tidak (pelayanan). Kalau cuma dikasih tahu "ulasan positif", dia bingung: yang
-positif itu makanannya atau pelayanannya?
+Kalau kita isi tabel ACOSE secara utuh, kita menemukan **dua paket** dalam satu
+kalimat:
 
-Inilah masalah yang ingin dipecahkan oleh ilmu yang namanya
-**Analisis Sentimen Berbasis Aspek** — istilah kerennya ABSA (dibaca "ab-sa").
-Terlalu panjang? Oke, kita sebut saja **"membaca ulasan secara rinci"**.
+**Paket 1 — tentang makanan:**
+- A: makanan
+- C: kualitas makanan
+- O: enak banget
+- S: suka (positif)
+- E: senang
 
-Inti masalahnya gampang:
+**Paket 2 — tentang pelayanan:**
+- A: pelayanan
+- C: pelayanan
+- O: lambat
+- S: nggak suka (negatif)
+- E: marah (atau setidaknya kesal)
 
-> Komputer hanya perlu tahu **5 hal** dari tiap ucapan orang tentang sebuah tempat.
-> Kalau komputer tahu 5 hal ini, dia bisa merangkum ratusan ulasan jadi ringkasan
-> yang berguna.
+Perhatikan dua hal yang sangat penting:
 
-## 5 Hal Itu Apa Saja?
+1. **Satu kalimat bisa berisi banyak paket.** Baru satu kalimat saja sudah ada
+   dua paket. Dan ini bukan kejadian langka: di kumpulan ulasan yang dipakai proyek
+   ini, hampir **4 dari 10 kalimat** ternyata berisi lebih dari satu paket. Jadi
+   memisah-misah kalimat bukan pengecualian — melainkan kebiasaan manusia berbahasa.
 
-Kita sebut 5 hal ini sebagai satu paket dan kita beri nama keren: **ACOSE**.
-Huruf-hurufnya diambil dari kata-kata Inggris, tapi jangan takut — kita akan
-pakai bahasa Indonesia saja.
+2. **Satu orang bisa merasa dua hal sekaligus.** Senang soal makanan, kesal soal
+   pelayanan. Wajar. Manusia memang begitu.
 
-| Huruf | Istilah | Artinya dalam bahasa santai |
-|---|---|---|
-| **A** | *Aspect* | **Bendanya** apa — makanan? pelayanan? harga? tempat? |
-| **C** | *Category* | **Nama resmi** benda itu (mis. "kualitas makanan") |
-| **O** | *Opinion* | **Kata-kata yang mengungkapkan rasa** (enak, lambat, mahal...) |
-| **S** | *Sentiment* | **Suka / biasa aja / tidak suka** |
-| **E** | *Emotion* | **Perasaannya** — senang, marah, sedih, takut... |
+Inilah mengapa komputer butuh bantuan kita: manusia sudah *secara alami* memecah
+cerita campur aduk ini. Komputer belum.
 
-Kelima hal ini diambil dari **satu potongan kecil** pembicaraan orang. Bukan dari
-seluruh ulasan, tapi dari tiap bagian yang dibicarakan.
+## Kenapa komputer tidak bisa sendiri?
 
-## Contoh Supaya Kebayang
+Pertanyaan ini wajar. Anda mungkin berpikir: "Kalau gampang gitu, kenapa komputer
+nggak bisa?"
 
-Ambil kalimat tadi:
+Jawabannya agak lucu. Komputer itu **pintar tapi kaku**. Dia bisa menghitung
+jutaan angka dalam sekejap, tapi dia **tidak punya pengalaman hidup**. Dia tidak
+pernah makan. Tidak pernah kesal karena dapat pelayanan lambat.
 
-> "Makanannya enak banget tapi pelayanannya lambat."
+Karena itu dia tidak "tahu" bahwa *lambat* biasanya hal buruk, atau bahwa *enak*
+itu pujian. Semua pengetahuan ini harus **diajarkan lewat contoh** — dan
+contohnya dibuat oleh manusia yang punya perasaan, yaitu **Anda**.
 
-Kalau kita baca dengan mata manusia, kita langsung tahu isinya. Coba kita isi
-tabel ACOSE-nya:
+Pekerjaan membuat contoh yang rapi ini disebut **anotasi**. Anda menandai,
+komputer belajar dari tanda Anda.
 
-**Potongan 1 (tentang makanan):**
+## Analogi: mengajari anak kecil
 
-- A (benda): **makanan**
-- C (nama resmi): **kualitas makanan**
-- O (kata rasa): **enak banget**
-- S (suka/tidak): **suka** (positif)
-- E (perasaan): **senang**
+Cara terbaik memahami ini adalah membayangkan mengajari anak kecil apa itu
+"sedih".
 
-**Potongan 2 (tentang pelayanan):**
-
-- A (benda): **pelayanan**
-- C (nama resmi): **pelayanan**
-- O (kata rasa): **lambat**
-- S (suka/tidak): **tidak suka** (negatif)
-- E (perasaan): **marah** (atau setidaknya kesal)
-
-Perhatikan dua hal penting:
-
-1. Satu kalimat bisa berisi **lebih dari satu paket ACOSE**. Di sini ada dua:
-   tentang makanan dan tentang pelayanan.
-2. Satu orang bisa merasa **senang dan kesal sekaligus** — senang soal makanan,
-   kesal soal pelayanan. Itu wajar dan boleh.
-
-## Kenapa Komputer Butuh Bantuan Anda?
-
-Anda mungkin berpikir: "Kalau gampang gitu, kenapa komputer nggak bisa sendiri?"
-
-Jawabannya lucu: komputer itu **pintar tapi kaku**. Dia bisa menghitung jutaan
-angka dalam sekejap, tapi dia **tidak punya pengalaman hidup**. Dia tidak pernah
-makan, tidak pernah kesal karena dapat pelayanan lambat. Jadi dia tidak "tahu"
-bahwa "lambat" itu biasanya hal buruk, atau bahwa "enak" itu hal yang baik.
-
-Justru karena itu, komputer butuh **contoh**. Banyak contoh. Dan contoh-contoh
-itu harus dibuat oleh **manusia** yang punya perasaan dan pengalaman — yaitu
-**Anda**.
-
-Pekerjaan membuat contoh yang rapi ini namanya **anotasi**. Anda yang menandai,
-komputer yang belajar dari tanda-tanda Anda.
-
-## Analogi: Mengajari Anak Kecil
-
-Bayangkan Anda mengajari anak kecil apa itu "sedih". Anda tidak menjelaskan
-definisi kamus. Anda malah menunjuk dan bilang:
+Anda tidak menjelaskan definisi kamus yang kaku. Anda malah menunjuk dan berkata:
 
 > "Lihat, waktu dia kehilangan mainan, mukanya cemberut gitu — itu namanya sedih."
 
-Anda memberi **contoh**, bukan **teori**. Anak kecil belajar dari banyak contoh.
+Anda memberi **contoh**, bukan **teori**. Anak kecil belajar dari banyak contoh —
+dan dari koreksi saat dia salah menebak.
 
-Komputer persis seperti itu — lebih dari anak kecil. Dia butuh ribuan contoh
-sebelum bisa menebak sendiri. Dan setiap contoh yang Anda beri adalah "anotasi".
-Tanpa contoh-contoh ini, komputer tidak akan pernah bisa membaca ulasan sendiri.
+Komputer persis seperti itu, bahkan lebih. Dia butuh **ribuan** contoh sebelum
+bisa menebak sendiri. Setiap contoh yang Anda beri adalah "anotasi". Tanpa
+contoh-contoh ini, komputer tidak akan pernah bisa membaca ulasan sendiri.
 
-## Ke Depan: Apa yang Akan Kita Pelajari
+## Tambahan yang membuat ACOSE istimewa: huruf E
 
-Sekarang Anda sudah paham gambaran besarnya. Sisanya tinggal detail:
+Buku ini diberi judul ACOSE dengan "E" di ujung. Huruf E itu — *Emotion*, perasaan —
+adalah yang membuat pendekatan ini berbeda dari pendekatan yang lebih tua.
 
-- 👉 **022b** — belajar menemukan **benda** (aspek) dan **kata rasa** (opini).
-- 👉 **022c** — belajar memberi **nama resmi** (kategori) pada benda.
-- 👉 **022d** — belajar menentukan **suka / biasa / tidak suka** (sentimen).
-- 👉 **022e** — belajar meraba **perasaan** (emosi).
-- 👉 **022f** — belajar **mencatat** semuanya supaya rapi.
-- 👉 **022g** — latihan soal-soal sulit dan tanya jawab.
-- 👉 **022h** — melihat apa gunanya semua ini di dunia nyata.
+Pendekatan yang lebih tua (biasa disebut ACOS, tanpa E) hanya mengambil **empat**
+lapis: aspek, kategori, opini, sentimen. Empat lapis ini sudah bagus untuk
+menjawab *"apa yang disukai atau tidak disukai."*
 
-Santai saja. Tiap bagian pendek dan penuh contoh. Kalau ada yang belum jelas di
-bagian ini, itu wajar — kita baru mulai. Bagian berikutnya akan membuat semuanya
-jauh lebih konkret.
+Tapi ada yang kurang. Coba pikirkan lagi tiga orang ini:
+
+> Dua orang sama-sama tidak suka harga yang mahal. Yang satu bilang "kesel banget
+> sih harganya." Yang lain bilang "sedih deh, jadi nggak bisa kemari lagi."
+
+Arahnya sama: keduanya **tidak suka** (sentimen negatif). Tapi perasaannya beda:
+yang satu **marah**, yang lain **sedih**. Empat lapis yang lama tidak bisa
+menangkap perbedaan itu. **Lapis kelima — emosi — inilah yang menangkapnya.**
+
+Di buku ini kita menambahkan lapisan perasaan itu, dan kita akan belajar
+mengisinya dengan jujur. Ini bagian yang paling sulit sekaligus paling menarik.
+
+## Jadi, kita sepakat mulai di sini
+
+Kita sudah punya gambaran besar. Ringkasnya:
+
+- Manusia bicara campur aduk, jadi kita pecah menjadi **paket-paket kecil**.
+- Tiap paket punya **lima lapis**: benda, nama resmi, kata rasa, suka/tidak,
+  dan perasaan.
+- Komputer tidak bisa sendiri; ia butuh **contoh beranotasi** dari manusia — dari Anda.
+- Huruf **E (emosi)** adalah bumbu yang membuat ini beda dari pendekatan lama.
+
+Sekarang tinggal detail. Dan detailnya seru. Mari kita mulai dari dua lapis yang
+paling konkret: **benda** dan **kata rasa**.
 
 ---
-
-**Latihan singkat:** Baca lagi kalimat "Makanannya enak banget tapi pelayanannya
-lambat." Sebutkan dua benda (aspek) yang dibicarakan dan satu kata rasa (opini)
-untuk tiap benda, tanpa lihat jawaban di atas. Kalau bisa, selamat — Anda sudah
-menguasai dasar ACOSE!
-
----
-
-*Lanjut ke [022b: Aspek dan Opini — menemukan benda dan kata rasanya](./022b_aspek_dan_opini.md).*
+*Lanjut ke [022b — Aspek & Opini: menemukan benda dan kata rasanya.](./022b_aspek_dan_opini.md)*

@@ -1,59 +1,66 @@
 # Bagian 022d — Sentimen: Suka, Biasa Aja, atau Tidak Suka
 
 **Seri:** Buku Panduan TTG "ACOSE untuk Semua Orang"
-**Tanggal:** 2026-09-02
-**Sebelumnya:** [022c: Kategori](./022c_kategori.md)
+**Sebelumnya:** [022c — Kategori](./022c_kategori.md)
 
 ---
 
-## Pertanyaan Paling Sederhana di Dunia
+> **Sebentar, masalahnya apa?**
+> - **Masalah:** Setelah tahu bendanya dan kata rasanya, kita masih belum menjawab
+>   satu pertanyaan mendasar: orang ini *suka* atau *tidak*? Tanpa jawaban itu,
+>   yang kita punya cuma kumpulan kata tanpa arah.
+> - **Kenapa ini berat:** Kalau tidak diputuskan dengan hati-hati, satu kalimat
+>   yang campur aduk bisa disalahartikan — misalnya dianggap "semuanya positif"
+>   padahal setengahnya keluhan.
+> - **Solusinya:** Kita pakai jawaban paling sederhana yang sudah Anda kenal sejak
+>   kecil: **suka, biasa aja, atau tidak suka.** Bab ini menyusunnya dengan dua
+>   aturan kunci supaya tidak salah — termasuk bahwa sentimen diukur per benda,
+>   bukan per kalimat.
 
-Setelah tahu *bendanya* (aspek) dan *kata rasanya* (opini), ada satu pertanyaan
-tinggal yang paling gampang dijawab:
+---
+
+## Pertanyaan paling sederhana, dan paling manusiawi
+
+Kita sudah menemukan *bendanya* (aspek), memberi *nama resmi* (kategori), dan
+menebak *kata rasanya* (opini). Sekarang muncul pertanyaan yang paling sederhana
+di dunia, dan justru karena itulah paling manusiawi:
 
 > **Orang ini suka, biasa aja, atau nggak suka sama benda itu?**
 
-Itulah yang namanya **sentimen**. Cuma ada tiga pilihan, dan ini pilihan yang
-sudah Anda pakai setiap hari sejak kecil:
+Itulah **sentimen**. Dan kabar baiknya: cuma ada tiga jawaban, dan Anda sudah
+menggunakan ketiganya sejak kecil.
 
-| Nilai | Arti santai |
+| Jawaban | Arti santai |
 |---|---|
 | **Positif** | suka / senang / oke / bagus |
 | **Netral** | biasa aja / datar / tidak memihak |
 | **Negatif** | tidak suka / kecewa / buruk |
 
-## Ini BUKAN Perasaan Kuat — Ini Arah Suka/Tidak
+Sederhana, ya? Tapi di balik kesederhanaan ini ada dua hal yang sering bikin orang
+tersandung. Mari kita buka keduanya, karena justru di sinilah keahliannya.
 
-Penting untuk tidak bingung: **sentimen** itu cuma arah (suka/tidak), bukan
-seberapa kuat perasaannya. Nanti di bagian 022e kita akan membahas **emosi**,
-yang justru berurusan dengan perasaannya (marah, sedih, senang...). Dua hal ini
-berbeda dan jangan dicampur.
+## Peringatan pertama: ini BUKAN kekuatan perasaan
 
-Bayangkan tiga orang berkata tentang harga:
+Paling penting untuk diingat: **sentimen itu cuma arah — suka, datar, atau tidak —
+bukan seberapa keras perasaannya.**
+
+Bayangkan tiga orang menilai harga:
 
 - "Harganya oke lah." → **positif** (menerima), tapi perasaannya biasa.
 - "Harganya standar." → **netral** (datar, tidak memuji tidak mengeluh).
-- "Harganya gila." → **negatif** (menolak), mungkin perasaannya marah.
+- "Harganya gila-gilaan." → **negatif** (menolak).
 
-Ketiganya bisa dikategorikan suka/nggak dengan mudah. Seberapa "besar" perasaan
-itu urusan 022e, bukan di sini.
+Ketiganya mudah dikategorikan. Seberapa *keras* perasaannya itu urusan bab berikutnya
+(022e, tentang emosi). Jangan dicampur di sini.
 
-## Panduan Menentukan Sentimen
+Nanti Anda akan lihat kenapa pemisahan "arah" dan "kekuatan" ini penting. Justru
+karena banyak orang mengira keduanya sama — padahal tidak — sehingga muncul banyak
+kebingungan.
 
-Lihat **opini** (kata rasanya) yang sudah kita temukan di 022b. Itu kuncinya:
+## Peringatan kedua: diukur per benda, bukan per kalimat
 
-| Jenis kata di opini | Sentimen |
-|---|---|
-| Kata pujian (enak, ramah, murah, bersih, mantap, bagus) | **Positif** |
-| Kata datar (biasa, standar, oke-oke aja, tidak menilai) | **Netral** |
-| Kata keluhan (buruk, mahal, lambat, kotor, hambar) | **Negatif** |
-
-Tapi hati-hati: beberapa kata punya maksud terselubung. Kita bahas di 022g.
-
-## Penting: Sentimen Diukur PER Benda, Bukan Per Kalimat
-
-Ini bagian yang sering bikin salah. **Sentimen dihitung untuk tiap aspek
-terpisah**, bukan untuk seluruh kalimat.
+Ini yang paling sering membuat anotator pemula salah. **Sentimen dihitung untuk
+tiap aspek secara terpisah, bukan untuk seluruh kalimat.**
 
 Contoh:
 
@@ -62,27 +69,51 @@ Contoh:
 - Untuk aspek **makanan**: positif (enak).
 - Untuk aspek **pelayanan**: negatif (lambat).
 
-Dalam satu kalimat, bisa ada sentimen positif DAN negatif sekaligus — karena
-masing-masing tentang benda yang berbeda. Ini mirip bagian 022a; kita sudah
-siapkan mental sejak awal.
+Dalam **satu kalimat** yang sama, ada sentimen positif DAN negatif — karena
+masing-masing tentang benda yang berbeda. Sudah kita antisipasi sejak 022a: manusia
+bicara campur aduk, jadi kita pecah per potongan.
 
-## Apa Itu "Biasa Aja" / Netral?
+Ini bukan teori rumit; ini cara Anda berbicara. Anda tidak akan pernah menjawab
+"makanannya gimana? enak!" lalu menyebut kalimat "makanan enak tapi pelayanan
+lambat" sebagai "positif semua". Anda akan menjawab dua hal berbeda. Tepat seperti
+itu yang kita lakukan.
 
-Banyak orang bingung sama "netral". Kapan kita memanggilnya netral?
+## Panduan menentukan sentimen: lihat opininya
 
-Kata "netral" kita pakai saat **tidak ada pujian juga tidak ada keluhan** —
+Cara paling mudah menentukan sentimen: **lihat opini** (kata rasa) yang sudah Anda
+temukan di 022b. Itulah petunjuknya.
+
+| Jenis kata di opini | Sentimen |
+|---|---|
+| Kata pujian (enak, ramah, murah, bersih, mantap, bagus) | **Positif** |
+| Kata datar (biasa, standar, oke-oke aja, tidak menilai) | **Netral** |
+| Kata keluhan (buruk, mahal, lambat, kotor, hambar) | **Negatif** |
+
+Ada satu peringatan kecil: beberapa kata punya maksud tersembunyi (misalnya
+sarkasme — "bagus banget" padahal maksudnya buruk). Kita akan bahas kasus-kasus
+"bahasa nakal" ini di 022g.
+
+## Apa sebenarnya "biasa aja" / netral?
+
+Banyak orang bingung dengan kata "netral." Kapan tepatnya kita menyebut sesuatu
+netral?
+
+Jawabannya: **netral dipakai saat tidak ada pujian juga tidak ada keluhan** — orang
 cuma menyatakan fakta tanpa menilai. Contoh:
 
-> "Menunya ada sedikit, tapi rasanya mantap."
+> "Menunya tersedia standar." (menyatakan, tidak menilai)
 
-Untuk aspek **pilihan menu**: "sedikit" itu... hmm, sedikit apa? Apakah buruk?
-Di sini "sedikit" biasanya dianggap agak negatif (pilihan kurang). Tapi kalau
-"menunya standar" tanpa nada keluhan → itu netral.
+Sedangkan kalau ada sedikit nada keluhan (misal "menunya cuma dikit"), itu sudah
+cenderung **negatif**, bukan netral.
 
-Cara paling gampang: **apakah orang itu terlihat memuji atau mengeluh?**
-Kalau tidak keduanya → netral.
+Cara termudah membedakannya, tanyakan:
 
-## Contoh Langkah Demi Langkah
+> **Apakah orang itu terlihat memuji, atau mengeluh?**
+
+Kalau tidak keduanya → **netral**. Kalau mengeluh → **negatif**. Kalau memuji →
+**positif**. Simpel.
+
+## Contoh langkah demi langkah
 
 **Contoh 1:** "Kopinya pahit banget."
 
@@ -99,23 +130,26 @@ Kalau tidak keduanya → netral.
 - Opini: "panjang tapi standar" → tidak jelas keluhan.
 - Sentimen: **netral** (dianggap tidak memihak).
 
-## Kesimpulan Singkat
+## Kesan yang ingin saya tinggalkan
 
-1. **Sentimen** = suka / biasa aja / nggak suka. Hanya 3 pilihan.
-2. Diukur **per aspek**, bukan per kalimat.
-3. **Netral** = tidak memuji tidak mengeluh.
-4. Sentimen itu arah, bukan kekuatan perasaan — yang kuat itu urusan 022e.
+Sentimen mungkin yang paling "gampang" di antara lima lapis ACOSE. Tapi jangan
+remahkan — dua peringatan di atas (bukan kekuatan, dan per benda) adalah sumber
+kesalahan paling umum di dunia nyata.
+
+Sekali Anda menguasai kedua peringatan itu, separuh pekerjaan selesai. Dan bersiaplah:
+bab berikutnya (emosi) akan memakai pemisahan ini sebagai fondasi. Karena di sanalah
+banyak orang — termasuk anotator berpengalaman — justru tersandung. Kita akan
+berjalan hati-hati.
 
 ---
 
-**Latihan:** Tentukan sentimen (positif/netral/negatif) untuk tiap aspek:
+**Latihan.** Tentukan sentimen (positif / netral / negatif) untuk **tiap aspek**:
 1. "Gurihnya mantap, tapi kuahnya kebanyakan minyak."
 2. "Lokasinya standar."
 3. "Pelayanannya cepat bin sigap!"
 
-(Jawaban: 1. gurih → positif; kuah → negatif. 2. lokasi → netral. 3. pelayanan
-→ positif.)
+*(Jawaban: 1. gurih → positif; kuah → negatif. 2. lokasi → netral. 3. pelayanan
+→ positif.)*
 
 ---
-
-*Lanjut ke [022e: Emosi — perasaan sesungguhnya](./022e_emosi.md).*
+*Lanjut ke [022e — Emosi: perasaan sesungguhnya, dan kenapa ini bagian tersulit.](./022e_emosi.md)*
