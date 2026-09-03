@@ -122,9 +122,10 @@ class BertTokenizer(object):
 
     def convert_tokens_to_ids(self, tokens):
         """Converts a sequence of tokens into ids using the vocab."""
+        unk_id = self.vocab.get('[UNK]', 100)
         ids = []
         for token in tokens:
-            ids.append(self.vocab[token])
+            ids.append(self.vocab.get(token, unk_id))
         if len(ids) > self.max_len:
             logger.warning(
                 "Token indices sequence length is longer than the specified maximum "
