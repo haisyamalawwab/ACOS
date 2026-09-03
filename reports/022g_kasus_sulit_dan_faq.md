@@ -144,4 +144,35 @@ memakai data ini.
 
 ---
 
+## ▪️ BAGI YANG MAU LEBIH DALAM: kenapa sarkasme dan ambiguitas "menakutkan" bagi AI
+
+Kasus-kasus "bahasa nakal" di bab ini bukan cuma menyulitkan Anda — mereka adalah
+masalah terbuka yang dikenal dalam riset NLP. Penutup teknis ini opsional.
+
+- **Sarkasme adalah tantangan yang *sulit dan terbuka* bagi komputer.** Banyak
+  sistem bisa membaca kalimat datar dengan baik, tapi gagal saat kalimat
+  menyiratkan kebalikan dari kata yang tertulis. Inilah sebabnya anotasi manusia
+  pada kasus sarkasme sangat bernilai: Anda menangkap maksud yang tidak bisa
+  ditangkap dari permukaan kata.
+
+- **Ambiguitas disebut juga *ambiguity* atau *annotation difficulty*.** Saat dua
+  anotator ragu dan berbeda pendapat, itu bukan kegagalan — dalam riset, tingkat
+  kesulitan anotasi ini bisa diukur dan justru dilaporkan. Beberapa dataset bahkan
+  menandai baris "sulit" secara khusus, karena baris itu membedakan model yang baik
+  dari model yang hanya menebak.
+
+- **Keraguan Anda ikut menghitung *kesepakatan antar-anotator*.** Ini melanjutkan
+  apa yang kita singgung di 022e (Cohen's kappa). Verdict-nya dipakai untuk
+  memperbaiki aturan: kalau banyak anotator sering berbeda di satu jenis kalimat,
+  berarti pedomannya di sana kurang jelas dan perlu ditulis ulang — bukan berarti
+  salah satu anotator bodoh.
+
+- **Satu prinsip yang membuat semua ini mungkin: kerja *dengan* data yang jujur,
+  bukan *menyembunyikan* kesulitannya.** Inilah ciri data penelitian yang bisa
+  dipercaya: keraguan dicatat, diukur, dan dipakai untuk memperbaiki proses — bukan
+  dibuang.
+
+Itu dunia teknisnya. Sekarang kita menutup buku di 022h.
+
+---
 *Lanjut ke [022h — Di Balik Layar: kenapa semua ini berharga, dan jujur soal batasannya.](./022h_di_balik_layar_dan_manfaat.md)*

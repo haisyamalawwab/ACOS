@@ -194,6 +194,37 @@ Semua masuk akal.
 
 ---
 
+## ▪️ BAGI YANG MAU LEBIH DALAM: bagaimana data "dibaca" komputer
+
+Sekarang formatnya sudah jelas. Ini lapisan tentang apa yang terjadi setelah data
+Anda jadi — opsional, untuk yang penasaran dengan sisi teknis.
+
+- **Anda baru saja belajar *token offset*.** "Memberi nomor pada tiap kata" itulah
+  yang peneliti sebut penanda posisi token. Ini bukan cara iseng — inilah bahasa
+  yang dipakai data untuk menunjukkan *di mana* aspek dan opini berada. Proyek ini
+  bahkan sanggup memindahkan penanda ini dengan tepat ke tingkatan yang lebih halus
+  (sub-kata) saat teks disiapkan untuk model bahasa — detail kecil, tapi menjaga
+  ketepatan.
+
+- **Menemukan aspek/opini di kalimat secara teknis disebut *span extraction* atau
+  *tagging* — dan sering pakai skema "BIO".** BIO singkatan dari *Begin, Inside,
+  Outside* (Mulai, Di dalam, Di luar). Komputer menandai tiap token: mana yang
+  "awal" dari aspek, mana yang "lanjutan" aspek, dan mana yang "di luar". Itu cara
+  lain menyatakan rentang yang Anda tulis sebagai `0,1` atau `2,4`.
+
+- **Untuk menjaga batas-batas itu tetap konsisten, proyek sering memakai satu alat
+  bernama CRF** (*Conditional Random Field*; Lafferty et al., 2001). Ini semacam
+  "penjaga aturan" yang memastikan hasil penandaan tetap masuk akal berurutan —
+  misalnya tidak mungkin ada "akhir aspek" tanpa "awal aspek".
+
+- **Yang Anda catat (`0,1 MAKANAN#KUALITAS 2 2,4 senang`) adalah *satu baris contoh
+  (instance)* untuk model.** Gabungan ratusan baris inilah yang akhirnya "dibaca"
+  model untuk belajar. Semakin konsisten baris-baris Anda, semakin baik modelnya.
+
+Format selesai. Lanjut ke 022g untuk menghadapi kasus-kasus bahasa yang "nakal".
+
+---
+
 **Latihan.** Pecah kalimat `kopi nya pahit sekali` jadi kata + nomor, lalu
 tuliskan satu paket ACOSE yang benar untuk "kopi pahit" dengan sentimen negatif.
 

@@ -158,4 +158,37 @@ Sekarang tinggal detail. Dan detailnya seru. Mari kita mulai dari dua lapis yang
 paling konkret: **benda** dan **kata rasa**.
 
 ---
+
+## ▪️ BAGI YANG MAU LEBIH DALAM: sekilas bahasa "NLP/AI" dari bab ini
+
+Bab ini adalah pemandangan dari jauh. Kalau Anda penasaran dengan istilah yang
+dipakai para peneliti ketika membicarakan hal yang sama — ini sedikit pelengkap
+yang tidak wajib, tapi menjelaskan nama-nama yang nanti bisa Anda temui.
+
+- **Apa yang kami lakukan manusiawi ini, oleh peneliti disebut "ABSA"** —
+  *Aspect-Based Sentiment Analysis*, atau analisis sentimen berbasis aspek.
+  Tugasnya memecah ulasan menjadi bagian-bagian (aspek) lalu menilai tiap bagian.
+
+- **Dua generasi tugas.** Versi lama, yang hanya mengambil empat lapis
+  (aspek, kategori, opini, sentimen), dikenal sebagai **ACOS** (*Aspect-Category-
+  Opinion-Sentiment*). Versi dengan emosi itulah yang kita pelajari di buku ini —
+  **ACOSE** (ditambah *Emotion*). Jadi huruf **E** yang kita bahas di atas itu,
+  dalam bahasa teknis, adalah pembeda ACOS → ACOSE.
+
+- **Kenapa peneliti peduli pada E?** Karena secara teori, arah suka/tidak
+  (sentimen) hanyalah satu dimensi dari perasaan, bukan keseluruhannya. Menambah
+  emosi berarti menangkap dimensi yang lebih kaya. (Kita akan lihat di 022e
+  bagaimana dimensi ini benar-benar bisa diukur, bukan cuma diduga.)
+
+- **Yang akan dipelajari komputer nanti disebut "model"**, dan bahan ajarnya
+  adalah data beranotasi seperti yang Anda buat. Ada istilah-istilah lanjutan
+  seperti *bank kata* (token), *penandaan* (tagging), dan *jaringan saraf* — kita
+  tidak akan menyelam terlalu dalam di sini, tapi istilah-istilah itu akan muncul
+  dalam buku teknis yang menyertai proyek ini.
+
+Garis besarnya begitu. Jika Anda ingin tetap di jalur yang mudah, langsung saja
+melanjutkan ke bab berikutnya — bagian teknis ini bisa Anda lewati tanpa kehilangan
+alur. 🍚
+
+---
 *Lanjut ke [022b — Aspek & Opini: menemukan benda dan kata rasanya.](./022b_aspek_dan_opini.md)*

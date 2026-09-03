@@ -169,6 +169,36 @@ anotator, adalah penerjemahnya.
 
 ---
 
+## ▪️ BAGI YANG MAU LEBIH DALAM: "taksonomi" dan "label set" di balik kategori
+
+Sekarang Anda paham *kenapa* kategori diperlukan. Kalau mau, berikut lapisan
+teknisnya — opsional, hanya untuk yang penasaran.
+
+- **Kumpulan kategori ini disebut *taksonomi*.** Taksonomi artinya sistem
+  pengelompokan yang teratur. Di proyek ini taksonominya bernama `resto_id`
+  (restoran Indonesia). Kalau suatu saat Anda melihat "taxonomy" di kode atau
+  dokumen teknis, itulah keranjang-keranjang yang baru saja kita pelajari.
+
+- **Format `BENDA#SIFAT` punya sejarah riset.** Cara menulis dua bagian ini
+  diwarisi dari kompetisi riset internasional bernama *SemEval-2016 Task 5*
+  (Pontiki et al., 2016) yang menggarap analisis sentimen restoran. Dengan
+  mewarisi bentuk itu, hasil dari bahasa Indonesia bisa *dibandingkan* dengan
+  hasil dari bahasa lain secara adil. Inilah kenapa kita tidak boleh asal membuat
+  kategori baru.
+
+- **"Keranjang" dalam bahasa data disebut *label set* — kosa kata tertutup.** Maksudnya
+  "tertutup" adalah: hanya inilah pilihan yang sah; Anda tidak boleh menambah dari
+  luar. Komputer bekerja paling baik dengan pilihan yang terbatas dan jelas.
+
+- **Satu khusus yang patut diingat.** Versi bahasa Indonesia ini memetakan
+  *satu-lawan-satu* dengan versi internasional. Itu sebabnya `MINUMAN#UMUM` tidak
+  ada — karena versi internasionalnya tidak punya, dan kita menjaga agar tetap
+  bisa dibandingkan.
+
+Selesai untuk kategori. Lanjut ke 022d untuk menentukan suka atau tidak.
+
+---
+
 **Latihan.** Tentukan kategori untuk kalimat-kalimat berikut:
 1. "Pelayanannya ramah banget."
 2. "Menunya cuma dikit."

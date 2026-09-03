@@ -187,6 +187,47 @@ dengan teliti dan jujur.
 
 ---
 
+## ▪️ BAGI YANG MAU LEBIH DALAM: emosi, ukurannya, dan soal kesepakatan
+
+Ini bab yang paling kaya, jadi bagian teknisnya paling panjang — tapi tetap
+opsional. Kalau Anda sudah paham konsepnya dan hanya ingin alur santai, lewati saja
+ke latihan.
+
+- **Enam label emosi kita punya nama registri: `emot_id_netral`.** "Emot" berasal
+  dari set emosi penelitian bahasa Indonesia (EmoT; Saputri et al., 2018) yang
+  awalnya lima label — senang, marah, sedih, takut, cinta. Kita menambahkan
+  **netral** menjadi enam, karena ulasan restoran sering tidak bermuatan emosi.
+  (Dalam kode dan buku teknis, ini disebut *label set* emosi.)
+
+- **Bagaimana kita tahu emosi "benar-benar menambah", bukan cuma nama lain dari
+  sentimen?** Ini pertanyaan riset yang dijawab dengan *mengukur*, bukan menduga.
+  Caranya: hitung seberapa banyak informasi emosi yang *tidak* bisa ditebak dari
+  sentimen saja. Kalau setiap "positif" selalu berarti "senang", maka emosinya
+  tidak menambah apa-apa. Kalau ternyata beragam, berarti emosi membawa informasi
+  baru.
+
+  Pada data contoh proyek, hasilnya mendukung bahwa emosi *bukan* sekadar nama lain
+  sentimen — ada keragaman (misalnya positif bisa jadi `senang` *atau* `cinta`,
+  negatif bisa `marah`, `sedih`, atau `takut`). Inilah bukti terukur yang
+  menegaskan kenapa kita tidak boleh menurunkan emosi otomatis dari sentimen.
+
+- **Soal "ragu antara dua emosi" ada alat ukurnya: *kesepakatan antar-anotator*.** Dalam
+  istilah teknis, perbedaan pendapat dua anotator yang mengerjakan data sama diukur
+  dengan sebuah angka yang lazim disebut **Cohen's kappa** (dari nama peneliti yang
+  memperkenalkannya, Cohen 1960). Semakin tinggi angkanya, semakin bisa dipercaya
+  data. Dan interpretasinya memakai *pita* kesepakatan yang lazim (Landis & Koch,
+  1977): dari "hampir sempurna" sampai "perlu diperbaiki". Kita akan menyentuh ini
+  lagi di 022h.
+
+- **Kenapa ada kelas `netral`?** Ini punya dasar riset serupa dalam bidang emosi:
+  banyak data emosi memang butuh kelas "tidak ada emosi" agar hasilnya jujur.
+  GoEmotions (Demszky et al., 2020) mempertahankan kelas *neutral* dengan alasan
+  yang sama. Jadi `netral` bukan "capai memilih", melainkan keputusan yang berdasar.
+
+Itu dunia teknisnya. Kembali ke jalur santai: lanjut ke 022f untuk cara mencatat.
+
+---
+
 **Latihan.** Tentukan emosi untuk tiap aspek:
 1. "Saya khawatir soal kebersihan dapurnya."
 2. "Restoran favorit saya sejak dulu."

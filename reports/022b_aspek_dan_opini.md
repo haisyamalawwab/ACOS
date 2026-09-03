@@ -186,6 +186,35 @@ Sekarang Anda sudah sadar sedang melakukannya. Itu langkah besar.
 
 ---
 
+## ▪️ BAGI YANG MAU LEBIH DALAM: "token" dan "span" — nama teknis benda & kata rasa
+
+Sekarang konsepnya sudah jelas. Kalau Anda ingin tahu nama yang dipakai para
+peneliti di balik "benda" dan "kata rasa", ini dia — sekadar pelengkap, opsional.
+
+- **Yang kami sebut "benda" (aspek) dan "kata rasa" (opini) adalah potongan teks.**
+  Dalam istilah teknis, setiap kata terpisah dalam kalimat disebut **token**
+  (bayangkan: kepingan terkecil dari kalimat). Dan sebaris token yang kita tunjuk
+  — misalnya "enak sekali" — disebut **span** (potongan).
+
+- **Span dicatat dengan angka offset.** Inilah asal mula aturan "mulai,akhir"
+  yang akan Anda pelajari di 022f. Peneliti menyebutnya *character span* atau
+  *token offset*: menunjukkan di mana potongan itu mulai dan berakhir di dalam
+  kalimat.
+
+- **Soal "tersembunyi" ada nama resminya: *implicit*.** Aspek yang tidak tertulis
+  tapi bisa kita tahu dari konteks disebut **aspek implisit**; opini yang sama-sama
+  tersembunyi disebut **opini implisit.** Dalam data, keduanya ditandai dengan
+  kode `-1,-1` (kita akan lihat di 022f).
+
+- **Kenapa komputer kesulitan dengan yang tersembunyi?** Karena komputer bekerja
+  pada token yang *tertulis*. Ia tidak punya "akal sehat" untuk menyimpulkan yang
+  tidak muncul. Justru di situlah contoh anotasi manusia (yang menandai "ini
+  sebenarnya tentang restoran") menjadi sangat berharga.
+
+Istilah ini cukup. Lanjut ke 022c untuk memberi nama resmi pada benda.
+
+---
+
 **Latihan ringan.** Untuk kalimat-kalimat ini, sebutkan **aspek** dan **opini**-nya:
 1. "Ramennya gurih dan kuahnya nendang."
 2. "Daftar tunggunya panjang banget."

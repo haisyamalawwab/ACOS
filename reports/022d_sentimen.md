@@ -143,6 +143,36 @@ berjalan hati-hati.
 
 ---
 
+## ▪️ BAGI YANG MAU LEBIH DALAM: dari "suka/tidak" ke "klasifikasi polaritas"
+
+Karena konsepnya sudah jelas, mari kita intip nama teknisnya sebentar — opsional.
+
+- **Sentimen disebut juga *polaritas* atau *orientation*.** Kata "polar" sendiri
+  memberi bayangan dua kutub: positif di satu sisi, negatif di sisi lain, dengan
+  "netral" di tengah. Tiga pilihan kita (positif/netral/negatif) inilah yang dalam
+  riset disebut *polaritas sentimen*.
+
+- **Di data, polaritas disimpan sebagai angka `0`, `1`, `2`.** Ini peletakan yang
+  disepakati: `0` negatif, `1` netral, `2` positif. Ini bukan angka "berat", hanya
+  kode — dan kita memakainya karena formatinya konsisten dengan standar ACOS
+  (Cai et al., 2021).
+
+- **Tugas "menentukan salah satu dari beberapa pilihan" disebut *klasifikasi*.** Di
+  sinilah komputer nanti berlatih: diberi (aspek, opini), ia harus memilih salah
+  satu dari tiga sentimen. Model yang melakukannya disebut *classifier*. Anda,
+  sebagai anotator, pada dasarnya sedang membuat *contoh jawaban yang benar* untuk
+  classifier itu.
+
+- **Penting dan sering disalahartikan di riset:** klasifikasi di sini dilakukan
+  *per aspek*, bukan per kalimat. Inilah yang membedakan analisis berbasis-aspek
+  (ABSA) dari analisis sentimen "level kalimat" yang lebih sederhana. Anda sudah
+  memegang konsep ini sejak tadi.
+
+Itu saja untuk sentimen. Lanjut ke 022e — hati-hati, di sinilah banyak yang
+tersandung. Kita berjalan pelan.
+
+---
+
 **Latihan.** Tentukan sentimen (positif / netral / negatif) untuk **tiap aspek**:
 1. "Gurihnya mantap, tapi kuahnya kebanyakan minyak."
 2. "Lokasinya standar."
