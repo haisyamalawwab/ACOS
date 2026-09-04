@@ -1,0 +1,66 @@
+{
+  "domain": "rest16",
+  "keluaran": ".\\build\\_gate2_en\\tokenized_data",
+  "split": {
+    "dev": {
+      "baris": 171,
+      "berkas": {
+        "pair": ".\\build\\_gate2_en\\tokenized_data\\rest16_dev_pair.tsv",
+        "quad_bert": ".\\build\\_gate2_en\\tokenized_data\\rest16_dev_quad_bert.tsv"
+      },
+      "histogram_panjang_subword": {
+        "0": 112,
+        "16": 51,
+        "32": 7,
+        "48": 1
+      },
+      "pair": 251,
+      "quad": 261,
+      "span_bergeser": 127,
+      "span_invalid": 0,
+      "unk_disisipkan": 0
+    },
+    "test": {
+      "baris": 583,
+      "berkas": {
+        "pair": ".\\build\\_gate2_en\\tokenized_data\\rest16_test_pair.tsv",
+        "quad_bert": ".\\build\\_gate2_en\\tokenized_data\\rest16_test_quad_bert.tsv"
+      },
+      "histogram_panjang_subword": {
+        "0": 325,
+        "16": 207,
+        "32": 44,
+        "48": 5,
+        "64": 1,
+        "80": 1
+      },
+      "pair": 895,
+      "quad": 916,
+      "span_bergeser": 526,
+      "span_invalid": 0,
+      "unk_disisipkan": 0
+    },
+    "train": {
+      "baris": 1530,
+      "berkas": {
+        "pair": ".\\build\\_gate2_en\\tokenized_data\\rest16_train_pair.tsv",
+        "quad_bert": ".\\build\\_gate2_en\\tokenized_data\\rest16_train_quad_bert.tsv"
+      },
+      "histogram_panjang_subword": {
+        "0": 860,
+        "16": 543,
+        "32": 100,
+        "48": 24,
+        "64": 2,
+        "80": 1
+      },
+      "pair": 2420,
+      "quad": 2484,
+      "span_bergeser": 1381,
+      "span_invalid": 0,
+      "unk_disisipkan": 0
+    }
+  },
+  "sumber": ".\\data\\Restaurant-ACOS",
+  "vocab_entries": 30522
+}
