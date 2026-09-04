@@ -1,0 +1,43 @@
+{
+  "bio_tags": [
+    "O",
+    "B-ASP",
+    "I-ASP",
+    "B-OPN",
+    "I-OPN"
+  ],
+  "categories": [
+    "ONBOARDING_KYC",
+    "AUTH_ACCESS",
+    "TRANSACTION_TRANSFER",
+    "APP_PERFORMANCE",
+    "UI_UX_DESIGN",
+    "FEES_CHARGES",
+    "INTEREST_RETURNS",
+    "CUSTOMER_SERVICE",
+    "SECURITY_FRAUD",
+    "FEATURES_PRODUCT",
+    "PROMO_MARKETING",
+    "NOTIFICATION_INFO",
+    "ACCOUNT_MANAGEMENT"
+  ],
+  "sentiments": [
+    "positive",
+    "negative",
+    "neutral"
+  ],
+  "emotions": [
+    "joy",
+    "trust",
+    "anger",
+    "sadness",
+    "fear",
+    "disgust",
+    "neutral"
+  ],
+  "null_term": "[NULL]",
+  "weight_scheme": {
+    "floor": 0.3,
+    "saturation_evidence": 2.0
+  }
+}
