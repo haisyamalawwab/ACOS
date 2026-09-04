@@ -1,0 +1,17 @@
+# Keluaran runtime: folder sesi bertimestamp, checkpoint, plot, log.
+results/
+
+# Checkpoint backbone hasil unduh/rekey (~500 MB per backbone). vocab.txt
+# dilacak karena dua gate membutuhkannya dan ukurannya hanya ~230 KB.
+backbones/*/config.json
+backbones/*/pytorch_model.bin
+backbones/*/_rekey.json
+
+# Keluaran sementara skrip verifikasi. Skrip .py-nya sendiri dilacak.
+build/_sim_v4/
+build/_eda_id/
+build/_gate2_en/
+
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/

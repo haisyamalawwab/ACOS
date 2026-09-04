@@ -69,6 +69,26 @@ def download_backbone(backbone: str, target_dir: str, *, force: bool = False) ->
     return out
 
 
+def ensure_vocab(backbone: str, target_dir: str) -> str:
+    """Pastikan `vocab.txt` backbone ada di `target_dir`; unduh bila belum.
+
+    Dipisahkan dari `prepare_backbone()` karena gate `tokenized` dan
+    `gate2_english` hanya butuh vocab (±230 KB), bukan `pytorch_model.bin`
+    (±500 MB) — dan keduanya torch-free, sehingga bisa jalan di mesin tanpa paket
+    ML. Ini juga yang membuat klon segar langsung bisa menjalankan gate: bobot
+    backbone sengaja tidak dilacak git.
+    """
+    if backbone not in BACKBONES:
+        raise KeyError(f"backbone '{backbone}' tidak dikenal; pilihan: {sorted(BACKBONES)}")
+    path = os.path.join(target_dir, "vocab.txt")
+    if os.path.exists(path) and os.path.getsize(path) > 0:
+        return path
+    os.makedirs(target_dir, exist_ok=True)
+    url = HF_TEMPLATE.format(hf_id=BACKBONES[backbone]["hf_id"], fname="vocab.txt")
+    urllib.request.urlretrieve(url, path)
+    return path
+
+
 def vocab_report(target_dir: str) -> dict:
     """Bandingkan `config.vocab_size` dengan jumlah baris `vocab.txt`.
 
