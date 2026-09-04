@@ -245,12 +245,16 @@ def analyze_and_plot_eda_id(data_dir, domain=DOMAIN, output_plots_dir="./plots",
 
 
 def main(argv=None):
+    """CLI: `python -m acos_id.eda [out_dir]`.
+
+    Root dihitung dari lokasi paket (`ACOS-IndoBERT/`); keluaran default ke
+    `ACOS-IndoBERT/build/_eda_id/`.
+    """
     import sys
 
     argv = list(sys.argv[1:] if argv is None else argv)
-    base = argv[0] if argv else os.path.dirname(
-        os.path.dirname(os.path.abspath(__file__)))
-    out = argv[1] if len(argv) > 1 else os.path.join(base, "build", "_eda_id")
+    base = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    out = argv[0] if argv else os.path.join(base, "build", "_eda_id")
     df_stats, _ = analyze_and_plot_eda_id(
         os.path.join(base, "data"), output_plots_dir=os.path.join(out, "plots"),
         output_csv_dir=os.path.join(out, "csv"))

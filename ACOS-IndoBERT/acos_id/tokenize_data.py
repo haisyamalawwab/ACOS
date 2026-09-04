@@ -237,27 +237,36 @@ def build(tokenizer, data_dir: str, out_dir: str, *, domain: str = DOMAIN,
     return report
 
 
-def load_legacy_tokenizer(vocab_dir: str, *, do_lower_case: bool = True):
+def load_legacy_tokenizer(vocab_dir: str, *, do_lower_case: bool = True,
+                          acos_root: str = None):
     """`BertTokenizer` legacy dari folder berisi `vocab.txt`.
 
     Impor ditunda ke dalam fungsi agar modul ini tetap bisa diimpor di mesin
-    tanpa dependensi `bert_utils` (mis. saat hanya `pair_lines_from_quads` yang
-    diuji).
+    tanpa dependensi `bert_utils`, dan `sys.path` dipasang di sini karena
+    `ACOS-IndoBERT/` berada di luar repo upstream.
     """
+    from . import upstream
+
+    upstream.ensure_path(acos_root)
     from bert_utils.tokenization import BertTokenizer
 
     return BertTokenizer.from_pretrained(vocab_dir, do_lower_case=do_lower_case)
 
 
 def main(argv=None):
-    """CLI: `python -m acos_id.tokenize_data <vocab_dir> <data_dir> <out_dir> [domain]`."""
+    """CLI: `python -m acos_id.tokenize_data [vocab_dir] [data_dir] [out_dir] [domain]`.
+
+    Tanpa argumen, memakai tata letak `ACOS-IndoBERT/` standar: vocab IndoBERT
+    dari `backbones/indobert_base_p1`, data dari `data/Apps-ACOS`, keluaran ke
+    `tokenized_data/`.
+    """
     argv = list(sys.argv[1:] if argv is None else argv)
-    if len(argv) < 3:
-        print(__doc__)
-        print("Pemakaian: python -m acos_id.tokenize_data <vocab_dir> <data_dir> "
-              "<out_dir> [domain]")
-        return 2
-    vocab_dir, data_dir, out_dir = argv[0], argv[1], argv[2]
+    root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    vocab_dir = argv[0] if len(argv) > 0 else os.path.join(
+        root, "backbones", "indobert_base_p1")
+    data_dir = argv[1] if len(argv) > 1 else os.path.join(
+        root, "data", "Apps-ACOS")
+    out_dir = argv[2] if len(argv) > 2 else os.path.join(root, "tokenized_data")
     domain = argv[3] if len(argv) > 3 else DOMAIN
 
     tokenizer = load_legacy_tokenizer(vocab_dir)

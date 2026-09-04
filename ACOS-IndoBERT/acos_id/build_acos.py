@@ -237,6 +237,10 @@ def build(data_root: str, out_dir: str = None, *, report_path: str = None) -> di
 
 
 def main(argv=None):
+    """CLI: `python -m acos_id.build_acos [data_root]`.
+
+    `data_root` default ke `ACOS-IndoBERT/data`, dihitung dari lokasi paket.
+    """
     argv = list(sys.argv[1:] if argv is None else argv)
     data_root = argv[0] if argv else os.path.join(
         os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")

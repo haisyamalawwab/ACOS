@@ -217,7 +217,8 @@ def gate_tokenized(paths, *, vocab_dir: str = None, out_dir: str = None,
     berkas = {s: os.path.join(out_dir, f"{taxonomy.DOMAIN}_{s}_quad_bert.tsv")
               for s in ("train", "dev", "test")}
     if rebuild or not all(os.path.exists(p) for p in berkas.values()):
-        tokenizer = tokenize_data.load_legacy_tokenizer(vocab_dir)
+        tokenizer = tokenize_data.load_legacy_tokenizer(
+            vocab_dir, acos_root=paths.get("acos_root"))
         detail["generator"] = {
             k: v for k, v in tokenize_data.build(
                 tokenizer, src_dir, out_dir, domain=taxonomy.DOMAIN).items()
@@ -266,12 +267,14 @@ def gate_gate2_english(paths, *, en_vocab_dir: str = None, work_dir: str = None)
                      error=f"vocab bert-base-uncased tidak ada di {en_vocab_dir}", **detail)
 
     repo_dir = os.path.join(paths["extract_dir"], "tokenized_data")
-    src_dir = os.path.join(paths["data_root"], "Restaurant-ACOS")
+    src_dir = os.path.join(paths.get("en_data_root") or paths["data_root"],
+                           "Restaurant-ACOS")
     if not os.path.exists(os.path.join(src_dir, "rest16_quad_train.tsv")):
         return _gate("gate2_english", False,
                      error=f"data Inggris tidak ada di {src_dir}", **detail)
 
-    tokenizer = tokenize_data.load_legacy_tokenizer(en_vocab_dir)
+    tokenizer = tokenize_data.load_legacy_tokenizer(
+        en_vocab_dir, acos_root=paths.get("acos_root"))
     gen_dir = os.path.join(work_dir, "tokenized_data")
     tokenize_data.build(tokenizer, src_dir, gen_dir, domain="rest16",
                         report_path=os.path.join(work_dir, "report.json"))
@@ -331,27 +334,44 @@ GATE_FUNCS = {
 }
 
 
-def default_paths(base_project_dir: str) -> dict:
-    """Peta path standar dari satu root proyek."""
+def default_paths(indo_root: str, acos_root: str = None) -> dict:
+    """Peta path standar dari dua root.
+
+    `indo_root` adalah folder `ACOS-IndoBERT/` — seluruh berkas Indonesia
+    (dataset, `tokenized_data`, backbone, hasil sesi) ada di bawahnya.
+    `acos_root` adalah repo pipeline Inggris `ACOS-ASLI/`, dipakai **hanya
+    untuk dibaca**: modul `Extract-Classify-ACOS/` dan data rest16 untuk gate 2.
+    Default-nya folder induk `indo_root`.
+    """
+    indo_root = os.path.abspath(indo_root)
+    acos_root = os.path.abspath(acos_root or os.path.dirname(indo_root))
     return {
-        "base_project_dir": base_project_dir,
-        "data_root": os.path.join(base_project_dir, "data"),
-        "extract_dir": os.path.join(base_project_dir, "Extract-Classify-ACOS"),
-        "tokenized_dir": os.path.join(base_project_dir, "Extract-Classify-ACOS",
-                                      "tokenized_data"),
-        "work_dir": os.path.join(base_project_dir, "build"),
+        "indo_root": indo_root,
+        "acos_root": acos_root,
+        # Berkas Indonesia
+        "data_root": os.path.join(indo_root, "data"),
+        "tokenized_dir": os.path.join(indo_root, "tokenized_data"),
+        "backbones_dir": os.path.join(indo_root, "backbones"),
+        "bert_cache_dir": os.path.join(indo_root, "backbones", "indobert_base_p1"),
+        "work_dir": os.path.join(indo_root, "build"),
+        "results_dir": os.path.join(indo_root, "results"),
+        # Upstream, baca saja
+        "extract_dir": os.path.join(acos_root, "Extract-Classify-ACOS"),
+        "en_data_root": os.path.join(acos_root, "data"),
+        "en_vocab_dir": os.path.join(indo_root, "backbones", "bert_base_uncased"),
     }
 
 
-def run_gates(base_project_dir: str = None, *, only=None, paths: dict = None,
-              raise_on_fail: bool = True, verbose: bool = True, **kwargs) -> dict:
+def run_gates(indo_root: str = None, *, only=None, paths: dict = None,
+              acos_root: str = None, raise_on_fail: bool = True,
+              verbose: bool = True, **kwargs) -> dict:
     """Jalankan gate yang diminta; kembalikan `{nama: hasil}`.
 
     `only` default ke gate torch-free. `raise_on_fail=True` melempar
     `RuntimeError` bila ada gate merah — itu perilaku yang diinginkan di
     notebook, agar sel berikutnya tidak menyembunyikan masalah.
     """
-    paths = paths or default_paths(base_project_dir)
+    paths = paths or default_paths(indo_root, acos_root)
     names = list(only or TORCH_FREE_GATES)
     hasil = {}
     for name in names:
@@ -384,14 +404,24 @@ def run_gates(base_project_dir: str = None, *, only=None, paths: dict = None,
     return hasil
 
 
+def indo_root_default() -> str:
+    """Folder `ACOS-IndoBERT/`, dihitung dari lokasi paket ini."""
+    return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+
 def main(argv=None):
-    """CLI: `python -m acos_id.selftest [base_project_dir] [gate ...]`."""
+    """CLI: `python -m acos_id.selftest [gate ...]`.
+
+    Root dihitung dari lokasi paket, jadi perintahnya sama dari mana pun ia
+    dijalankan. Tanpa argumen, kelima gate torch-free dijalankan.
+    """
     argv = list(sys.argv[1:] if argv is None else argv)
-    base = argv[0] if argv else os.path.dirname(
-        os.path.dirname(os.path.abspath(__file__)))
-    only = argv[1:] or None
+    only = argv or None
+    indo = indo_root_default()
+    print(f"indo_root : {indo}")
+    print(f"acos_root : {os.path.dirname(indo)} (baca saja)\n")
     try:
-        hasil = run_gates(base, only=only, raise_on_fail=False)
+        hasil = run_gates(indo, only=only, raise_on_fail=False)
     except Exception as exc:
         print(f"❌ {type(exc).__name__}: {exc}")
         return 1
