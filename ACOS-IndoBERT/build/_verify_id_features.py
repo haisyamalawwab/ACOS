@@ -14,7 +14,7 @@ import sys
 import types
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.dirname(HERE)
+INDO_ROOT = os.path.dirname(HERE)
 
 
 def stub_scientific_imports():
@@ -79,7 +79,7 @@ def main(argv=None):
     # --- Step 1 -------------------------------------------------------------
     p1 = processors["quad"]()
     ll1 = p1.get_labels(T.DOMAIN)
-    ex1 = p1.get_dev_examples(extract_dir, T.DOMAIN)[:limit]
+    ex1 = p1.get_dev_examples(tokenized_base, T.DOMAIN)[:limit]
     f1 = convert_examples_to_features(ex1, ll1, 128, tk, output_modes["quad"], "quad")
     tags = collections.Counter()
     for f in f1:
@@ -115,7 +115,7 @@ def main(argv=None):
     # --- Step 2 -------------------------------------------------------------
     p2 = processors["categorysenti"]()
     ll2 = p2.get_labels(T.DOMAIN)
-    ex2 = p2.get_train_examples(extract_dir, T.DOMAIN)[:limit]
+    ex2 = p2.get_train_examples(tokenized_base, T.DOMAIN)[:limit]
     f2 = convert_examples_to_features2nd(ex2, ll2, 128, tk, output_modes["categorysenti"])
     n_pos = sum(sum(f.label_id) for f in f2)
     n_a = sum(1 for f in f2 if sum(f.candidate_aspect) > 0)
