@@ -1,0 +1,68 @@
+{
+  "domain": "appsid",
+  "keluaran": "build/_indobert_tokenized",
+  "split": {
+    "dev": {
+      "baris": 8027,
+      "berkas": {
+        "pair": "build/_indobert_tokenized\\appsid_dev_pair.tsv",
+        "quad_bert": "build/_indobert_tokenized\\appsid_dev_quad_bert.tsv"
+      },
+      "histogram_panjang_subword": {
+        "0": 7204,
+        "16": 753,
+        "32": 52,
+        "48": 14,
+        "64": 3,
+        "80": 1
+      },
+      "pair": 8991,
+      "quad": 9587,
+      "span_bergeser": 2742,
+      "span_invalid": 0,
+      "unk_disisipkan": 0
+    },
+    "test": {
+      "baris": 7891,
+      "berkas": {
+        "pair": "build/_indobert_tokenized\\appsid_test_pair.tsv",
+        "quad_bert": "build/_indobert_tokenized\\appsid_test_quad_bert.tsv"
+      },
+      "histogram_panjang_subword": {
+        "0": 7007,
+        "16": 810,
+        "32": 62,
+        "48": 8,
+        "64": 3,
+        "80": 1
+      },
+      "pair": 9006,
+      "quad": 9514,
+      "span_bergeser": 2635,
+      "span_invalid": 0,
+      "unk_disisipkan": 0
+    },
+    "train": {
+      "baris": 60159,
+      "berkas": {
+        "pair": "build/_indobert_tokenized\\appsid_train_pair.tsv",
+        "quad_bert": "build/_indobert_tokenized\\appsid_train_quad_bert.tsv"
+      },
+      "histogram_panjang_subword": {
+        "0": 53607,
+        "16": 5973,
+        "32": 472,
+        "48": 81,
+        "64": 22,
+        "80": 4
+      },
+      "pair": 65423,
+      "quad": 72973,
+      "span_bergeser": 20615,
+      "span_invalid": 0,
+      "unk_disisipkan": 0
+    }
+  },
+  "sumber": "data/Apps-ACOS",
+  "vocab_entries": 30521
+}
