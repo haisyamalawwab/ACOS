@@ -1,4 +1,4 @@
-# Mengajari Mesin Membaca Keluhan dan Pujian
+# Kata, Data, Rasa
 ## Buku Panduan Teknologi Tepat Guna — Seri 022 · Bagian Pembuka (022aa)
 
 **Satu kalimat yang membuka seluruh buku ini:**
@@ -116,6 +116,24 @@ dan didesain untuk dibaca santai — seperti mengobrol, bukan membaca buku teks.
 
 Tiap bagian punya contoh nyata dari data sungguhan di proyek ini, plus **latihan
 kecil** yang menyenangkan. Tidak apa-apa salah. Justru dari salah kita belajar.
+
+### Cara setiap bab disusun (supaya Anda tahu apa yang diharapkan)
+
+Semua bab memakai bentuk yang sama, jadi Anda tidak akan pernah tersesat:
+
+1. **Kotak "Sebentar, masalahnya apa?"** di awal — merangkum masalah yang dihadapi
+   bab itu dan bagaimana ia dipecahkan. Baca ini kalau ingin cepat tahu ke mana bab
+   itu menuju.
+2. **Bagian utama** — cerita, analogi sehari-hari, contoh, dan aturan praktis.
+   Inilah inti buku, dan ditulis untuk dibaca siapa pun.
+3. **Kotak "▪️ BAGI YANG MAU LEBIH DALAM"** di akhir — istilah teknis AI/NLP untuk
+   materi bab itu, bagi yang penasaran.
+4. **Latihan kecil** berjawab, untuk mengetes pemahaman.
+
+**Penting:** kotak teknis di nomor 3 itu **sepenuhnya opsional.** Kalau Anda hanya
+ingin bisa beranotasi dengan benar, lewati saja — alurnya tetap utuh. Kotak itu ada
+untuk pembaca yang setelah paham konsepnya jadi ingin tahu "apa sih nama resminya
+di dunia penelitian?"
 
 ## Satu janji sebelum kita mulai
 

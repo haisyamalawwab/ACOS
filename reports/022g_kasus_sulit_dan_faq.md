@@ -5,6 +5,18 @@
 
 ---
 
+> **Sebentar, masalahnya apa?**
+> - **Masalah:** Aturan yang sudah kita pelajari bekerja rapi pada kalimat yang
+>   sopan. Tapi manusia tidak selalu bicara rapi — ada sarkasme, kalimat dobel
+>   makna, dan kasus yang bikin berhenti dan bertanya "ini yang mana?"
+> - **Kenapa ini berat:** Kalau anotator bingung dan menebak asal, data jadi
+>   berisik. Kalau ia berhenti terlalu lama, pekerjaan tidak selesai.
+> - **Solusinya:** Kumpulkan pertanyaan yang paling sering muncul, jawab dengan
+>   aturan praktis, dan — yang paling penting — perlakukan keraguan sebagai
+>   **informasi yang dicatat**, bukan kegagalan yang disembunyikan.
+
+---
+
 ## Bahasa itu tidak selalu sopan — dan itu justru yang menarik
 
 Sebelum menutup bagian teknis, mari kita jujur tentang satu hal: manusia tidak
@@ -162,7 +174,7 @@ masalah terbuka yang dikenal dalam riset NLP. Penutup teknis ini opsional.
   dari model yang hanya menebak.
 
 - **Keraguan Anda ikut menghitung *kesepakatan antar-anotator*.** Ini melanjutkan
-  apa yang kita singgung di 022e (Cohen's kappa). Verdict-nya dipakai untuk
+  apa yang kita singgung di 022e (Cohen's kappa). Hasilnya dipakai untuk
   memperbaiki aturan: kalau banyak anotator sering berbeda di satu jenis kalimat,
   berarti pedomannya di sana kurang jelas dan perlu ditulis ulang — bukan berarti
   salah satu anotator bodoh.
