@@ -1,0 +1,4 @@
+Domain,Split,Sentences,Total_Quadruples,Explicit_Aspects,Implicit_Aspects,Explicit_Opinions,Implicit_Opinions,Negative_Count (0),Neutral_Count (1),Positive_Count (2)
+appsid,train,60159,72973,51184,21789,43271,29702,36217,8274,28482
+appsid,dev,8027,9587,6588,2999,5836,3751,4819,1030,3738
+appsid,test,7891,9514,6576,2938,5693,3821,4788,1100,3626
