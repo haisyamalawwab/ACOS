@@ -1,0 +1,405 @@
+review_id,user_name,rating,title,review_text,app_version,vote_sum,review_date,app_name,app_slug,platform,store_id
+14457356309,Retvilio,5,8FE8KJ,Mohon bantuannya untuk bisa aktifasi pinjaman kak🤲,26.7.17,0,2026-08-21T21:29:50-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+14434143631,Baaags,5,ERROR,"iOS ga bisa dibuka, muncul pop up message error “Bank Saqu tidak bisa digunakan di perangkat yang sistemnya telah dimodifikasi. Coba pakai perangkat lain, ya.” Padahal ga ada modifikasi apa apa, aneh banget ini bank saqu",26.7.4,0,2026-08-16T02:44:59-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+14421513164,AFP896,1,Force Close,"Sering banget force close kalau mau bayar pake qris dan trf, ampun deh",26.7.4,0,2026-08-12T23:13:50-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+14417331394,Agnes pravita,5,Bank digital saqu,Banyak reward dan menabung jadi lebih untung,26.7.4,0,2026-08-11T22:09:41-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+14415160346,robbiue,5,tulisan,joshebe,26.7.4,0,2026-08-11T09:04:16-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+14413166244,sinta p,1,Ribet,"verifikasi wajah ribet susah pakai buka buka mulut mangap, di top up jg gagal 2x , verifikasi lama",26.7.4,0,2026-08-10T21:46:06-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+14407525583,0xTaaa,1,gabisa buka aplikasi di ios26.6,"keterangannya perangkat tidak didukung, padahal aku pake iphone 12 mini",26.7.4,0,2026-08-09T11:03:16-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+14398187566,vcrttt,1,Bug,"Aneh sih ini, hp gapernah di jailbreak malah muncul notif “apps gabisa dipake di hp yang udah dimodifikasi”",26.7.4,0,2026-08-07T02:02:46-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+14394950266,legendsnote,1,crash di iphone 15,kok crash di iphone 15 pas mau login dibilang perangkat tidak didukung ngaco banget,26.7.4,0,2026-08-06T06:21:25-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+14386973494,Billy Wijayaa,1,Customer Service Bad,"Pelayanan customer service by chat atas nama Bayu bener-bener gak ada attitude, slow response dan main tutup percakapan padahal gue belum selesai. Kacau nih Bank Saqu",26.7.4,0,2026-08-04T07:01:56-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+14379828178,underway113,1,Developer Mode On,"aplikasi lain bisa dipakai ketika Developer Mode On. Bank Saqu sendiri yang tidak bisa dipakai. iphone saya Tidak di jailbreak, hanya developer mode on. tolong di fix terima kasih",26.7.4,0,2026-08-02T12:16:19-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+14375544675,12020ari,5,great,great,26.7.4,0,2026-08-01T10:40:07-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+14369571651,Albert Sif,1,MoonAir,"Location request nya ketinggalan di versi ini 
+<key>NSLocationWhenInUseUsageDescription</key>
+<string>Lokasi digunakan untuk meningkatkan keamanan akun.</string>
+
+import 'package:geolocator/geolocator.dart';
+
+await Geolocator.requestPermission();
+
+Segera di perbaiki ya saya jadi gabisa masuk keluar popup suruh aktifkan lokasi pas di cek gaada",26.7.4,0,2026-07-31T00:27:12-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+14361644888,Iphone15b,1,minta izinkan akses lokasi,"sudah diaktifkan lokasinya tetapi tidak ada opsi bank saqu untuk izinkan lokasi
+sedangkan bank nya tidak bisa dibuka kalau lokasi tidak di izinkan
+perbaiki",26.7.4,0,2026-07-29T01:43:15-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+14358568346,Kanjeng ratu ndoro,2,Pelayanan buruk,"Jelek aplikasi gk jelas belum selesai laoran dgn cs sudah d ttup tanpa konfirmasi, transfer terhambat selama 3 hari sampai qris sudah kadaluwarsa ttp transaksi tertunda pdhal sudah membuat  laporan 2x",26.6.5,0,2026-07-28T07:15:08-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+14348869216,S1CK.,1,App KONTL,"login pas habis verif muka kok nunggu2 mulu , ampe emosi gua nunggu gua tinggal ini itu sejam masih aja muter tai , habis bisa login minta akses lokasi lah di settingan kaga ada , dev kalo bikin izin app di pikir , bckend kek plr semua",26.6.5,0,2026-07-25T20:50:02-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+14338101472,Finansial Freedom,3,Susah buat login,Dulu mah enak buat login makin makin ngestuck mulu sinyal pun lancar tolong di perbaiki lagi lah,26.6.5,0,2026-07-23T04:43:26-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+14329103078,Reyxxdey15,5,KODE REFFERAL BUAR DAPET BONUS,XH54ZL,26.6.5,0,2026-07-20T22:42:34-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+14298183739,nadri04,2,penggunaan rumit,"saya pakai bank saqu krna ada yg tawarin saya untuk tugas dia, sayang sekali mau transfer biaya nya 6.500 dan saya ga ngerti itu bank kenapa ribet bgt??",26.6.5,0,2026-07-13T06:56:16-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+14273274456,SNZZO,1,Aplikasi gaje,GAUSAH DI PAKE APK ANJING,26.6.5,0,2026-07-07T02:12:39-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+14264566630,zer0zer0byte,1,Aplikasi goblok,"Butuh izin lokasi tapi gak ada di pengaturan tuh gimana, developer goblok semua",26.6.5,0,2026-07-04T21:18:07-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+14261138213,Ioihdh,2,-,"Masuk aplikasinya lama banget, buat payment qriss aja sering gagal gara2 appnya lemot pdahal jaringan internetnya bagus2 aja. Tolong untuk pihak bank saqu sistemnya diperbaiki",26.6.5,0,2026-07-04T00:52:41-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+14252584058,MUHAMAD YUSUP AKBAR,5,Riport,"Di bantu atas nama MUHAMAD YUSUP AKBAR ,saya sudah komfirmasi via live chat fan email",26.6.5,0,2026-07-01T23:46:21-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+14233396922,saputramadira,5,sangat mudah dipakai,sangat mudah di pakai dan dimengerti untuk fiturnya banyak,26.5.5,0,2026-06-27T09:19:55-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+14209520701,Kampangbabi,1,Aplikasi babi,Aplikasi anjing gegara gk bisa tf 2hri tagihan saya nunggak dan kena denda emng gk jls apk kontl ini lama gk dipkk pas skliny dipkk bermasalah sialan!,26.5.5,0,2026-06-21T08:40:14-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+14201154365,Taik222,1,Saqu tolol,Minta izin apps tadi ga ada pilihan akses di pengaturan kayak bank lain nya… emang bank saqu goblok tolol,26.5.5,0,2026-06-19T05:48:14-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+14184269105,GGJLS,1,APLIKASI GAJELAS,DUIT GUE KEPOTONG!! DIAWAL GAADA TUH GUE DIINFOIN KALO DUIT YG DIKUNCI TERUS DIAMBIL SEBELUM TGL YG DITENTUKAN BISA KENA PINALTI 50% SCAM BGT SIALANNNNNN LO!!,26.5.5,0,2026-06-14T21:08:28-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+14158290840,Andreastja,1,Tipu tipu,Jangan download. Penipuan. Saya pakai berkali kali selalu ga ada cashback dan ga bisa dicek realtime apakah masih ada cashback. Not recommended & not worthy,26.5.5,0,2026-06-08T06:08:29-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+14157639834,LuthfanNoorAditya,4,Terbantu,Keren top,26.5.5,0,2026-06-08T02:02:21-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+14142514444,Oeya_311,5,Kode Promo 11AKNI,"buka bank saqu banyak benefitnyaaa, salah satunya dapat 50k kalau buka rekeningg pake kode referral, buka rekening juga 0 saldo, teruss transfer ke antar bank 0 admin seterusnyaa, nyimpen uang disitu jugaa berbunga kaya sea bankk, 3.5% perbulannya, sama bisa buat saku saku sendiri, terus banyak promonya",26.5.5,0,2026-06-04T04:10:56-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+14141349923,Antybemba,5,Good,Baik,26.5.5,0,2026-06-03T19:30:37-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+14129627795,grkeks,1,jelek banget aplikasi bug,pelayanan jelek cust service gajelas udah di jelasin berkali kali app nya bug gabisa service location bahkan di setting device juga ga muncul jadi gabisa buka app nya duit saya ketahan sialan,26.5.5,0,2026-05-31T19:53:07-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+14124451766,RM1811,5,Daftar dengan kode referensi milikku TXOC8F,"Hai! Bergabunglah denganku di Bank Saqu dan kamu akan mendapatkan Rp25.000 setelah berhasil bergabung.
+Daftar dengan kode referensi milikku TXOC8F",26.5.5,0,2026-05-30T11:49:52-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+14122444286,Tameput,1,Tidak dpt memindai dana ke rekening,Hallo knpaa punya saya tidak dapat memindai dana yaa ???,26.5.5,0,2026-05-30T00:44:20-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+14115191267,Mud aja,1,Status qr tertunda,"Hallo min mhn maaf sbelumnya , aku dah make saqu lumayan lama, dan pas tgl 8 mei aku qr dr saqu buat bayar makan ehh malah pending sampe skrang, pas ku ulang lg status yg kedua masuk, tp saldo yg pertama trnyta kepotong juga tpi saldo ku belum di refund udah chat admin bia email dr tgl 8 disuruh tunggu teruss tp gk ada kabar sama sekali",26.5.5,0,2026-05-28T04:03:46-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+14103264172,Angelingoh31,1,penipuan,"bank haram jangan ada yang pakai, bank bisa nerima duit tapi tidak bisa transfer duit",26.5.5,0,2026-05-24T23:07:04-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+14098143935,ARputra,4,DOR4XQ,Hai! Bergabunglah denganku di Bank Saqu dan kamu akan mendapatkan Rp25.000 setelah berhasil bergabung. Daftar dengan kode referensi milikku: DOR4ZQ.,26.5.5,0,2026-05-23T13:52:06-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+14073837509,Jieun27iu,1,Mr,"Aplikasinya susah dibuka, harus open close berkali kali,gagal transfer, hubungi call centernya aja susah",26.3.2,0,2026-05-17T00:28:17-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+14069641218,navajouy,1,SANGAT BURUK,bank yang sama sekali tdk bisa di nego. meminta keringanan pun gabisa. hubungi cs tdk diberikan solusi. bank gajelas jgn dipake. super ribet.,26.3.2,0,2026-05-15T21:33:39-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+14066483852,ambr retno ayu,1,gajelas penipu,penipu,26.3.2,0,2026-05-15T02:20:37-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+14065914377,Zaiin mutaqin,1,Kebocoran data,Di daftarin sama sales bank saqu sebar yang di braga sama buah batu kota bandung data nya bocor no wa nyebar semua no CS bank saqu semua cabang tidak ada yang bisa di hubungi.,26.3.2,0,2026-05-14T21:43:01-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+14053350407,roalys,1,SALES MARKETING,"jujur aplikasinya bagus aja, cuma cara memperkenalkan ke masyarakat melalui sales yang tersebar kesannya agak maksa ya. Hp saya diambil alih sales katanya cuma top up buat bukti pernah transaksi malah dijadiin dana beku, masalahnya saya ada wisuda, seenaknya bekuin dana, mana temen saya juga pake dana dari saya. jadi dana beku saya 2x lipat, tolong sales marketing nya diperbaiki lagi, gausa target harus bekuin dana apalagi sampe main ambil dan pencet2 gitu aja alesan jelasin apk!!",26.3.2,0,2026-05-11T10:23:20-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+14047509421,mjwynn67,1,SALES Bank Saqu KACAU,"dipaksa download apk ini trus abis itu disuruh pura-pura isi saldo 250rb buat difoto, mana harus verif pake ktp mau nolak tapi bener bener di paksa terus. Tolong dong buat sales bank saqu tgl 9 mei yg ada di booth gajah mada kemarin dibenerin etika nya, mana sempet kemarin aku juga di kata katain karna gapunya saldo buat tf ke bank saqu nya",26.3.2,0,2026-05-09T20:28:53-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+14040877634,evellyn368,1,pemaksaan,"temen saya dipaksa download & disuruh masukin uang sebesar 250rb, pdhl temen saya udah nolak, tpi mereka tetap maksa",26.3.2,0,2026-05-08T02:15:20-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+14030111860,Handayani2001,3,.,"Giman nih gak bisa login masuk layar putih semu, uang saya disitu semua, banyak banget uang saya disana, gimana nih 
+Saya minta prbaikan skrg saya mau ambil uang say !",26.3.2,0,2026-05-05T00:50:47-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+14018660137,805AL,5,DAPET 25K KODE ODYL8J,Dapet 25K pake referral aku,26.3.2,0,2026-05-01T20:23:38-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+14015401522,icloudiiy,1,Mengecewakan,Setelah update data tidak bisa dipakai transaksi,26.3.2,0,2026-04-30T23:53:24-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+14001244326,Yuzulvanny,1,Parah,"Mau transfer masih dalam pemgembangan, aduh gimana sih urgent banget ni",26.3.2,0,2026-04-26T21:25:03-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+14001187707,Radikskskd,1,Apk eror mulu,Plis bukannya bilang apknya jelk ya coba mohon di perbaiki lagi soalnya lagi eror sm kadang gak bisa tranfer 🙏🏻,26.3.2,0,2026-04-26T20:55:23-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+14000970762,Bos0/0:0,1,Aplikasi gjls erorrrr mulu,Aplikasi erorrr mlu anj,26.3.2,0,2026-04-26T19:10:23-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+14000965717,Ibnusofyanyusuf,1,Error,"Aplikasinya sering error, selalu muncul Layanan sedang tidak tersedia. Auto delete deh. Bye",26.3.2,0,2026-04-26T19:08:07-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13992381867,Mr.And2,4,V7X3CV,Pake kode ini V7X3CV buat dapat tambahan 25K di saldo kakak. Free. Asal ada saldo kakak 100k bakal dapat free,26.3.2,0,2026-04-24T09:01:50-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13986029291,fthzx,1,ga bisa kebuka,"tulisannya karena perangkat di modifikasi, aneh banget",26.3.2,0,2026-04-22T11:29:52-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13934216378,anjing aplikasi bego,1,Report aja biar ga ada lagi aplikasinya scam,minus anjir saldo ketahan cok 1 jt gabisa di tf kemana2 di qris juga ga bisa scam anjir gara2 sales bego,26.3.2,0,2026-04-07T19:17:53-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13902128766,wlzknd,5,Info promo voucher Starbucks ga jelas,"Bikin promo tapi ga details, bahkan tim memberikan informasi yang salah mengenai min pembelian dll. Dalam hal promosi, harus lebih jelas dan tepat mengenai informasi yang diberikan, jangan cuma ngejar target.",26.3.2,0,2026-03-29T20:33:28-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13899638968,kda.88,1,Bank digital yang sangat disappointing,"Jujur aja saya tergiur untuk install bank saqu karna banyak merchant yang menawarkan discount dan harga spesial dengan menggunakan metode pembayaran bank Saqu. 
+Namun setelah saya coba install, dan top up saldo, sesuai dengan keterangan dari web resmi bahwa kalau saldo 500 ribu rupiah keatas itu free untuk pengajuan kartu debit, dan saya isii sesuai dengan nominal tersebut, dan pada saat pengajuan diaplikasi jga keterangannya masih free. Namun pada akhirnya saldo saya dipotong 50 ribu (berbeda dengan ketentuan mereka). First impression saya uda langsung buruk, apalagi saya sudah coba chat ke cs bank saqu (2x) dan jawabannya sangat template dan kaya bot walaupun sudah dihubungkan dengan CS human. 
+
+Definitely wouldnt recommend it to use. Please do increase your services and provide clear and detailed explanation to its users not only template ones.",26.3.2,0,2026-03-29T05:08:07-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13893824217,raam d,5,Bank Saqu mantuul,"Kereen mudah dan praktis, pengajuannya juga sangat mudah dan semoga amanah ya datanya aman. Terima kasih Bank Saqu😍",26.3.2,0,2026-03-27T13:37:54-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13893511970,ClausiusAldi,5,Yah begitulah,"udah enak di bantuin capai target nya,sales nya ke bab1  jebolin dana, hati"" ya yang di tawarin salesnya, iming"" voucer makanan/minuman yang paling banyak sales nya di braga di tomoro nya. hati"" teman"".
+saya bintang 5 biar ke up ini ulasan nya",26.3.2,0,2026-03-27T11:41:59-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13888164206,dwifnd,1,ga sopan,"sales gajam mada plaza nya rese bgt ganggu orang makan, so akrab, bahasa nya jelek
+sampe ikut gabung duduk di meja yg sama maksa buat download apk
+awal nya melas karna blm capai target
+tapi maksa banget buat kita bikin akun sampe ngejelekin nasabah yg gamau bikin akun sekarang pake katakata kotor kayak k**t*l
+
+aku yg di jan istirahat keganggu banget
+jam istirahat jadi ga leluasa
+juga ngejelekin brand ku
+terakhir dia maksa nyuruh aku top up padahal aku blm percaya 100% sama aplikasi ini
+sampe mohon mohon walaupun udah aku tolak baik baik
+sampe aku agak kesel dia tetep maksa juga
+
+pliss nasabah itu kalo udah percaya juga ga perlu disuruh apalagi ini aplk menyangkut uang! ko bisa maksa tanpa ada kepercayaan
+brandingan sales nya juga zero ettitude sih
+kalimatnya ngejelekin orang lain dan kotor!",26.3.2,0,2026-03-26T01:11:15-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13880917631,fck iq option,1,Bug,"Banyak bgt bug di UI nya di iphone 13 pro, udh dicoba install ulang berkali kali, tapi masih aja error 😩",26.3.2,0,2026-03-23T22:42:42-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13871847185,soobtaku,4,Loc,Overall bagus tapi tiap mau akses harus idupin LOKASI jadi 4 bintang dulu krn bikin agak ribet,26.3.2,0,2026-03-21T08:13:21-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13848685907,hambaallahditipusales_,1,.,"install saqu karna ditawarin sama SALESNYA yg SCAM, DIPAKSA topup 1jt, terus saldo dimasukin ke BUSDEPOSITO 900k yg gabisa dipake TANPA KONFIRMASI DAN LANGSUNG DIPINDAHIN.",26.3.2,0,2026-03-14T15:18:56-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13843990167,sxdhay,1,scamm,scam bgt uang ketahan 100 rb,26.3.2,0,2026-03-13T08:27:31-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13830036086,addd_qw,1,Saldo pending urusnya lama banget,"jujur kecewa sih, transaksi pake qris tbtb pending. chat ke cs yang bales bot bukan manusia, dari tanggal 4 maret baru di respon tanggal 8 dan harus tunggu 17 hari kerja. Hahahahah kocakkkkkkk",26.1.6,0,2026-03-09T05:43:08-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13826774690,Aa ul,2,Aplikasinya sangat lemot untuk IOS,"Sering lemot kalo pake qris dan transfer antar bank. Pakai BCA Mobile gak pernah masalah, memang beda kualitas",26.1.6,0,2026-03-08T06:32:11-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13816446780,Aprisyaref,1,Pelayanan bobrok,"Saya melakukan transaksi terus menanyakan saldo yg kepotong tiba tiba dan komplen ke cs ga ada solusi dan dibahasnya malah itu lagi itu lagi
+Tolong dong di training lagi cs nya",26.1.6,0,2026-03-05T06:51:38-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13816026515,meongnizer,2,Untuk alasan keamanan yang aneh,Tidak bisa transaksi menggunakan QR apabila sedang melakukan panggilan suara merupakan decision yang sangat aneh. Sedangkan aplikasi Bank lain semua bisa 😂,26.1.6,0,2026-03-05T04:26:19-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13808155632,awllllllll🫶🏼🫶🏼🫶🏼,1,buruk sekali,pelayanan cs buruk,26.1.6,0,2026-03-02T19:57:55-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13793609478,Jwiabiwwosn,1,Sistem tololl,Yang bner ajaa gw bayar 2x tagihan stresss nih bank jangan mau pake lagi,26.1.6,0,2026-02-26T20:35:08-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13786005259,Agom171717,1,REKENING DIBLOKIR TANPA ALASAN,"akun saya tiba2 keblokir tiba2 tanpa alasan, gabisa digunakan. katanya rekening dormant ga ada transaksi selama 12 BULAN pdhl itu akun SERING saya pakai buat Qris dll. dan biasa kl abis gajian saya selalu trf untuk simpan saldo di bank saqu. skrg setelah saya trf malah saldonya sama sekali gabisa diapa2in krna rekeningnya diblock. well done dah. itu duit kemana jadinya??? gimana mau gajian pake bank saqu kalau gini????",26.1.6,0,2026-02-24T18:28:16-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13775760263,mr.herisetyawan,5,"Aplikasi Super Sleek, Dapetin Bonus Pakai Kode 5L09TM","Gak nyangka aplikasinya se-sleek ini. 
+UI sederhana gak bikin sakit mata
+Fitur tabungmatic bikin nyaman. Tiap transaksi bisa sekalian pembulatan untuk masuk saku booster buat dapet bunga optimal
+Fitur Busposito yang bikin seru buat bikin deposito rame-rame
+Promo-promonya menarik banget dan cashbacknya masuk ke saku booster. Mantab
+
+Buat yang pengen ngerasain promo dan bonus ekstra, yuk gabung jadi warga dan jangan lupa pake kode 5L09TM
+
+PS: buat developernya, transaksi QRIS nya perlu ditingkatkan lebih cepat prosesnya. Soalnya kalo kelamaan ngantri di kasir jadi ga enak bikin panjang antrian.",26.1.6,0,2026-02-21T21:24:20-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13754335603,Uhuy74,1,Ujud,Udah seminggu masih verifikasi data,26.1.6,0,2026-02-15T21:21:21-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13749061297,Gonjalezzz,1,🤸🏻,Scam hilang uang,26.1.6,0,2026-02-14T09:53:45-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13722766080,AngelTriyWahyuni,4,join,"LTSF1C gunakan kode ini, untuk mendapatkan saldo up too 300🥰",26.1.6,0,2026-02-07T04:14:55-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13714777783,Lilyys88,1,JELEKK BGT,Sy buka saqu nabung desember 2025 masa febuari 2026 DORMANT??? Heyy yg bener aja ni bank!!! Mana aktifin dormant 2 hari kerja??? JANGAN MAU BUKA REKENING DI BANK GAJELAS INI,26.1.6,0,2026-02-05T00:01:23-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13714512079,sy.dimdim,4,Transaksi gagal,Kenapa di buat transaksi gagal terus,26.1.6,0,2026-02-04T21:52:55-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13711330285,kwsuper12,1,Bank sampah,udah nerimah duit bisa giliran ngirim gak bisa udah mau satu minggu gak bisa ngapa ngapain,26.1.6,0,2026-02-04T01:50:09-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13696823962,ancdefghijmn,1,Buat Akun,"pendaftaran lama dan stuck terus, cs ngga membantu sama sekali dan udah coba pake data masih stuck gajelas aplikasinya",26.1.5,0,2026-01-31T05:32:25-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13692095232,Amandacsngikkkkkwhsnz,1,Penipu,Penipu,26.1.5,0,2026-01-30T00:31:53-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13685918515,Jagshnsnsmsk,1,Aplikasi Coba-Coba,"Rencana beli token d aplikasi ini, eh gak tau token nya gak muncul transaksi nya hilang . Tolong lah kalo belum layak kali ciptain aplikasi jangan kekgini, buat susah orang aja aplikasi ini . jangan coba2 kalian pakai aplikasi ini aplikasi jelek",26.1.2,0,2026-01-28T08:53:19-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13668948309,Trijadmito,1,Tolong di perbaiki,Ga bisa buat tf & qris udah seminggu lebih,26.1.2,0,2026-01-23T21:22:33-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13665844930,bang iyang,1,"transfer dari malam sampe seharian belom sampe juga, kocak nih app",buruk,26.1.2,0,2026-01-23T02:34:34-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13662866517,Ryuhei07,1,WORST,Jelek bgt ngga bisa scan Qris,26.1.2,0,2026-01-22T06:29:24-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13661715327,widaa1212,5,4GWU9W gas biar dpt bonus,apk nya mantull,26.1.2,0,2026-01-21T22:38:38-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13661526613,josuavltino,1,aneh,"saya kirim uang ke jasa jakarta dah satu harian , status rekening saya berhasil tapi duitnya ga masuk ke akun jasa jakarta, bagaimana ini?",26.1.2,0,2026-01-21T21:03:26-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13657240790,Heri herdiansyah,1,Saqu,Duit gue ngedap woyy gak bisa di pake transaksi cepet benerin woooooooy,26.1.2,0,2026-01-20T16:40:22-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13645786028,RaulaSptr,5,Keren,Mantap,26.1.2,0,2026-01-17T16:42:42-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13627971048,Ichihamu,5,KODE Refreal : 3BRPP2,Gunakan kode refreal tersebut untuk pengguna baru agar mendapatkan bonus dan promo menarik.,26.1.2,0,2026-01-13T00:57:01-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13627348781,&4¥4,2,Force close,"Kok gabisa dibuka ya di iphone 6s plus, tiap mau buka langsung keluar",26.1.2,0,2026-01-12T19:51:41-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13613885405,Surabayatrend,1,Parah tdk mendukung di IOS 16.7.12,"Apps parah ini, ndak bisa diupdate ke ios versi terbaru di iphone saya, terus saya harus dipaksa pake ios 11, emang bisa apa saya boss?? Sedangkan iphone sendiri harus update ke ios terbaru 16.07.12 nah, kalian bisa kasih solusi ndak?? Sungguh menyulitkan pengguna..",25.12.2,0,2026-01-09T09:42:03-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13613318884,CONDROJK,5,TERBAIK,"SEMOGA SAQU KREDIT BISA NAIKIN BATAS PLAFONNYA JADI 50JT DAN BUNGANYA TURUN JADI 0,99",25.12.2,0,2026-01-09T06:51:34-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13610051953,zallhoy,3,Saku kredit,Cari saku kredit dmna buat pinjaman,25.12.2,0,2026-01-08T09:44:38-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13605901773,gariskeris,1,penipu,"salesnya nipu katanya cuma download doang makanya saya iyain, udah download disuruh daftar, udah daftar disuruh transfer saya iyain aja soalnya sambil ngemis trus katanya bisa di tarik eh ternyata gak. Aplikasi jelek, sales bilang lebih bagus dari Se*bank karena saya bilang pake Se*bank, ternyata jelek banget gratis tf cuma 3",25.12.2,0,2026-01-07T08:26:34-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13605031381,Customer93940,1,Promosi yang tidak ramah,"Saya kemarin jalan di pim 1, ada booth bank saqu. Saya dan teman2 saya lewat, tiba tiba kami di tarik ke booth mereka (tangan kami di tarik). Saya paham anda mengejar target, tetapi tidak dengan cara seperti itu. Apalagi kami di paksa untuk deposit uang yang sebenarnya uang itu akan kami gunakan untuk biaya berlibur di jakarta. Tolong di perbaiki!",25.12.2,0,2026-01-07T03:56:16-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13578521622,Bezzyl,1,Bank ANEH dan sistem yg buruk,"Tepat di tgl 31 desember 2025 sore sekitaran jam 3 sore -+ , sayq makan di winglok dimaum tebet karna saya lihat ada promo cashback 50rb minumun pembelian 200rb , saat saya mau payment ke kasir,saya ingat bahwa bank saqu saya sudah lama tdk di gunakan, akhirnya saya tes dlu untuk scan QR pada saat pembayaran, dan bisa muncul QR nya , pikir saya oh brrti msh bisa
+Saat saya tf uang ke bank saqu pun masuk dan ada notifnya, oh brrti bisa namun saat saya sidah tf dan beneran mau payment lalu QR ... ow ow ZONK ! Baru ada notif terblokir!
+Yah dan TIDAK BISA DIPAKAI! Saya rugi waktu krna harus lama d kasir dan gadapet casback 50rb karna harus pakai bank lain, itupun saya bayar cash untung kasirnya baik mau bantu debet dr Atmnya dia ! Padahal ada loh orang bank saqu standby d lokasi , pas saya tanya gimana solusinya hanya bilang, gapernah ada kejadian kaya gini jd gatau, dan sibuk tlp yang katanya bis nya dan gak mengarahkan saya juga harus apa 🤣 LUCU SEKALI !!!!
+lalu dengan inisiatif saya cek2 tuh aplikasi trnyata ada fitur live chat dan saya lgsg cek itupun susah sekali ya , dan d suruh nunggu 1  sampai 2 hari ! GILA ! Baru stelah tuh orang bank saqu tlpnn dia menghampiri saya lg, kk kata atasan saya ke ca aja tlp , ya gamau lah berapa kerugian lg yg hrs saya keluarkan , dan saya jawab, mas situ gada gunanya harusnya kalo ada kejadian begini setidaknya mas arahkan saya ke fitur lube chat! Ini aja saya inisiatif sendiri cari2 d apliksinya bukanya menjelaskan dia sibuk tlponan lg sama yg katanya atasannya dan gajelas pula jelasinnya
+
+Tlg donk bank saqu !!!! Setidaknya respon cepat dan anehnya ko bisa d awal uang masuk dan pada saat QR tuh d coba bisa tp karna emng blm ada saldonya blm ada keterangan terblokir ! Harusnya dr sistem klian dr awa udah ada notif donk !!dan uang pun masuk saat tf
+Sampai skrg uang saya masih mengendap
+GATAU DEH ampe kapan! Notif atas komplain saya lewat live chat pun gak ada tuh ya Reportnya 
+
+Sorry blacklist sih transaksi pake ini!",25.12.2,0,2025-12-31T13:48:44-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13577281194,Tan8126,1,Not statisfied,Not statisfied,25.12.2,0,2025-12-31T07:21:56-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13542158008,NavisaK,5,Kode reveral buat pengguna baru nih,TXJFLQ,25.11.9,0,2025-12-22T04:35:19-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13538295069,Cantik2999,5,Review,Sangat sangat membantu dgn tdk ad potongan apapun dan banyak promonya😀,25.11.9,0,2025-12-21T03:32:22-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13522390322,EROR LO,1,Transaksi,"udah 2 bulan lebih gabisa transaksi apapun beli pulsa kek apa kek. di telfon cs lempar tim sana sini, udah lapor ada yg telfon tapi ga ke angkat malah diulang lagi laporannya buat tiket yg baru nunggu 5 hari kerja. hadehh.. nelfon cs bank lain jam 2 pagi karna pw akun lupa aja langsung selesai, ga sampe 30 menit telfon udah bisa dipake lagi. ini duit gw gabisa dipake lagi urgent. bunga saku kredit lo gede bgt, minimal pelayanan bisa lah yg cepet.",25.11.9,0,2025-12-16T19:26:18-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13521729202,Dijah ainun,5,Bagus,Saya suka,25.11.9,0,2025-12-16T14:51:12-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13520965943,maaiel,4,kritik dan saran,"tolong ya fitur-fitur nya di benarkan lagi, tampilan nya tolong bngt di benerin lagi kalau tidak ya di HDin, tf ke e-wallet tolong dong jngn seperti tu yang simple aja seperti bank lain. adakan barkot Saqu, tolong dong beberapa apk keuangan tidak bisa tf ke bank ini, tolong yahh🙏🏻☺️ dan smga di segerakan. smngt semua🫶🏻💐",25.11.9,0,2025-12-16T10:01:14-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13514606853,Ferry155,1,Tolong contoh bank jago,"Kenapa ada verifikasi wajah dulu ketika transfer. Harus mangap dan geleng2 kepala. Pernah nyobain UAT ga sih ini? Malu ga sih geleng2 dan mangap ketika mau transfer. Ada face ID buat apa mangap2 segala.
+Kalau mau sukses, tiru integrasi Gopay dengan Bank Jago",25.11.9,0,2025-12-14T16:14:56-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13484568786,Bebekhijaupelangi,4,Apk ny,Masa tiap mau pakai harus updte mulu,25.11.9,0,2025-12-06T20:51:35-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13474336401,user-ma,1,fee buka kunci.,"tiba tiba saldo kepotong buat fee penalti kunci dana. 
+
+niat bantu, malah hm. mba salesnya bilang tgl 4 bisa diambil jadi pas check langsung coba buka kunci aja :) ga expect ada fee penalti. saran, ini kan termasuk transaksi.. harusnya minta kita masukin password transaksi dulu lah minimal.
+
+sangat kurang safe bisa tiba tiba biaya penalti :)",25.11.9,0,2025-12-04T07:16:04-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13466181910,Kannfarras,5,Bank saqu,Sangat membantu dengan unlimited free transfernya,25.11.9,0,2025-12-02T04:11:30-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13458522229,Cok gak iso input jeneng,1,"Mau lihat saldo saku utama stuck loading lama, padahal jaringannya bagus",Dahlah anjing!,25.11.9,0,2025-11-30T04:56:21-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13444893271,fallingg tooooo,4,baru download sehari udah ada aja gangguan,dari kemarin saya loading terus gabisa masuk aneh,25.11.9,0,2025-11-26T15:35:25-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13442877401,Reynaldo Sunyata,1,SALDO DIDALAM REKENING TIDAK BISA DITARIK ATAU DITRANSFER KE REKENING LAIN!,"SALDO DIDALAM REKENING TIDAK BISA DITARIK ATAU DITRANSFER KE BANK LAIN, TIDAK BISA MENGGUNAKAN QRIS, DAN TIDAK ADA SOLUSI CEPAT DARI CUSTOMER SERVICE. TOLONG SERIUS URUS PROBLEM DIAPLIKASI ANDA KARENA INI APLIKASI PERBANKAN YANG MENYANGKUT KEUANGAN MASYARAKAT!!!",25.11.9,0,2025-11-26T04:27:27-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13437709246,Seriiwulandari,5,Harus di updata teruss,Ada uang saya di bank saqu,25.11.9,0,2025-11-24T18:22:52-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13433642152,sbkeun,5,Great apps,Great for everyday use and saving,25.11.9,0,2025-11-23T16:31:43-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13432594232,Xcloud7,5,Simple and useful,Ui/ux yg simple sehingga memudahkan pengguna betah pakai apps nya dan ada cashback referal nya bikin menarik,25.11.9,0,2025-11-23T10:04:26-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13430259732,Mantri1234,1,APLIKASI SCAMMERS,"Tidak rekomendasi untuk pakai bank digital ini. Saya topup astrapay sebesar 1.246.000 gak ada masuk. Coba komplin via email. Jawabnya sangat tidak memuaskan, tidak ada solusi. Suruh nunggu 1hari. Padahal mereka yang punya system. Kalau belum bisa penuhi kebutuhan transaksi nasabah jangan buka bank digital. Bank digital yang lain seperti @jadijago , @superbank.id , @seabank.id transaksi hari minggu pun tidak ada transaksi yang ditunda. Ini bank digital macam apa. Balikin dana saya @banksaqu. Saya uninstall aplikasinya setelah dana saya dikembalikan.",25.11.9,0,2025-11-22T19:59:31-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13428012663,nandarie,1,ERROR,Gabisa loginnnn,25.11.9,0,2025-11-22T06:39:59-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13426007173,riskaafitasari,3,Butuh solusi,Aplikasi ga bisa diperbarui akhirnya saya uninstall terus instal ulang niatnya tapi malah ga bisa bisa ini gimana sih?,25.11.9,0,2025-11-21T17:46:27-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13425873470,Alsjshsnsbslsl,1,Gak bisa log in,"Gila sih log in aja susah, error mulu . mana ada saldo lagi 1 jutaan. Gimana sih ini ?!!!",25.11.9,0,2025-11-21T16:54:18-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13420591330,Mlnnnn24,5,keren,busposito keren,25.11.9,0,2025-11-20T07:32:24-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13418944353,evangel nathasya,5,comment,ok,25.11.9,0,2025-11-19T20:38:49-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13418938574,ntisna,3,app follow,hi,25.11.9,0,2025-11-19T20:36:04-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13418840431,IlhamFauzyyy,5,keren,jossss,25.11.9,0,2025-11-19T19:50:13-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13418836046,cubidu24,3,Keren,Keren,25.11.9,0,2025-11-19T19:48:11-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13418507532,🩵✈️✈️🦋,5,Review Apps,Mantap sekali promonya min,25.11.9,0,2025-11-19T17:29:19-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13398168172,december zebua,1,transaksi berkendala,"pembayaran qris saldo terpotong, tapi status transaksi tertunda, saya mau minta saldo dikembalikan",25.11.4,0,2025-11-14T13:10:18-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13390617719,Selficabi,1,Kartu ATM gak bisa tiap bulan,Kartu ATMnya gak bisa dipakai. Padahal tiap bulan gak pernah narik pakai kartu.tp limit penarikan sudah terpakai. Males bgt masa limit kartu dibatasi.kocak duit bnyak tp gak bisa tarik tunai,25.11.4,0,2025-11-12T15:57:40-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13387907280,zeinahmd,2,pembaruan,"terlalu keseringan update, ketika urgent d gunakan harus nunggu pembaruan dulu, tolong d perbaiki",25.11.4,0,2025-11-12T00:52:05-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13383350895,guoblog,1,Aplikasi sampah,Bayar kredit aja ga di potong potong padahal saldo cukup tapi bunga tetep nambah APLIKASI SAMPAH di chat cs nya ga ngebantu sama sekali malah suruh nunggu 5 hari keburu gede bunganya mending gsh bayar sekalian,25.11.4,0,2025-11-10T21:12:58-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13358117568,FathurF138,5,Dompet digital,Mempermudah transaksi dan pinjaman uang cepat yuk pake kode referal aku LTROYR,25.9.2,0,2025-11-04T20:31:13-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13354894547,ijatjarjit,5,Cuann,masuk kan kode ini JJJGFD nanti bakal dapat cuan tambahan bonus 🥰,25.9.2,0,2025-11-04T03:10:45-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13342799542,Taiiingasu,1,Kendala pembayaran,"Ga ngerti sama bank ini, tiba2 bgt dikenain denda padahal sama sekali ga telat. Call center malah tetap gada feedback apapun, yang ada saya dirugikan sebagai customer . Aneh , tidak ada tanggungjawabnya sama sekali . !!!",25.9.2,0,2025-11-01T08:44:33-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13332657482,gunturR1,2,Bank,"susah banget mau buka rekening gara” awal salah masukin nik, sampe sekarang jadi ga bisa bisa",25.9.2,0,2025-10-30T01:15:39-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13332617449,Giovani Hon,3,Layar BLANK jika tidak kill app,"Setelah transaksi QRIS dan tidak kill app, pas akses aplikasi nya lagi kemudian dan sudah timeout akan muncul pop up harus login. Pas di kilk layar blank PUTIH",25.9.2,0,2025-10-30T00:59:29-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13328584675,weeeesnhuee,1,aplikasi sampah,sudah buka rekening baru kode promo tidak muncul sampah,25.9.2,0,2025-10-29T02:23:06-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13326073189,Kiyya_laa,5,Suka bgt sama bank saqu,"Sejauh ini aman bgt pake bank saqu, bunganya gede. Apalagi kalo nabung di saku booster bunganya 10%. banyak cashback sama rewardnya",25.9.2,0,2025-10-28T10:35:15-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13310911855,Awin masolo,5,Oke,Mantap sekali,25.9.2,0,2025-10-24T23:20:47-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13310356767,Tasyiiiiiiiiiii,1,Gabisa ambil saldo,Apk gajelas niiiiiiiiiiiiiiiiiiiiii,25.9.2,0,2025-10-24T19:38:54-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13308233011,Ahun77,1,Big no,"Scam, mas2nya katanya mau kasih pulsa kalo kita deposit 50jt. Udh deposit malah nomor saya di block. Kocak sales lu",25.9.2,0,2025-10-24T08:01:31-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13301883376,pratiwininik,3,Gagal terus,"Beberapa kali ada notif kredit tapi pas diajuin gagal padahal nomer dan ktp sesuai sama pertama kali daftar,ada spin juga percuma ya? Emang udah disetting selalu dapet 1000rb aja🫢",25.9.2,0,2025-10-22T19:19:54-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13287323067,Rahmi13,4,Aktifin suku kredit,Cara aktifin suku kredit di bank saqu gimana,25.9.2,0,2025-10-19T08:59:37-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13267437807,tantitia,5,bermanfaat,"pertama kali pakai, aplikasi mudah digunakan, mudah dimengerti, dan sangat menbantu",25.9.2,0,2025-10-14T17:10:18-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13252136689,Michelle ariancye,1,Apk jelek bgt,Minta update mulu tp ga ke update. Memori ga full sinyal oke padahal,25.9.2,0,2025-10-11T04:21:23-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13248266053,sapisapi123,1,Aplikasi J3l3k,"Aplikasi gajelas promo cashback tapi saldo ga nambah, byr pake qr berhasil tp dana ga smpe ke merch. Ngerepotin org trs",25.9.2,0,2025-10-10T06:12:01-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13248137962,ady suroso,1,jelek,"kendalanya lama saya transaksi tertundaa dan saldo terpotonggggg, padahal saya lagi urgent tapi ga di benerin emang tolol",25.9.2,0,2025-10-10T05:37:17-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13248025576,spsdq,1,Buat Masalah,"Transaksi saya tidak kunjung selesai dan aplikasi untuk login saja lama sekali, load datanya lelet. Jangan andalkan bank ini kalo kamu butuh transaksi dadakan atau cepat. Menyusahkan.",25.9.2,0,2025-10-10T05:05:37-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13247948981,cbsgita,5,Saran Pengembangan,"Sudah bagus app nya. Saran saja dibuatkan riwayat transaksi per menunya jadi lebih gampang kalo mau transaksi lagi ga perlu input manual lagi. Sebagai contoh beli token listrik, jadi saya ga perlu input manual lagi kalo sudah pernah transaksi",25.9.2,0,2025-10-10T04:43:11-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13243704012,Zhen.Io,1,Gangguan mulu,"Sering gangguan, uang sering nyangkut, nanganin masalah super lamaaa, suruh tunggu 3 hari kerja ini udh 7 hari kerja ga jelas juga, cs ga membantu terlalu template, blm siapkah? Sorry gaakan pake lagi",25.9.2,0,2025-10-09T04:34:09-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13240537202,Dedi Mustapa,1,Aplikasi Lelet,Sebenarnya bagus. Ada pos pos yang bagus untuk mengelola keuangan. Tp percuma mau buka apssnya lelet banget lemot. Kurang cocok dengan dunia yg serba cepat. Bayangin lg antri bayar tp aplikasinya lelet. Kesel gk tuh yg antri dibelakang. Dikira kitanya yg lemot pdahal apssnya lemot banget.,25.9.2,0,2025-10-08T09:12:05-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13239609203,Salma Zahira,1,Tolong perbaiki sistemnya. Error trs qrisnya!,"Hallo, saya melakukan transaksi Qris pada hari Senin 06 oktober 2025 pukul 17:41 dengan gangguan yg menghambat proses transaksi begitu lama sehingga akhirnya saya mengubah pembayaran menjadi Cash, namun setelah beberapa saat tiba-tiba status pembayaran dinyatakan sukses dimana saldo saya terpotong, namun pada EDC yg tersedia di merchant status pembayaran tetap gagal dan saldo belum masuk. Mohon bantuannya karna ini pertama kalinya saya mendapat gangguan seperti ini. Saya juga ada bukti bahwa transaksi atau saldo tidak masuk ke EDC BCA yg digunakan oleh penjual.",25.9.2,0,2025-10-08T05:02:18-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13238328637,zzzzidk,1,review,"kata salesnya nanti bulan dpn dpt 50k di saku booster tp engga wkwkwk, pls la jgn bohong aga maksa buat ttp download. kalo suruh download ya gausa pake embel embel ky gitu, pake embel embel tf gratis atau fitur lainnya yg keren udh cukup ko.",25.9.2,0,2025-10-07T20:58:53-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13236141036,zehkakajjajans,1,apk ga jelas,aplikasi eror g ada respon mana uang saya disitu gmn si,25.9.2,0,2025-10-07T08:33:19-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13192359822,Ioshpen,2,Saku kredit tidak ada,Semua fitur saya ada yang hilang antara lain saku kredit saya tidak ada kenapa bisa begitu,25.8.6,0,2025-09-27T09:14:08-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13179282218,ansgns,1,Info,tolong dong kalo lg maintance info lg urgent gabisa tf!!!!!',25.8.6,0,2025-09-24T09:27:27-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13177244597,Fiqsdn,1,Gagal daftar,Kenapa selalu gagal daftar bank saqu . Padahal semua sudah benar . Dan 2 x daftar selalu gagal,25.8.6,0,2025-09-23T22:32:38-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13168140658,Rodipiper,3,3dulu katax dapat dana 25k,.,25.8.6,0,2025-09-21T18:09:54-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13161142803,Algojooo,1,Cashback scam,"Cashback nya nipu, sering ga masuk, Qris juga sering error di tenant2 rekanan, tiap kali mau scan sering banget bilang nya sedang eror 👎👎, giliran lagi bisa mala cashback nya gamasuk . Sampah . Promo nya penipuan
+Skip dha gajadi pake .",25.8.6,0,2025-09-20T05:32:22-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13154669463,ra_1953but,5,Bank Saqu,Mantap sekali,25.8.6,0,2025-09-18T16:30:50-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13147398788,Shipa59,5,Mantap,Mantap,25.8.6,0,2025-09-17T00:04:08-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13119598864,bulunulu,3,Belum ada fitur saku kredit,"Berkali2 ada notif aktifkan saku kredit tp smpe skrg belum muncul2 pdhal udh sering dipakai, tp anehnya punya saudara baru donlot lgsg muncul",25.8.6,0,2025-09-09T21:17:39-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13097269183,Sapalusapa,5,Nice Banking App!,"Bagus banget, banyak promonya dan cocok untuk yang punya banyak plan untuk nabung.. cuma tolong jangan keseringan update karena terkadang saat urgent aplikasinya tidak bisa dibuka karena harus update dulu..",25.8.6,0,2025-09-04T03:38:01-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13065162734,smokeybluecat,5,P80GEX,Bonus saldo sd 300rb cuma masukin kode P80GEX Amazing!!! 🥳🥳🥳🔥🔥🔥,25.8.6,0,2025-08-26T21:04:58-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13062237368,suryahalim,1,buang2 waktu,"saya daftar ikutin ekyc supaya bisa dapet kesempatan beli tiket konser. tapi waktu saya sudah daftar, kode redeem tidak bisa dimasukkan . sekarang saya tutup akunnya. buang2 waktu",25.8.6,0,2025-08-26T03:37:30-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13048180897,dendi hardiansyah,5,bank saqu,baik,25.8.3,0,2025-08-22T11:49:50-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13038194204,Jefrii17,3,Juara cashback,"Banyak promo nya & cashback, Tapi sayang, suka banget suruh update di Ios , agak jengkel belum lama update , update lagi",25.8.3,0,2025-08-19T23:42:37-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13014417329,Bank penipuaan hati hati,1,Pemalakan,Di paksa di suruh dwld awal nya gak bilang kalo harus ada saldo ngendap tau tau disuruh tf 150rb 10 rb nya gak bisa di tarik walapun cuma 10rb cara nya salah kalo kaliaan di tawari dwld bank ini mending gak usah,25.8.3,0,2025-08-14T03:53:55-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13006855665,haneeyy1234,1,apk jelek,apk jelek mau masuk lama,25.8.3,0,2025-08-12T06:18:08-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+13006538228,Caiirr,5,4GU4LH,4GU4LH,25.8.3,0,2025-08-12T04:41:25-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12993945875,Nisaniisss,1,SISTEM SELALU ERROR,Setiap mau digunakan atau di topup saldo sistem selalu error jadi tidak bisa digunakan.,25.7.5,0,2025-08-08T23:43:21-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12987471657,yayaa425,5,kode referensi XH03OH,"pakaii kode referal aku yaa XH03OH nantii bakal dapat Rp25.000 setelah berhasil bergabung.
+Daftar dengan kode referensi milikku: XH03OH.",25.7.5,0,2025-08-07T08:19:43-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12985846191,cccumi,1,PERANGKAT TIDAK DIDUKUNG,masa iya dr kemaren gapapa hari ini aplikasi sama sekali blm buka gada transaksi apa apa tiba tiba perangkat tidak di didukung ksrna sistem di modifikasi. hp saya samsung z flip 3 harusnya bukan hp jadul yg dapat notif seperti itu. tolong pebaiki saqu saya karna saya mau transaksi jadi gbisa!!!!,25.7.5,0,2025-08-06T23:08:21-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12983917030,sabilaarhaq,1,WORST DIGITAL BANK. EVER!!!!!!!!!,I hate how their CS treat Customers when they are handling reported problem(s) from the app. Well It’s actually useless. The only thing that good is their Promo.,25.7.5,0,2025-08-06T10:50:48-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12973727185,ghio71,1,Kode 403,"Sering banget error pas di daylight, bingung dah, kena kode 403 nih permission file nya kena nih",25.7.5,0,2025-08-03T23:20:34-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12971601065,Sitirukoysh,1,Ribet,Uang saya g bisa d tf ke bank lain,25.7.5,0,2025-08-03T09:35:27-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12971133487,A Wwuu,5,Referal Bank Saqu SSGIRQ,hi guys siapa yang mau 15 rb cuma cuma? tinggal download bank saqu dan masukan kode referal SSGIRQ dan tahan uang 100 rb saja di rekening selama 7 hari bisa dapat uang 15 rb😍,25.7.5,0,2025-08-03T07:19:28-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12969531447,Rifki penipu,1,Sales Penipu,Sales saya menjajikan bunga tinggi saat approach saya. Tetapi ternyata bunga tidak bisa ditebus. Oleh Sales Rifki d GIIAS,25.7.5,0,2025-08-02T21:19:56-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12963520871,jihannn__,5,mantep,keren dan kece bgt bunga 10%!,25.7.5,0,2025-08-01T08:45:36-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12962327688,Rrrthom,1,Cust service bad,"Cust servicenya parah, ditanya pertanyan sulit malah kabur. Langsung tutup chat di apps baru jg semenit",25.7.5,0,2025-08-01T02:50:07-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12959382453,kimmmtaeeee,5,Bonus,"Pakai Kode Referral Bank Saqu biar dapet 25k saldo dari Bank Saqu dg masukin kode
+
+95EHB9
+
+ (pertahankan saldo 100rb selama 7 hari di Saku Utama ya, reward bakal masuk di hari ke-9)",25.7.5,0,2025-07-31T08:50:17-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12946670826,ahmads syihab,3,Force Update,kalau updata jangan maksa kenapa sih,25.7.5,0,2025-07-28T07:02:33-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12936904450,ame01vy,5,Referal LTOUEN,"Hai! Bergabunglah denganku di Bank Saqu dan kamu akan mendapatkan Rp25.000 setelah berhasil bergabung.
+Daftar dengan kode referensi milikku: LTOUEN",25.7.5,0,2025-07-25T18:47:23-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12924737244,Eka nabilah,1,Tidak ada mutasi rekening,"Tidak ada mutasi rekening pas hari H transfer, menyulitkan untuk bukti kalo lupa screenshoot, aplikasi sampah",25.7.5,0,2025-07-22T18:17:19-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12917476308,Honest-Review-Only,1,APP CRASHED,"GAK BISA KEBUKA, UDAH REINSTALL JUGA SAMA. CRASH TERUS.
+
+Tolong diperbaiki min 🙏🏼
+
+Device: 14 Pro Max",25.6.3,0,2025-07-21T00:30:27-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12911491119,Frans Adit,5,Frans Adit,"Aplikasi Bank Saqu sangat user-friendly dan tampilannya menarik banget! Semua fitur mudah diakses, proses transaksi juga cepat dan lancar. Cocok banget buat kebutuhan keuangan sehari-hari. Recommended!",25.6.3,0,2025-07-19T10:50:01-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12905158253,siennyyyyy,5,H992WJ,H992WJ yuk pakai kode referral ini buat dapatin bonus 25rb,25.6.3,0,2025-07-17T21:01:38-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12904721672,kimulzzz,1,PROMO GABISA DIPAKE,"KALAU MAU ADAIN PROMO PASTIKAN MERCHANT NYA NGERTI JG PROMO NYA!!!!! JGN UDH INSTALL DPT DATA GUA, MERCHANT NYA KAGA NGERTI, PROMO NYA GA DAPET.. EEK LAH",25.6.3,0,2025-07-17T18:09:32-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12901894215,JoemanLeko,4,VERIFIKASI EMAIL GA MASUK,Verifikasi di email terdaftar berulang kali tapi inbox ga nongol”. dah periksa di spam folder sampah juga ga nemu pdhal emailnya benar. Kenapa ya?,25.6.3,0,2025-07-17T02:40:46-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12900707236,yniprynti,1,-,"terlalu membingungkan, pake bank digital lain enak enak aja. baru kali ini pake bank digital ga oke",25.6.3,0,2025-07-16T18:36:32-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12898545969,Geraldiwijaya,5,Pakai kode ini untuk dapat 25Rb untuk kamu,"EUYOGQ pakai kode refensi ini ya, kamu akan dapat 25rb . see you",25.6.3,0,2025-07-16T06:29:47-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12896779112,syadippp,1,GAJELAS,Ngebug mulu. ksl,25.6.3,0,2025-07-15T19:08:38-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12886405528,Arifian92,5,Kerenn,Mantap,25.6.3,0,2025-07-13T04:22:23-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12885444790,Mayngjunl,1,Akun diblokir pdhl ga knp2,"Akun saya statusnya sedang diblokir. Ga tau awalnya knp. Tp sy transfer ke akun tersebut bisa. Sial bgt ga bs dipakai. Rugi. CS nya jg pk robot, template ga mnyelesaikan masalah. CS nya entah kmn.",25.6.3,0,2025-07-12T21:42:07-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12882390087,AlejandroSoku,1,Deceiving salesman,"Deceiving salesman. They say it's only for a proof of picture but they take your money and national identification. Say no if you're approached by one of the salesman, use force if you have to",25.6.3,0,2025-07-12T02:56:48-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12869823956,Utinuriaya,1,Jumlah uang ga bisa terserah kita,"Jumlah uang aja ga bisa segimana kita mau tf berapa , vitur virtual account aja sulit bgt nemuin nya payah auto hapus",25.6.3,0,2025-07-08T21:42:36-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12865991333,ebithebeth,2,tidak bisa transaksi dan kirim dana,"tidak bisa melakukan transaksi dan kirim dana sekarang, gimana nih?
+harus pake verifikasi wajah dulu bukan pake pin, dan dipastikan gagal terus verifikasinya.
+KACAU",25.6.3,0,2025-07-07T22:57:11-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12853181141,korban bank saqu,1,promo menipu,kunci dana segar 1 juta dengan iming2 tiket konser tapi nggak ada tiket masuk sama sekali. penipu PENIPU,25.6.3,0,2025-07-04T15:50:19-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12851205459,ilaboy123,1,lol,"aplikasi tai, abis masukin otp trus blank apknya",25.6.3,0,2025-07-04T05:03:15-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12846389307,Bank saqu1,5,Bagus dan terpercaya,Good,25.6.3,0,2025-07-02T23:53:12-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12845887007,vwysis,2,disappointed,"saran aja ya min buat bank saqu mekanisme promo beserta alur penggunaan promo tuh dijelasin juga, saya beli tomoro kasir aja gatau soal promo ini dan saya pikir bakal otomatis dipotong dari bank saqunya taunya malah harus nunjukim ke kasir S&K nya. nanti kasir yg motong harga sendiri. ini point menunjukkan snk ke kasir kuga perlu ditulis diapk saqu biar jelas min. kasir Tomoro aja gatau loh ada promo bank saqu. dan repotnya tuh setiap ada promo ga ditukis juga diapk kuotanya jadi kita harus ngecek lagi ke IG kan repot kenapa tdk diupdate aja sekalian stoknya di apk langsung.",25.6.3,0,2025-07-02T20:29:18-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12835261510,phukanaphan,1,salesnya gak banget.,"salesnya gak sopan, ditawarin tiba-tiba, pas lagi proses di buka wa nya,
+mbanking nya, gak banget, awalnya blg cepet cuma 2 menit taunya lebih lama prosesnya. Disuruh keep lah 3 hari eh mau di cancel malah di potong setengah. salesnya no",25.6.3,0,2025-06-30T06:55:39-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12826694287,Hulwanih,5,Masukan kode reff ( QI9HJ4 ) dan Dapatkan kredit 25 rb,"Mempertahankan saldo 100 rb selama 7 (tujuh) Hari Kalender berturut-turutdi Bank di dalam Saku Utama, terhitung sejak dari hari pertama setelah dirinya menjadi Nasabah hingga 7 hari lalu dapat uang 25 rb.",25.6.3,0,2025-06-28T02:23:58-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12821589510,rabblpp,1,Security Risk Alert - Cant open the app,"Tidak bisa buka app, crash",25.6.3,0,2025-06-26T18:41:29-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12818710751,Rudi Triyanto,5,Saqu kredit,Versi baru solusi!?,25.6.3,0,2025-06-26T02:16:04-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12818306851,PenggunaSaku,2,Promo Cashback,"uang cashback tidak bisa digunakan untuk pembelian apapun, jadi cuman pajangan aja",25.6.3,0,2025-06-25T23:21:05-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12792356017,ucokkkkkkl,1,Lama Bat bintang 1,skem,25.6.3,0,2025-06-19T05:02:07-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12756831671,Mobilee user,3,Bug,"Fixing lagi bug nya, kadang suka crash sendiri, engga bisa ngetik untuk series iphone 10 s.d terbaru",25.4.2,0,2025-06-09T22:18:23-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12756602514,Fjaisenx,2,Error transaksi,Lama sekali u/ proses pembayaran. Tidak bisa akses pembayaran,25.4.2,0,2025-06-09T20:33:37-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12753839894,Vicky Firda Lodovika,1,uang di tahan,ga bisa buat transaksi saldo masi ada malah ga bisa di pake,25.4.2,0,2025-06-09T04:29:34-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12752900657,xXxBwt,1,gajelas,uang nyantol ga bisa di pake padahal masi ada saldo,25.4.2,0,2025-06-08T21:35:19-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12751070747,MasterIlama,5,Kode referall IEDJHV,Kode  ref IEDJHV,25.4.2,0,2025-06-08T09:46:50-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12748621380,weyeahmed,2,Error mulu,"Sering banget dapet error state koneksi internet bermasalah, padahal buka aplikasi lain aman, mungkin perlu dimapping ulang errornya biar ga nyalahin koneksi orang",25.4.2,0,2025-06-07T18:54:12-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12734205766,widimaxx,5,DAPET CASHBACK 25K,Woww baru daftar dapet cashback 25ribu ges lumayan bgt nih. Cuma simpan 100k dalam 7hari. Pakai kode : EUX3MS,25.4.2,0,2025-06-04T02:09:31-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12733667865,nabillaainuu,1,gajelas,gajelas masa gabisa masuk akun udah di masukin sandinya tetep gabisa masuk bikin orang ragu kalo naro uang disini,25.4.2,0,2025-06-03T21:58:05-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12728646503,Willow Wonkaa,1,APLIKASI DAN BANK BUSUK,"TRANSAKSI SERING NYANGKUT DAN TIDAK ADA TINDAK LANJUT DARI PIHAK BANK! KERJA SANGAT LAMA DAN MENGGAMPANGKAN SEMUA MASALAH! BERBEDA DENGAN BANK LAIN KETIKA ADA TRANSAKSI YANG GAGAL, DANA AKAN DIKEMBALIKAN.
+
+DI BANK INI KETIKA KALIAN TRANSAKSI DAN STATUSNYA GAGAL, SALDO KALIAN AKAN DITAHAN DI BANK INI DAN TIDAK TAU KAPAN AKAN DIKEMBALIKAN! 
+
+JUJUR DARI SEMUA EXPERIENCE BANK DIGITAL, INI MERUPAKAN BANK DIGITAL TERBURUK SAAT INI!",25.4.2,0,2025-06-02T13:28:41-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12725715699,phil80s,1,Aplikasi Tidak bisa dipakai,Aplikasi tidak bisa dibuka di iphone15,25.4.2,0,2025-06-01T19:32:04-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12711737370,Mavis2612,3,Mutasi,Untuk liat mutasi selalu delay,25.4.2,0,2025-05-29T06:57:07-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12707351374,Eric Tumewu,5,⭐️⭐️⭐️⭐️⭐️,⭐️⭐️⭐️⭐️⭐️,25.4.2,0,2025-05-28T04:05:32-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12703797079,Jepry al,4,Bug,Sering terjadi bug di iphone 11 dan 15 aplikasi nya suka ngestuck dan tidak bisa keluar,25.4.2,0,2025-05-27T05:12:14-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12703729983,muhmdrezki,1,gagal login,"gagal login, crash terus, freeze di halaman login",25.4.2,0,2025-05-27T04:49:31-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12694873893,ji1379,1,App sering freeze screen,"Tolong diperbaiki , ini app bentar bentar freeze screen , aku sampai sekarang mau daftar satu akun aja belum jadi jadi",25.4.2,0,2025-05-24T19:53:51-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12694264833,Babikwow,1,Aplikasi gajelas,"Saya tf via qris di jam 5.29 gagal terus tiba tiba pas coba lagi malah ke pending trs saldo ga balik csnya cuman menginformasikan aja lagi padahal perihal balikin doang ribet banget udh si mending paki bca seabnk kayak gitu aja trs kalo saldo saya mau kalian pake, pake aja biar puas tuh perut gakan lagi transaksi di apk gajelas ini pokonya bunganya aja kecil bgt memang babik",25.4.2,0,2025-05-24T15:44:52-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12688986518,prijoturner.,1,Freeze,"Aplikasi terjelek. Dikit² nge freeze, udah dikill dibuka lagi juga nge freeze lagi. Jelek banget developernya",25.4.2,0,2025-05-23T08:36:47-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12680794893,dwi har,1,Sangat buruk,Aplikasi sangat buruk.,25.4.2,0,2025-05-21T05:49:59-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12673010049,BokuHan,1,Tidak bisa digunakan,"Applikasi tidak bisa dibuka, sebelumnya selalu hang. Setelah update iOS sekarang dibuka muncul error security alert.
+
+Malah dijawab hape di modif/jailbreak atau root. Hape saya gak diapa2in mas. Kalau hape saya digunakan seperti ini applikasi2 bank lain jg pasti ada yang kena. Ini masalah hanya di applikasi kalian",25.4.2,0,2025-05-19T03:03:01-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12660423939,Elfosway,1,Ga bisa register,Masukin no hp blm komplit udh g bs pencet apapun. Coba klik email pun ga mau pindah,25.4.2,0,2025-05-15T16:27:45-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12647161051,corave,1,Constantly freeze,"Ios 18, plz fix immediately",25.3.3,0,2025-05-12T00:52:20-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12640403408,kakakalililidududu,1,PENIPUAN,"JANGAN MAU PAKE BANK INI, SALES NYA TUKANG NIPU",25.3.3,0,2025-05-10T05:38:41-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12638380265,Jeffch123,1,TRANSFER KE BANK BCA TIDAK MASUK UANGNYA PADAHAL SALDO SUDAH KEPOTONG,"tolong dibantu dan dijawab pertanyaan saya, saya melakukan transfer sebesar 1.630.000 pada hari ini 10 mei jam 4.50 pagi ke rekening orang tua saya tetapi saat saya selesai transfer uangnya malah tidak masuk ke rekening orang tua saya tolong segera dikembalikan uang saya bila memang tidak masuk ke rekening orang tua saya.",25.3.3,1,2025-05-09T15:45:24-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12624894399,useraplikasimu,1,buka rekening pun gabisa,buka rekening katanya ga sesuai syarat dan ketentuan gajelas,25.3.3,0,2025-05-05T23:06:23-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12621651613,Rzbdk,1,Apk lag terus,Saat mau isi login selalu lag tidak bergerak,25.3.3,0,2025-05-05T02:30:52-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12621535885,emhaje,1,gak bisa dibuka,pas mau di buka appnya force close,25.3.3,0,2025-05-05T01:40:12-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12598111823,kalihkayu,1,Scam,Percuma daftar dan share referral. Sengaja menerapkan sistem saku yang berbeda dengan tabungan utama supaya uangnya sulit diambil dan tidak bisa dipakai transaksi,25.3.3,0,2025-04-28T22:12:26-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12591879805,User99o,4,Bug,"Menemukan bug pada saat login, sering freeze",25.3.3,0,2025-04-27T05:46:58-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12590256737,Yang bener2 aj,1,Bad,"Perbaikin sistem masa cashback ditagih2 gini sih,.. Trs Jgn percaya merchant saran cs Kalo cashback Tapi tlp dulu call center, ini sih lucu",25.3.3,0,2025-04-26T18:22:01-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12577177027,dudlla,4,joinn kode 95D80T,"gabung di Bank Saqu dan kamu akan mendapatkan Rp25.000 setelah berhasil bergabung.
+Daftar dengan kode referensi milikku: 95D80T",25.3.3,0,2025-04-23T08:31:52-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12572148295,pocolocooooo,1,bug,ga bisa dipakai di ios18,25.3.3,0,2025-04-22T01:11:28-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12569343293,Ian Bodrex,1,kebanyakan buzzer,"Bintang 1 vendor buzzer gajelas, dapet misi dari kitalulus ga payment komisi, udah cuma 10k gak dibayar lagi",25.3.3,0,2025-04-21T06:56:15-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12567980131,hogi_mogi,5,kode referensi milikku: H98O5S,Hai! Bergabunglah denganku di Bank Saqu dan kamu akan mendapatkan Rp25.000 setelah berhasil bergabung. Daftar dengan kode referensi milikku: H98O5S.,25.3.3,0,2025-04-20T21:44:12-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12561491574,runidwihap,1,Aplikasi Freeze,"Tolong diperbaiki, karna di beberapa device iPhone selalu ngefreeze ngestuck ga bisa di klik apapun. Terima kasih.",25.3.3,0,2025-04-19T05:16:48-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12557356658,hadiot,1,always login its too bothering me,why as everything when i open the app always logout and need to login its too bothering me and please fixed it make the app single login like another app dana or shopee if success login whenever i to open the app dont need login again thankyou,25.3.3,0,2025-04-18T04:36:51-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12552316845,Nis_CL,5,Banyak promo,"Yang mau dpt bonus Rp. 25.000 bisa pakai kode referral ini :
+6Q0W0L",25.3.3,0,2025-04-16T20:34:46-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12552298554,qmnali,1,Stuck in login view,"Gk tau hp saya yang kurang bagus atau gimana , mau daftar aja gk bisa , stuck di login view dan gk bisa di tekan . Tolong lah app yang belum di naikin versi nya cek lagi",25.3.3,0,2025-04-16T20:26:36-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12551889821,nathanaelbartholomew,5,Nice Bank App,"Hai! Bergabunglah denganku di Bank Saqu dan kamu akan mendapatkan Rp25.000 setelah berhasil bergabung.
+Daftar dengan kode referensi milikku: 5LWTWI.",25.3.3,0,2025-04-16T17:37:26-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12545213855,clrtjt,5,Gunakan kode referal : U2PV86,"Gunakan kode referal : U2PV86
+Untuk mendapatkan bonus rewards sebesar 25.000😃",25.3.3,0,2025-04-15T00:56:36-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12542657008,Cantikpii,5,Banyak cashback nya😍 QI2GP9,"Ayokk buruan masukin kode referral QI2GP9 beneran dapet bonus saldo dan cashback lainnya🥰
+Bonus saldo awal 25rb, trus ada bonus yang lainnya juga hingga 1jt🤑🤑🤑",25.3.3,0,2025-04-14T08:10:12-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12540436001,lapoyyyy,5,mantapp bank saquu,"tampilan aplikasi yang keren, warna yang keren dan transaksi lebih cepatttt, mempermudah dalam transaksi dengan pembukaan rekening yang lebih cepat",25.3.3,0,2025-04-13T17:30:42-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12538379827,phoebedynevor,1,skip,salesmya scam,25.3.3,0,2025-04-13T06:10:09-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12529594808,calzquervo,1,Aplikasi Tidak Jelas !!!!,"Log in diminta masukin password, sudah sesuai tp masih suruh masukin data lagi seperti di awal. Abis itu ada info NIK sudah terdaftar suruh log in lagi masukin password. Gituuuu aja teros sampe lebaran 3000 taon lagi !!!! KOCAK !!!!!",25.3.3,0,2025-04-11T03:18:09-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12529330004,sapirmunakib,5,buka rekening buat modal nikah,jjel semangat,25.3.3,0,2025-04-11T01:29:51-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12518926860,Daaa___,5,Best,Best,25.3.3,0,2025-04-08T08:09:03-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12518871333,Ary Albert,5,LTP1LO,LTP1LO,25.3.3,0,2025-04-08T07:52:57-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12511106639,hayatikecewa,1,Gajelas,Ditolak aneh,25.3.3,0,2025-04-06T07:57:21-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12503121700,Wliam_,1,Aplikasi freeze,Ga bisa dipakai aplikasi nya ditengah2 freeze.,25.3.3,0,2025-04-04T09:03:55-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12497605032,ampersanda,1,Can’t run on beta iPhones,Can’t run on beta iOS. Tried to update to stable and still doesn’t work. It says “This app cannot run because the environment is not secure and your data may be at risk”,25.3.3,0,2025-04-03T00:41:16-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12490167968,Rivaldi Giantara,3,Kendala login,"Selalu tidak bisa login menggunakan mobile data, hny bisa login pakai wifi. Tolong di betulkan. Trimakasih",25.3.3,0,2025-04-01T04:12:08-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12485666887,RakyatPajak,1,Bug freeze,"Beberapa kali buka appnya, selalu ngefreeze, ga bisa tap apapun. Padahal baru mau registrasi",25.3.3,0,2025-03-31T00:42:51-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12472933868,Kotak pos,5,Dapatkan 200rb dengan Kode 0W6YN1,Dapatkan 200rb untuk pembukaan rekening dengan menggunakan kode 0W6YN1,25.1.28,0,2025-03-27T20:07:22-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12461603784,13mueeza,2,Sering ngefreeze,aplikasi sering ngefreeze tiba tiba jd ganggu banget padahal internet gaada masalah,25.1.28,0,2025-03-24T22:59:08-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12453784994,stevano88816,1,Appikasi ga bermutu,"Aplikasi bank paling ribet, ga mutu dan buang waktu. Transaksi. Bayangin aja hanya transaksi qris rp. 20.000 harus pake pin dan VERIFIKASI WAJAH. Dan verifikasi wajah selalu GAGAL… Bener bener bank aplikasi paling sampah, lucu bgt udah minta validasi transaksi pakai pin sok sok an di stel sistem pakai verifikasi wajah. Tolong lah kalp buat aplikasi masihcoba coba kangan bikin nasabah sulit dan ribet. Dikira transaksi nominal besar banget apa sampe butuh 2 validasi pin dan verifikasi wajah. Tolong diperbiaiki sistem kalian yang ga jelas.",25.1.28,0,2025-03-23T01:56:44-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12449681705,Adisyoukat,1,Gabisa,Gabisa registrasi bengak!,25.1.28,0,2025-03-22T01:45:33-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12434190609,Kontollllmu anjing,5,Jangan lupa masukin kode referal ya guys,11G4P6,25.1.28,0,2025-03-18T00:59:10-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12427854767,Jordsynz,1,App Kocak,masih banyak bug udah di publish. kocak,25.1.28,0,2025-03-16T08:28:48-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12427418966,Mindi berrina,5,Kode Referral V7M90R,👌🏼,25.1.28,0,2025-03-16T06:24:32-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12423789147,GhannyMuzakki,5,ZR2R7P,Pakai reff ZR2R7P untuk mendapatkan free 25.000 hanya cukup isi saldo 100.000,25.1.28,0,2025-03-15T08:30:35-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12418805762,Kaishwbakao,5,karin,aplikasinya sangat bagus sekali mudah dan nyaman,25.1.28,0,2025-03-14T03:54:31-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12418525728,I hate shopeee,1,Promo scaming!!!,"Aplikasi tukang nipu,duit gua malah dijadiin cashback anjing",25.1.28,0,2025-03-14T01:57:36-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12415460169,Reyner Soendojo,1,FinApp yang blum layak publish,"Fatal crash, disuruh cek koneksimu padahal baik2 aja, freeze screen, ‘lanjut’ button disabled. Ini bikin orang jadi trust issue kalo mau naro duit di sini. Gw pake di iOS 18.3.1",25.1.28,2,2025-03-13T06:19:04-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12414874714,Heni0901,5,Ulasan,Suka banget banyak promonya,25.1.28,0,2025-03-13T02:48:36-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12414715736,RzSim,4,IEBJ9L,"Yuuk masukin kode refferal buat dapatin cashback 25k
+
+IEBJ9L",25.1.28,0,2025-03-13T01:34:36-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12414588055,nd19087,1,error,error when trying to login always hang,25.1.28,1,2025-03-13T00:32:17-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12410729818,Kunci langit,1,"Lelet,lambat,lemot",Harus pake sinyal dari provider mana sih supaya aplikasinya lancar???,25.1.28,1,2025-03-11T23:26:13-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12410411457,Bocentt,2,Not optimized,Baru buka ga bisa tap apapun. Force close buka lagi baru bisa terus ga bisa di tap lagi terus begitu. Bahkan keyboard juga ga bisa diketik,25.1.28,0,2025-03-11T20:44:03-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12409913872,ujhhjk,5,Gak bisa buka aplikasi sama sekali ud download hapus gitu trus tetep gak bisa,Tolong di perbaikin aplikasi nya,25.1.28,0,2025-03-11T17:18:47-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12408601437,marrieolive,5,referal kode EUQPVC,kode referal EUQPVC,25.1.28,0,2025-03-11T09:20:44-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12404357327,Yoyohanda,1,crash di ios 18.4,saya tiba2 ga bs buka bank saqu di ios 18.4 solusinya apa ini,25.1.28,1,2025-03-10T06:39:13-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12396862995,helmihy,1,Aplikasi Nge Frezee,"Sering nge frezee saat aplikasi dibuka, di kill buka lagi tetap nge freeze. Sudah update versi terbaru padahal",25.1.28,0,2025-03-08T07:36:45-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12394325710,Harris setiawan,2,Lambat,Aplikasinya lambat banget. Perlu dikembangkan lagi. Mau buka untuk bayar QR aja lambat,25.1.28,0,2025-03-07T16:23:45-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12392982089,Zizah223,5,Penilaiann sayaa,Bank saqu ini sgt Membantu sekali,25.1.28,0,2025-03-07T08:33:15-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12383293937,Zendnin,4,Diajak cewek yg pernah nolak cinta saya buat nabung saqu,Semoga aja dia luluh,25.1.28,0,2025-03-04T19:40:17-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12382336604,Mochazis,5,Bank keren,Mantapp,25.1.28,0,2025-03-04T13:22:16-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12377905062,Danessss123,1,Nyesel download,"Niat download apk ini cuma karena mau daftar turnamen dari IFEL, sudah daftar dari awal buka pendaftaran sampai sekarang (5 hari) tidak dapat email untuk pendaftarannya. Di keterangannya menunggu 2x24 jam eh sudah 5 hari gak dapet email, sedangkan admin (ifel) sendiri blg ada yg 1 hari sudah dapat emailnya. Buat IFEL lumayan lah ya kalian dapet 15K/orang dari kode refferal 🤣",25.1.28,0,2025-03-03T09:16:43-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12372138793,ANDINIEEEEYYY,1,APLIKASI PAYAH,"UANG SAYA TERTAHAN DI SAQU TIDAK BISA DI TRANSFER KEMANA-MANA!!!!!! SELALU GAGAL, AWAS HATI-HATI UNTUK PENGGUNA BARU YANG MAU SIMPAN UANGNYA DI APLIKASI INI!!!!!!! JANGAN DEH MENDING PAKE BANK YANG SUDAH PASTI AJAAA",25.1.28,0,2025-03-01T22:36:25-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12371527617,patriceeeeeeeeeeeeeee,1,"ERROR MULU! Tulisan periksa jaringan seakan jaringan kita yg ga bener , pdhal buka app lain lancar","Selalu tulisan error jaringan, pdhal buka m banking bank lain lancar! Kocak",25.1.28,1,2025-03-01T18:37:51-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12368888333,12237361528,1,BANK PENIPU,"Bank nipu, agent nya nipu, UIUX jelek, promo gajelas!!!!",25.1.28,0,2025-03-01T04:41:22-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12366551062,ideis11,1,Menunya ngk bisa di klik ngebug,Tolong di fix pas masuk menu atau masukkan password itu dah ngeblang,25.1.28,0,2025-02-28T14:21:53-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12364482385,Yulia and,4,Kode referral BFKRKI,"Daftar nya gampang banget gak pakek ribet meskipun aku IRT . Langsung dapat bonus , gunakan kode refferalku ya",25.1.28,0,2025-02-28T03:31:51-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12364251380,Sgozali,1,Crash terus,"Ini setelah update apps nya malah crash terus, loading halaman awal lalu quit.",25.1.28,0,2025-02-28T02:06:04-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12362719571,yudystriawan,1,Tidak layak,"aplikasi tidak layak digunakan, sering freeze saat input email, tidak bisa isi saldo 24/7 sangat sangat fatal untuk aplikasi finance. Promo/cashback atau apapun tidak masuk. Kalau kalian ingin download karena Promo mending jangan, kasian KTP kalian. Kalau bisa bintang 0",25.1.28,0,2025-02-27T15:17:38-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12357192526,wulanrk,1,Tidak bisa login pakai iPhone,"Tolong dong aplikasinya dibenerin, masa saya ngga bisa login terus menerus sih. Ini jadinya Bank Saqunya ngga bisa digunakan.",25.1.28,1,2025-02-26T05:46:57-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12356425792,angryblob997,1,Freeze after face id,"Please fix la! Everytime I want to use to pay using qris, I got freeze frame. Gonna close my account!",25.1.28,0,2025-02-26T01:15:50-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12347777716,kepoxxx,5,kode referal,26KT1F,25.1.28,0,2025-02-23T17:40:22-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12336359588,Kholis Abdianto,1,Error,"Tidak bisa melakukan pendaftaran karena aplikasinya ngefreeze , dicoba tutup dan dibuka kembali berulang ulang juga sama.",25.1.28,0,2025-02-20T22:59:22-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12327283092,Hayuuki,1,Mau daftar susah,Tiap dimasukkan alamat email valid malah dibilang alamat email salah dan dibilang tidak menemukan alamat email … gimana sih apk ini?,25.1.28,0,2025-02-18T14:26:53-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12324583693,Kevin Rivaldo,3,Layar nge freeze,"Ketika menggunakan tampilan UI sering nge freeze, harus di kill dulu dan buka kembali",25.1.28,0,2025-02-17T22:22:53-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12323505833,Dah03*,1,CASHBACK TIDAK MASUKKK,Bertele tele dan lama,25.1.28,0,2025-02-17T14:43:24-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12316564797,kimlboy,2,Not working,pake developer mode not working. masa harus off developer mode terus. padahal build sebelumnya sudah bisa,24.12.2,0,2025-02-15T21:35:06-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12304821670,leonard2406,1,"App tak bisa dibuka, security error","Mendadak app error t”his app can't run because the environment is not secure and your data may be at risk”, jadi gak bisa dipakai…",24.12.2,0,2025-02-12T21:59:54-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12302101976,Firjaun,1,Sales Tidak Amanah,"+62 831-6916-1060 sales atas nama maman or herman central park tidak amanah, waktu sblm daftar bilang dpt hadiah lsg. Setelah daftar bilang hrus buka deposito😃😄",24.12.2,0,2025-02-12T05:34:13-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12301887675,FF6997,1,Force Closed,Aplikasi terinstall tapi gabisa dibuka selalu force close mau trf uang jadi ke hold,24.12.2,0,2025-02-12T04:28:00-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12301085911,Dfn262626,1,GABIS LOGIN,ga jelas mau login kode otp salah mulu padahal udah bener,24.12.2,0,2025-02-11T23:09:27-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12300571412,NikoIksanto,5,KODE REFERRAL : ZR8IDZ,"Hai! Bergabunglah denganku di bank Saqu dan kamu PASTI akan mendapatkan Rp25.000 setelah berhasil menabung 100.000 dan dipertahankan selama 7 hari. Isi saldo maks 1 hari setelah daftar ya!
+Daftar dengan kode referensi milikku: ZR8IDZ",24.12.2,0,2025-02-11T19:26:10-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12300535193,Haumea777,5,Kode referral: KPK9J4,"Hai! Bergabunglah denganku di Bank Saqu dan kamu akan mendapatkan Rp25.000 setelah berhasil bergabung.
+Daftar dengan kode referensi milikku: KPK9J4.",24.12.2,0,2025-02-11T19:12:16-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12294358402,mrxdmr,1,Dana pending terus,Setiap topup e wallet. Selalu pending dan dana sudah terpotong di bank saqu. Di kembalikkannya nunggu smpe berhari hari. Parah bgt sering terjadi seperti ini,24.12.2,0,2025-02-10T06:39:44-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12288734724,Dellbat,1,Aplikasi eror,"Ini kenapa ya apk nya eror, tiap mau buka gak bisa, sdh 3hari",24.12.2,0,2025-02-08T21:16:52-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+11761354605,ATRBollinger,5,Kode :  8FE8KJ,Gunakan kode 8FE8KJ agar kamu dapat kejutan spesial 😍,24.9.3,8,2024-09-24T19:09:45-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+11796810808,Timothy Hardaway,5,Input kode referral LTIFDM dapat 25.000,Dapatkan 25.000 langsung di saldo tabunganmu dengan input kode referral LTIFDM. Sudah terbukti.,24.9.4,1,2024-10-04T08:52:38-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+11145154742,zuginael,1,BERULANG KALI TIDAK BISA LOGIN ke aplikasi Bank Saqu,Saya sudah kesekian kali tidak bisa login ke aplikasi bank saqu padahal no hp dan email yang saya daftarkan sudah benar. Uang saya ada didaalam aplikasi Bank Saqu. Uang tersebut mau saya gunakan untuk pembayaran membeli makanan untuk saya dan anak saya tetapi saya tidak bisa login dengan tulisan LAYANAN TIDAK TERSEDIA. bagaimana ini?,24.3.1,2,2024-04-11T00:54:41-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12286651341,ritabdrt,5,Buka Rekening Bank Saqu,"Yang mau dapat Cashback pembukaan rekening sebesar 25k bisa banget pake kode aku yaa: DOSKQT (lumayan lohh😍)
+Sejauh ini bagus banget pake Bank Saqu karena ada Saqu-Saqu tabungan nya yang memudahkan mengelompokan uang tabungan. Semoga kedepan semakin lebih baik❤️✨",24.12.2,0,2025-02-08T08:59:04-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12194821196,Cory Poetry,5,Keren,Mantap buat nabung & bisa dapat bonus buat jajan alhamdulillah terimakasih yaaaaa,24.12.2,0,2025-01-17T03:49:47-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12277960161,BeniiiBoyss,1,Aplikasi GEMBEL,"Duitt gue masih ngendepp woyyy disiniiii, apps nya gak bisaa di buka kocakkk bangetttttt APLIKASI TOLOL",24.12.2,0,2025-02-06T06:31:03-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12247548665,ucokbatakjaksel,1,Security alert,"Di iphone 11 pro aplikasi bank saqu ku gak bisa di buka/error bertulisan "" Security alert this app cannot run because the environment is not secure and your data my be at risk "" tlng di perbaiki",24.12.2,0,2025-01-29T21:00:16-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12236367838,Halooyyasss,4,Kode : KPJ2LZ,Yukk gabung,24.12.2,0,2025-01-27T01:18:41-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12228832562,pinalti,1,pinalti,"apk sangat tidak worth it saya lagi di tempat makan dan di datangin oleh petugasnya sebelumnya sudah di tolak tetapi tetap memaksa untuk mendownload apk dengan kata kata kerja sama dengan tmpt makan yang sedang saya kunjungi di saat apk sudah saya dowload sudah selesai semuanya baru di suruh untuk top up Rp.150.000 ketika sudah saya top up hp kembali di otak atik oleh petugas banksaqu sama sekali tidak ada memberi tahu petunjuk!! di saat saya ingin melakukan pembayaran di kasir apk tidak bisa di gunakan di saat memanggil petugasnya hp saya di otak atik dan saya kenak biaya pinalti kunci dana sebesar -Rp.50.000 penjelasan dari petugasnya dana di kembalikan selama 3 hari dan saya tanyak kalau dana tidak kembali saya ngelapor kemana dan petugasnya menjawab “ saya kasih nomor wa saya” petugas bertekak kalau dana bakal di kembalikan menunggu selama 3 hari tolong untuk bapak / ibuk apa sebelumnya petugasnya belum pernah di briefing? masa petugasnya tidak tau kalau sudah kenak pinalti dana tidak bakal bisa kembali? petugasnya ada 3 orang dan sampai me nelfon seseorang menanyakan soal dana saya,tolong di respon ya bapak / ibuk yang terhormat🙏🏻🙏🏻",24.12.2,0,2025-01-25T05:01:01-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12225305211,4b1gail23074,1,duh gak bgt.,"ilang respect sama bank saqu.  lagi di mall disamperin sama sales2nya. awalnya cuma minta download dan regis, eh tiba2 minta saya transfer uang ke rekening yg baru aja diregistrasi, alasannya untuk laporan performance. nominalnya gak kecil lagi, 500 ribu. kecewa berat. masa harus sampe nipu sih",24.12.2,0,2025-01-24T07:31:31-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12211898865,Arukaii,1,Eror,Setiap dibuka ke close sendiri,24.12.2,0,2025-01-21T06:36:15-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12207341665,Bentar Aptrisal,1,Enggak bisa login padahal data semua sdh di isi,"Enggak bisa login alasan data tidak memenuhi syarat padahal semua data sdh di isi 
+# terimakasih",24.12.2,0,2025-01-20T03:33:32-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12205638795,istdigfi,2,Banayak promo tapi aplikasi lemot,Sering muter2 transaksi gagal dan jaringan tidak stabil padahl jaringan selalu stabil pkek wifi dan data yg 4G dan 5G,24.12.2,0,2025-01-19T15:55:22-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12198343648,Rputra.l,1,tidak bisa dibuka,"apps selalu crash dan tidak bisa dibuka muncul pop up alert kalau device ngga aman, padahal sudah update os dll apps banking lain aman aman aja
+device Iphone 12 
+OS 18.3",24.12.2,0,2025-01-18T00:18:25-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12197921481,mantan palsu,1,LAG JELEK UIUX NYA,"lag suka loading sendiri, ui uz nya terasa kaku bingung pakenya gimana. cuma untuk bakar duit doang promo sana sini",24.12.2,0,2025-01-17T21:18:35-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12194148805,Hmpcjkt158,5,Kode 26JFJQ,Masukkan kode 26JFJQ dan dapatkan bonusnya sekarang!,24.12.2,0,2025-01-16T23:09:53-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12194015433,verasep,5,Bagus,"Pakai kodeku ""H97IIC"" biar tambah cuan.",24.12.2,0,2025-01-16T22:08:07-07:00,Bank Saqu,bank_saqu,app_store,1668516593
+12188927041,kumbangguhuy,5,Kalau mau penghasilan bertambah kalian bisa masukin kode undangan saya yaitu: 6QZQOE,Kalau mau penghasilan bertambah kalian bisa masukin kode undangan saya yaitu: 6QZQOE,24.12.2,0,2025-01-15T14:39:37-07:00,Bank Saqu,bank_saqu,app_store,1668516593
