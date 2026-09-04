@@ -5,15 +5,15 @@
   "baris_test": 7891,
   "baris_train": 60159,
   "berkas": {
-    "dev": "data\\Apps-ACOS\\appsid_quad_dev.tsv",
-    "test": "data\\Apps-ACOS\\appsid_quad_test.tsv",
-    "train": "data\\Apps-ACOS\\appsid_quad_train.tsv"
+    "dev": "D:\\laragon\\www\\ACOS-ASLI\\ACOS-IndoBERT\\data\\Apps-ACOS\\appsid_quad_dev.tsv",
+    "test": "D:\\laragon\\www\\ACOS-ASLI\\ACOS-IndoBERT\\data\\Apps-ACOS\\appsid_quad_test.tsv",
+    "train": "D:\\laragon\\www\\ACOS-ASLI\\ACOS-IndoBERT\\data\\Apps-ACOS\\appsid_quad_train.tsv"
   },
   "kategori_asing": {},
   "klausa_dibuang_tanpa_split": 4183,
   "opini_eksplisit": 54800,
   "opini_implisit": 37274,
-  "sumber": "data\\Apps-ACOS\\processed",
+  "sumber": "D:\\laragon\\www\\ACOS-ASLI\\ACOS-IndoBERT\\data\\Apps-ACOS\\processed",
   "tuple_dev": 9587,
   "tuple_test": 9514,
   "tuple_train": 72973
