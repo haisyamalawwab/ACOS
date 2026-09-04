@@ -1,0 +1,343 @@
+[
+  {
+    "name": "Bank Jago",
+    "slug": "bank_jago",
+    "android": {
+      "package_name": "com.jago.digitalBanking",
+      "store_title": "Bank Jago/Jago Syariah",
+      "developer": "PT Bank Jago, Tbk",
+      "score": 4.7208395,
+      "reviews_total": 81561,
+      "installs": "10.000.000+"
+    },
+    "ios": {
+      "track_id": 1539402234,
+      "bundle_id": "com.jago.digitalBanking",
+      "store_title": "Bank Jago/Jago Syariah",
+      "seller": "PT. Bank Artos Indonesia Tbk",
+      "score": 4.79487,
+      "ratings_total": 48003,
+      "candidates_seen": [
+        "Bank Jago/Jago Syariah",
+        "SeaBank",
+        "neobank by BNC Digital",
+        "Allo Bank",
+        "blu by BCA Digital"
+      ]
+    }
+  },
+  {
+    "name": "Allo Bank",
+    "slug": "allo_bank",
+    "android": {
+      "package_name": "com.alloapp.yump",
+      "store_title": "Allo Bank",
+      "developer": "PT. ALLO BANK INDONESIA Tbk",
+      "score": 4.1882524,
+      "reviews_total": 45561,
+      "installs": "10.000.000+"
+    },
+    "ios": {
+      "track_id": 1591223632,
+      "bundle_id": "com.allo.allobank",
+      "store_title": "Allo Bank",
+      "seller": "PT Allo Bank Indonesia Tbk",
+      "score": 3.88344,
+      "ratings_total": 4916,
+      "candidates_seen": [
+        "Allo Bank",
+        "neobank by BNC Digital",
+        "Bank Jago/Jago Syariah",
+        "Kredivo - Paylater & Loans",
+        "Tunaiku - Pinjaman Dana Cepat"
+      ]
+    }
+  },
+  {
+    "name": "Bank Neo Commerce (BNC)",
+    "slug": "bnc_neobank",
+    "android": {
+      "package_name": "com.bnc.finance",
+      "store_title": "neobank dari BNC Digital",
+      "developer": "PT. BANK NEO COMMERCE TBK",
+      "score": 4.728604,
+      "reviews_total": 174330,
+      "installs": "10.000.000+"
+    },
+    "ios": {
+      "track_id": 1519178181,
+      "bundle_id": "com.bank.neo",
+      "store_title": "neobank by BNC Digital",
+      "seller": "PT. Bank Neo Commerce Tbk",
+      "score": 3.83876,
+      "ratings_total": 9557,
+      "candidates_seen": [
+        "neobank by BNC Digital"
+      ]
+    }
+  },
+  {
+    "name": "Amar Bank (Senyumku)",
+    "slug": "amar_senyumku",
+    "android": {
+      "package_name": "com.senyumkubank.rekeningonline",
+      "store_title": "Amar Bank: Tabungan & Celengan",
+      "developer": "PT Bank Amar Indonesia Tbk.",
+      "score": 4.754832,
+      "reviews_total": 24263,
+      "installs": "1.000.000+"
+    },
+    "ios": {
+      "track_id": 1527998513,
+      "bundle_id": "com.senyumkubank.rekeningonline.ios",
+      "store_title": "Amar Bank - Investasi&Tabungan",
+      "seller": "BANK AMAR INDONESIA, PT",
+      "score": 4.17232,
+      "ratings_total": 354,
+      "candidates_seen": [
+        "Amar Bank - Investasi&Tabungan"
+      ]
+    }
+  },
+  {
+    "name": "Jenius",
+    "slug": "jenius",
+    "android": {
+      "package_name": "com.btpn.dc",
+      "store_title": "Jenius",
+      "developer": "PT Bank SMBC Indonesia Tbk",
+      "score": 3.2609866,
+      "reviews_total": 129651,
+      "installs": "10.000.000+"
+    },
+    "ios": {
+      "track_id": 1079340119,
+      "bundle_id": "com.btpn.jenius.dc",
+      "store_title": "Jenius",
+      "seller": "PT. Bank SMBC Indonesia Tbk",
+      "score": 4.1251,
+      "ratings_total": 26610,
+      "candidates_seen": [
+        "Jenius",
+        "Bank Jago/Jago Syariah",
+        "blu by BCA Digital",
+        "myBCA: New BCA Banking Apps",
+        "Allo Bank"
+      ]
+    }
+  },
+  {
+    "name": "blu by BCA Digital",
+    "slug": "blu_bca",
+    "android": {
+      "package_name": "com.bcadigital.blu",
+      "store_title": "blu by BCA Digital",
+      "developer": "BCA Digital",
+      "score": 4.8045397,
+      "reviews_total": 35560,
+      "installs": "5.000.000+"
+    },
+    "ios": {
+      "track_id": 1550237185,
+      "bundle_id": "com.bcadigital.blu",
+      "store_title": "blu by BCA Digital",
+      "seller": "PT. Bank Digital BCA",
+      "score": 4.76935,
+      "ratings_total": 51156,
+      "candidates_seen": [
+        "blu by BCA Digital",
+        "myBCA: New BCA Banking Apps",
+        "SeaBank",
+        "WhatsApp Messenger",
+        "Bank Jago/Jago Syariah"
+      ]
+    }
+  },
+  {
+    "name": "Bank Raya (BRI)",
+    "slug": "bank_raya",
+    "android": {
+      "package_name": "id.co.bankraya.apps",
+      "store_title": "Raya - Digital Bank",
+      "developer": "PT Bank Raya Indonesia Tbk.",
+      "score": 4.2811966,
+      "reviews_total": 8024,
+      "installs": "1.000.000+"
+    },
+    "ios": {
+      "track_id": 1627393834,
+      "bundle_id": "id.co.bankraya.apps",
+      "store_title": "Raya - Digital Bank",
+      "seller": "PT. Bank Raya Indonesia, Tbk.",
+      "score": 4.66209,
+      "ratings_total": 1530,
+      "candidates_seen": [
+        "Raya - Digital Bank",
+        "Pinang Performa",
+        "Raya E-Learning",
+        "Mitra Kiosbank: Pulsa & PPOB",
+        "Jagat Raya Mobile"
+      ]
+    }
+  },
+  {
+    "name": "wondr by BNI",
+    "slug": "wondr_bni",
+    "android": {
+      "package_name": "id.bni.wondr",
+      "store_title": "wondr by BNI",
+      "developer": "PT Bank Negara Indonesia (Persero) Tbk.",
+      "score": 4.8413687,
+      "reviews_total": 112565,
+      "installs": "10.000.000+"
+    },
+    "ios": {
+      "track_id": 6499518320,
+      "bundle_id": "id.bni.wondr",
+      "store_title": "wondr by BNI",
+      "seller": "PT. BANK NEGARA INDONESIA (PERSERO) TBK.",
+      "score": 4.86245,
+      "ratings_total": 327577,
+      "candidates_seen": [
+        "wondr by BNI",
+        "Shopee Indonesia",
+        "Livin' by Mandiri",
+        "BCA mobile",
+        "SeaBank"
+      ]
+    }
+  },
+  {
+    "name": "PermataMobile X",
+    "slug": "permata_x",
+    "android": {
+      "package_name": "net.myinfosys.PermataMobileX",
+      "store_title": "Permata ME",
+      "developer": "PT Bank Permata Tbk",
+      "score": 2.4959598,
+      "reviews_total": 92227,
+      "installs": "5.000.000+"
+    },
+    "ios": {
+      "track_id": 1323973644,
+      "bundle_id": "net.myinfosys.PermataMobileX",
+      "store_title": "Permata ME",
+      "seller": "PT. Bank Permata, Tbk",
+      "score": 3.42579,
+      "ratings_total": 8166,
+      "candidates_seen": [
+        "Permata ME",
+        "BCA mobile",
+        "Tokopedia",
+        "OCTO by CIMB Niaga",
+        "OVO"
+      ]
+    }
+  },
+  {
+    "name": "SeaBank",
+    "slug": "seabank",
+    "android": {
+      "package_name": "id.co.bankbkemobile.digitalbank",
+      "store_title": "SeaBank",
+      "developer": "SeaBank Indonesia",
+      "score": 4.86261,
+      "reviews_total": 442251,
+      "installs": "50.000.000+"
+    },
+    "ios": {
+      "track_id": 1525477806,
+      "bundle_id": "id.co.bankbkemobile.digitalbank",
+      "store_title": "SeaBank",
+      "seller": "PT.Bank Seabank Indonesia",
+      "score": 4.89137,
+      "ratings_total": 322575,
+      "candidates_seen": [
+        "SeaBank",
+        "DANA Dompet Digital Indonesia",
+        "BRImo BRI",
+        "Shopee Indonesia",
+        "Superbank: Save, Borrow, Grow"
+      ]
+    }
+  },
+  {
+    "name": "Superbank",
+    "slug": "superbank",
+    "android": {
+      "package_name": "id.co.bankfama.android",
+      "store_title": "Superbank: Tabungan & Pinjaman",
+      "developer": "PT Super Bank Indonesia Tbk",
+      "score": 4.430078,
+      "reviews_total": 56881,
+      "installs": "5.000.000+"
+    },
+    "ios": {
+      "track_id": 6444720285,
+      "bundle_id": "id.co.bankfama.app",
+      "store_title": "Superbank: Save, Borrow, Grow",
+      "seller": "PT Super Bank Indonesia",
+      "score": 4.31099,
+      "ratings_total": 5370,
+      "candidates_seen": [
+        "Superbank: Save, Borrow, Grow",
+        "Bank Jago/Jago Syariah",
+        "Tunaiku - Pinjaman Dana Cepat",
+        "Krom - Bank Digital",
+        "Solusiku - Pinjaman Online"
+      ]
+    }
+  },
+  {
+    "name": "Krom Bank",
+    "slug": "krom_bank",
+    "android": {
+      "package_name": "com.krom.android",
+      "store_title": "Krom - Bank Digital",
+      "developer": "PT Krom Bank Indonesia Tbk",
+      "score": 4.873152,
+      "reviews_total": 15970,
+      "installs": "1.000.000+"
+    },
+    "ios": {
+      "track_id": 1673245868,
+      "bundle_id": "com.krom.ios",
+      "store_title": "Krom - Bank Digital",
+      "seller": "PT. KROM BANK INDONESIA TBK",
+      "score": 4.91324,
+      "ratings_total": 13162,
+      "candidates_seen": [
+        "Krom - Bank Digital",
+        "Bank Jago/Jago Syariah",
+        "WhatsApp Messenger"
+      ]
+    }
+  },
+  {
+    "name": "Bank Saqu",
+    "slug": "bank_saqu",
+    "android": {
+      "package_name": "bjj.bank.digital.indo.prod",
+      "store_title": "Bank Saqu",
+      "developer": "PT BANK SAQU INDONESIA",
+      "score": 4.6437516,
+      "reviews_total": 17665,
+      "installs": "5.000.000+"
+    },
+    "ios": {
+      "track_id": 1668516593,
+      "bundle_id": "bjj.bank.digital.indo.prod",
+      "store_title": "Bank Saqu",
+      "seller": "PT BANK JASA JAKARTA",
+      "score": 4.79737,
+      "ratings_total": 16834,
+      "candidates_seen": [
+        "Bank Saqu",
+        "SeaBank",
+        "neobank by BNC Digital",
+        "Bank Jago/Jago Syariah",
+        "BantuSaku- Pinjaman Daring"
+      ]
+    }
+  }
+]

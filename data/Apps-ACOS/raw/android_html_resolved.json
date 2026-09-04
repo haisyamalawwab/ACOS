@@ -1,0 +1,34 @@
+{
+  "amar_senyumku": {
+    "package_name": "com.senyumkubank.rekeningonline",
+    "store_title": "Amar Bank: Tabungan & Celengan",
+    "developer": "PT Bank Amar Indonesia Tbk.",
+    "score": 4.754832,
+    "reviews_total": 24263,
+    "installs": "1.000.000+"
+  },
+  "permata_x": {
+    "package_name": "net.myinfosys.PermataMobileX",
+    "store_title": "Permata ME",
+    "developer": "PT Bank Permata Tbk",
+    "score": 2.4959598,
+    "reviews_total": 92227,
+    "installs": "5.000.000+"
+  },
+  "krom_bank": {
+    "package_name": "com.krom.android",
+    "store_title": "Krom - Bank Digital",
+    "developer": "PT Krom Bank Indonesia Tbk",
+    "score": 4.873152,
+    "reviews_total": 15970,
+    "installs": "1.000.000+"
+  },
+  "bank_saqu": {
+    "package_name": "bjj.bank.digital.indo.prod",
+    "store_title": "Bank Saqu",
+    "developer": "PT BANK SAQU INDONESIA",
+    "score": 4.6437516,
+    "reviews_total": 17665,
+    "installs": "5.000.000+"
+  }
+}
