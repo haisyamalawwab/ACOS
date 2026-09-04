@@ -69,20 +69,30 @@ Keputusan desain yang mengikat tahap ini:
   muatan emosi, dan fallback sentimen tagger menunjuk ke kelas ini.
 - Kepala label **factored** (13 + 3 + 6 = 22 output), bukan joint (13×3×6 =
   234 sel yang sebagian besar kosong pada ~2,5 ribu tuple).
-- Domain `laptop` **ditolak** `absa5` (taksonomi 121 kategori → 1815 sel label
-  tidak trainable); tahap ini hanya untuk `rest16`.
+- Dua domain didukung: `rest16` (data quad Inggris, emosi di-bootstrap leksikon,
+  status `suggested`) dan `resto_id` (data quint Indonesia di `data/Demo-Resto-ID/`,
+  kolom emosi sudah ada, status `annotated`). Domain `laptop` **ditolak** `absa5`
+  (taksonomi 121 kategori → 1815 sel label tidak trainable).
 - Sel 10a menghitung H(emosi | sentimen) per split. Nilai 0 bit berarti kolom
   emosi cuma penggantian nama sentimen pada data itu — baca verdict-nya sebelum
   menafsirkan metrik 10d."""
 
 MD_10A = """## 10. ACOSE: Ekstraksi Quintuple (ACOS + Emosi)
 
-### 10a. Bootstrap Quad → Quint (Leksikon Emosi)
-Membaca `data/<domain>/rest16_quad_{train,dev,test}.tsv`, menambah kolom emosi
-lewat `absa5.emotion.LexiconEmotionTagger`, dan menulis berkas quint ke folder khusus
-`ACOSE/<domain>/data/` di Drive (lihat judul versi V3). Leksikonnya kata pemicu Indonesia — pada rest16 (Inggris)
-hampir semua label datang dari fallback sentimen, dan sel ini melaporkan itu
-apa adanya lewat H(emosi | sentimen) plus verdict redundansinya.
+### 10a. Sumber Data Quint ACOSE
+Menyiapkan berkas quint di folder khusus `ACOSE/<domain>/data/` (lihat judul versi
+V3). Dua jalur, dipilih otomatis dari `DOMAIN` lewat tabel `DOMAIN_SOURCES`:
+
+| DOMAIN | Sumber | Schema sumber | Kolom emosi | Status |
+|---|---|---|---|---|
+| `rest16` | `data/Restaurant-ACOS/` | quad | dibuat `LexiconEmotionTagger` | `suggested` |
+| `resto_id` | `data/Demo-Resto-ID/` | quint | sudah ada di berkas | `annotated` |
+
+Untuk `rest16` leksikonnya kata pemicu Indonesia sementara datanya Inggris, jadi
+hampir semua label datang dari fallback sentimen — sel ini melaporkannya apa adanya
+lewat H(emosi | sentimen) dan verdict redundansi, bukan menyembunyikannya. Untuk
+`resto_id` kolom emosi dipakai apa adanya (tanpa leksikon) dan kedua angka itu tetap
+dihitung dari berkas, sehingga kedua jalur bisa dibandingkan dengan ukuran yang sama.
 
 Output tambahan: CSV tugas anotasi (satu baris per tuple, `emotion_final`
 dibiarkan kosong untuk manusia) dan pedoman anotasinya di `ACOSE/<domain>/annotation/`.
@@ -139,11 +149,12 @@ def _ensure_absa5(base_dir):
 _ensure_absa5(base_project_dir)
 
 from absa5 import get_schema
-from absa5.data import read_records
+from absa5.data import read_records, write_records
 from absa5.emotion import (
     LexiconEmotionTagger,
     export_annotation_tasks,
     extend_file,
+    sentiment_redundancy,
 )
 from absa5.selftest import run_gates
 from absa5.taxonomy import EMOTIONS
@@ -154,15 +165,25 @@ ACOSE_FORCE_BOOTSTRAP = False
 # menunjuk ke 'netral', jadi label set tanpa kelas itu akan ditolak tagger.
 ACOSE_EMOTION_SET = "emot_id_netral"
 
-DOMAIN_DIR_MAP = {"rest16": "Restaurant-ACOS", "laptop": "Laptop-ACOS"}
+# Sumber data per domain. `schema` menentukan jalur yang dipakai sel ini:
+#   quad  -> kolom emosi belum ada, dibuat oleh leksikon (status suggested)
+#   quint -> kolom emosi sudah ada di berkas (status annotated, tanpa leksikon)
+DOMAIN_SOURCES = {
+    "rest16": {"dir": "Restaurant-ACOS", "schema": "quad", "category_set": "rest16"},
+    "resto_id": {"dir": "Demo-Resto-ID", "schema": "quint", "category_set": "resto_id"},
+}
 
-with step_stage("10a. Bootstrap quad → quint: leksikon emosi + tugas anotasi", 9) as st:
-    if DOMAIN not in DOMAIN_DIR_MAP:
+with step_stage("10a. Sumber data quint ACOSE (bootstrap emosi bila perlu)", 9) as st:
+    if DOMAIN not in DOMAIN_SOURCES:
         raise RuntimeError(
-            f"ACOSE hanya disiapkan untuk DOMAIN 'rest16'. Domain '{DOMAIN}' ditolak "
-            f"absa5: taksonomi laptop 121 kategori membuat ruang label 121x3x6 = 1815 "
-            f"sel yang tidak trainable pada jumlah data semacam ini.")
-    raw_dir_src = os.path.join(base_project_dir, "data", DOMAIN_DIR_MAP[DOMAIN])
+            f"ACOSE mendukung DOMAIN {sorted(DOMAIN_SOURCES)}; '{DOMAIN}' tidak ada. "
+            f"Domain 'laptop' khususnya ditolak absa5: taksonomi 121 kategori "
+            f"membuat ruang label 121x3x6 = 1815 sel yang tidak trainable pada "
+            f"jumlah data semacam ini.")
+    _srcspec = DOMAIN_SOURCES[DOMAIN]
+    ACOSE_CATEGORY_SET = _srcspec["category_set"]
+    ACOSE_SOURCE_SCHEMA = _srcspec["schema"]
+    raw_dir_src = os.path.join(base_project_dir, "data", _srcspec["dir"])
 
     # Khusus ACOSE: seluruh hasil disimpan di folder Drive "ACOSE" yang berdiri
     # sendiri (stabil lintas sesi), bukan di dalam folder sesi pipeline ACOS.
@@ -195,9 +216,16 @@ with step_stage("10a. Bootstrap quad → quint: leksikon emosi + tugas anotasi",
     st.step(f"Selftest absa5 ({len(_g_res)} gerbang) LULUS di {base_project_dir}")
 
     emotion_labels = list(EMOTIONS.get(ACOSE_EMOTION_SET))
-    tagger = LexiconEmotionTagger(label_set=ACOSE_EMOTION_SET)
-    st.step(f"Tagger '{tagger.name}' siap | label emosi ({len(emotion_labels)}): "
-            f"{', '.join(emotion_labels)}")
+    if ACOSE_SOURCE_SCHEMA == "quad":
+        tagger = LexiconEmotionTagger(label_set=ACOSE_EMOTION_SET)
+        st.step(f"Sumber quad → emosi dibuat leksikon '{tagger.name}' (status "
+                f"suggested) | label ({len(emotion_labels)}): "
+                f"{', '.join(emotion_labels)}")
+    else:
+        tagger = None
+        st.step(f"Sumber sudah quint → kolom emosi dipakai apa adanya (status "
+                f"annotated, tanpa leksikon) | label ({len(emotion_labels)}): "
+                f"{', '.join(emotion_labels)}")
 
     # Penanda identitas folder (singkat): folder ACOSE adalah hasil ABSA5
     # Quintuple Extraction, bukan ACOS 4-elemen biasa.
@@ -206,24 +234,63 @@ with step_stage("10a. Bootstrap quad → quint: leksikon emosi + tugas anotasi",
     with open(os.path.join(acose_root, "_ACOSE.txt"), "w", encoding="utf-8") as _mf:
         _mf.write(_acose_tag + chr(10))
 
+    def _report_from_quint(path):
+        """Laporan setara extend_file untuk berkas yang SUDAH quint.
+
+        Tanpa ini, jalur data teranotasi tidak punya distribusi emosi maupun
+        H(emosi | sentimen) — dua angka yang menentukan apakah elemen kelima
+        layak dilatih, jadi keduanya dihitung dari berkas apa adanya.
+        """
+        recs = read_records(path, get_schema("quint"))
+        dist, joint, n = {}, {}, 0
+        for _rec in recs:
+            for _t in _rec.tuples:
+                _e = str(_t.get("emotion"))
+                dist[_e] = dist.get(_e, 0) + 1
+                _k = (str(_t.get("sentiment")), _e)
+                joint[_k] = joint.get(_k, 0) + 1
+                n += 1
+        out = {"rows": len(recs), "tuples": n,
+               "distribution": dict(sorted(dist.items())),
+               "tagger": "none (berkas sumber sudah quint)",
+               "status": "annotated",
+               "warning": ("kolom emosi berasal dari berkas sumber; pastikan "
+                           "provenance-nya tercatat sebelum dipublikasikan"),
+               "input": path, "output": path}
+        out.update(sentiment_redundancy(joint))
+        return out
+
     quint_files, acose_bootstrap_reports = {}, {}
     for split in ("train", "dev", "test"):
-        src = os.path.join(raw_dir_src, f"{DOMAIN}_quad_{split}.tsv")
+        src = os.path.join(raw_dir_src,
+                           f"{DOMAIN}_{ACOSE_SOURCE_SCHEMA}_{split}.tsv")
         dst = os.path.join(acose_raw_dir, f"{DOMAIN}_quint_{split}.tsv")
         rep_path = os.path.join(acose_raw_dir, f"_bootstrap_{split}.json")
         if not os.path.exists(src):
-            raise FileNotFoundError(f"Berkas quad sumber tidak ada: {src}")
-        if os.path.exists(dst) and not ACOSE_FORCE_BOOTSTRAP:
+            raise FileNotFoundError(f"Berkas sumber tidak ada: {src}")
+        if os.path.exists(dst) and os.path.exists(rep_path) and not ACOSE_FORCE_BOOTSTRAP:
             with open(rep_path, "r", encoding="utf-8") as jf:
                 acose_bootstrap_reports[split] = json.load(jf)
             st.step(f"[CACHE HIT] {os.path.basename(dst)} sudah ada "
                     f"({acose_bootstrap_reports[split]['rows']} baris)")
-        else:
+        elif ACOSE_SOURCE_SCHEMA == "quad":
             acose_bootstrap_reports[split] = extend_file(
                 src, dst, tagger=tagger, report_path=rep_path)
             _r = acose_bootstrap_reports[split]
             st.step(f"{os.path.basename(dst)}: {_r['rows']} baris, {_r['tuples']} tuple "
                     f"→ {_r['distribution']}")
+        else:
+            # Berkas sudah quint: salin ke folder ACOSE lewat pembacaan skema,
+            # bukan copy byte, supaya berkas cacat tertangkap di sini.
+            _recs = read_records(src, get_schema("quint"))
+            write_records(dst, _recs, get_schema("quint"))
+            acose_bootstrap_reports[split] = _report_from_quint(dst)
+            with open(rep_path, "w", encoding="utf-8") as jf:
+                json.dump(acose_bootstrap_reports[split], jf, indent=2,
+                          ensure_ascii=False)
+            _r = acose_bootstrap_reports[split]
+            st.step(f"{os.path.basename(dst)}: {_r['rows']} baris, {_r['tuples']} tuple "
+                    f"(sudah quint) → {_r['distribution']}")
         quint_files[split] = dst
 
     st.step("H(emosi | sentimen): "
@@ -238,15 +305,16 @@ with step_stage("10a. Bootstrap quad → quint: leksikon emosi + tugas anotasi",
     _annot_csv = os.path.join(acose_annot_dir, f"{DOMAIN}_emotion_annotation_tasks.csv")
     acose_annot_report = export_annotation_tasks(
         read_records(quint_files["test"], get_schema("quint")),
-        _annot_csv, emotion_set=ACOSE_EMOTION_SET)
+        _annot_csv, tagger=tagger, emotion_set=ACOSE_EMOTION_SET)
     st.step(f"Tugas anotasi: {acose_annot_report['rows']} baris → {_annot_csv}")
 
-    rep.section("8. ACOSE: bootstrap emosi (quad → quint)")
+    rep.section("8. ACOSE: sumber data quint & informasi emosi")
     rep.kv({
         "label_set": ACOSE_EMOTION_SET,
         "label": ", ".join(emotion_labels),
-        "tagger": tagger.name,
-        "status": "suggested (belum divalidasi manusia)",
+        "sumber": f"{os.path.basename(raw_dir_src)} (schema {ACOSE_SOURCE_SCHEMA})",
+        "tagger": acose_bootstrap_reports["train"]["tagger"],
+        "status": acose_bootstrap_reports["train"]["status"],
         "H_emosi_sentimen_train": f"{acose_bootstrap_reports['train']['conditional_entropy_bits']:.3f} bit",
         "verdict": _verdict,
         "tugas_anotasi": _annot_csv,
@@ -257,19 +325,25 @@ with step_stage("10a. Bootstrap quad → quint: leksikon emosi + tugas anotasi",
         {"Split": s,
          **{lab: acose_bootstrap_reports[s]["distribution"].get(lab, 0)
             for lab in emotion_labels},
-         "Total_Tuple": acose_bootstrap_reports[s]["tuples"]}
+         "Total_Tuple": acose_bootstrap_reports[s]["tuples"],
+         "H_bit": round(acose_bootstrap_reports[s]["conditional_entropy_bits"], 3)}
         for s in ("train", "dev", "test")
     ])
     export_step_table(df_emosi, name="master_10_acose_distribusi_emosi",
                       csv_dir=acose_csv_dir, md_dir=acose_md_dir,
-                      title=f"Distribusi Emosi Hasil Bootstrap ({DOMAIN.upper()})",
-                      notes=("Label dari leksikon, status suggested. Verdict redundansi "
-                             "train: " + _verdict))
-    rep.table(df_emosi, caption="Distribusi emosi hasil bootstrap per split")
+                      title=f"Distribusi Emosi per Split ({DOMAIN.upper()})",
+                      notes=(f"Sumber: {os.path.basename(raw_dir_src)}, schema "
+                             f"{ACOSE_SOURCE_SCHEMA}, status "
+                             f"{acose_bootstrap_reports['train']['status']}. "
+                             f"H_bit = H(emosi | sentimen); 0 berarti kolom emosi "
+                             f"tidak menambah informasi. Verdict train: " + _verdict))
+    rep.table(df_emosi, caption="Distribusi emosi & H(emosi | sentimen) per split")
     st.step("Tabel master_10_acose_distribusi_emosi diekspor")
 
     update_mcp_manifest("ACOSE_BOOTSTRAPPED", 7, {
         "acose_label_set": ACOSE_EMOTION_SET,
+        "acose_source_schema": ACOSE_SOURCE_SCHEMA,
+        "acose_emotion_status": acose_bootstrap_reports["train"]["status"],
         "acose_redundancy_bits": acose_bootstrap_reports["train"]["conditional_entropy_bits"],
         "acose_annotation_tasks": acose_annot_report["rows"],
     })
@@ -283,6 +357,7 @@ remap span ke subword, dan pembentukan pair file per split. Torch-free.
 Cache: bila `_prepare.json` sudah ada, artefak dimuat tanpa menghitung ulang."""
 
 CODE_10B = '''require_vars("step_stage", "acose_root", "acose_raw_dir", "bert_cache_dir",
+             "ACOSE_CATEGORY_SET", "ACOSE_EMOTION_SET",
              "MAX_SEQ_LENGTH", "NUM_EPOCHS", "SEED")
 
 if "absa5" not in sys.modules and "_ensure_absa5" in globals():
@@ -311,7 +386,7 @@ with step_stage("10b. Konfigurasi run ACOSE + persiapan data quint", 6) as st:
         notes="ACOSE quintuple dari master pipeline Colab V3 (emosi masih suggested)",
         data=DataConfig(
             raw_dir=acose_raw_dir, work_dir=acose_root, domain=DOMAIN,
-            schema="quint", category_set="rest16", sentiment_set="acos",
+            schema="quint", category_set=ACOSE_CATEGORY_SET, sentiment_set="acos",
             emotion_set=ACOSE_EMOTION_SET, max_seq_length=MAX_SEQ_LENGTH,
         ),
         tokenizer=TokenizerConfig(kind="wordpiece", path=bert_cache_dir,
