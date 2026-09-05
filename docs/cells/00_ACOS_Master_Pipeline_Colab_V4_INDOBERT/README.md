@@ -5,7 +5,7 @@ Sumber: notebook versi Google Drive (folder `12kRSVe-l88iZY1oix0CXSqTZ2308KzQx`,
 Jumlah sel: **80** (48 kode, 32 markdown).  
 Pola nama berkas: `0xx_00_ACOS_Master_Pipeline_Colab_V4_INDOBERT_cellNN_DDMMYYYY.md` — `0xx` nomor urut serial, `NN` nomor sel (1-based), tanggal `05092026`.
 
-> Catatan: versi notebook di Drive **lebih baru** daripada hasil `notebooks/_build_v4_indobert.py` di repo (commit `4bcca52`) — versi repo menghasilkan 72 sel tanpa sel 2c (dua root), 4c (adapter IndoBERT), 4d (gerbang data), dan 5d2 (Gate 1). Dokumentasi ini mengikuti versi Drive (80 sel).
+> Catatan: notebook di repo (`ACOS-IndoBERT/notebooks/00_ACOS_Master_Pipeline_Colab_V4_INDOBERT.ipynb`) dan generator `ACOS-IndoBERT/notebooks/_build_v4_indobert.py` **sudah 80 sel**, termasuk sel 2c (dua root + `acos_id.upstream`), 4c (adapter IndoBERT), 4d (gerbang data), dan 5d2 (Gate 1). Dokumentasi ini mengikuti versi itu. Ketujuh modul `acos_id` (`taxonomy`, `build_acos`, `tokenize_data`, `checkpoint`, `selftest`, `eda`, `upstream`) ada di paket.
 
 ## Peta alur
 

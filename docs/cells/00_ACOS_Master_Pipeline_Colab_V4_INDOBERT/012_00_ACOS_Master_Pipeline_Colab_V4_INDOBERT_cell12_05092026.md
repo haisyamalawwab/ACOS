@@ -33,7 +33,7 @@ Menemukan (atau menyinkronkan) folder `ACOS-IndoBERT`, memvalidasi 7 modul `acos
 
 ## Catatan
 
-- Paket `acos_id/` di repo saat ini (commit 4bcca52) **belum memiliki `upstream.py`** — sel ini akan gagal di cek kelengkapan sampai modul itu ditambahkan.
+- Paket `acos_id/` **sudah memiliki ketujuh modul** yang dituntut sel ini, termasuk `upstream.py` (`find_upstream` / `ensure_path` untuk memasang `Extract-Classify-ACOS/` ke `sys.path`). `acos_id.REQUIRED_MODULES` dan `acos_id.missing_modules()` adalah padanan pemeriksaan kelengkapan di luar notebook.
 - Jalankan sekali setiap restart kernel, sama seperti 1b.
 
 ---
