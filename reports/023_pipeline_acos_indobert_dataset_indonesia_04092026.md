@@ -1,40 +1,77 @@
 # 023 — Pipeline ACOS IndoBERT untuk Dataset Indonesia (Apps-ACOS)
 
 > Tanggal: 4 September 2026
-> Deliverable: paket `acos_id/`, notebook `00_ACOS_Master_Pipeline_Colab_V4_INDOBERT.ipynb`
+> Deliverable: folder `ACOS-IndoBERT/` — paket `acos_id/` + notebook
+> `00_ACOS_Master_Pipeline_Colab_V4_INDOBERT.ipynb`
 > Status: **belum pernah dilatih** — semua verifikasi di bawah torch-free atau berbasis berkas
 
 ---
 
 ## 1. Yang dibangun
 
-Dataset Indonesia baru (`data/Apps-ACOS/`, 96.417 quintuple lemah dari 43.673
-ulasan aplikasi bank digital) dijalankan lewat pipeline ACOS dua tahap yang sudah
-ada, dengan backbone IndoBERT yang di-fine-tune di notebook ini. Pola
-penyimpanan, penamaan sesi, caching per tahap, tabel `master_*`, dan plot 300 DPI
-persis mengikuti V2 STAGED, supaya angkanya bisa diletakkan berdampingan dengan
-baseline BERT Inggris.
+Dataset Indonesia baru (96.417 quintuple lemah dari 43.673 ulasan aplikasi bank
+digital) dijalankan lewat pipeline ACOS dua tahap yang sudah ada, dengan backbone
+IndoBERT yang di-fine-tune di notebook ini. Pola penyimpanan, penamaan sesi,
+caching per tahap, tabel `master_*`, dan plot 300 DPI persis mengikuti V2 STAGED,
+supaya angkanya bisa diletakkan berdampingan dengan baseline BERT Inggris.
 
-| Berkas | Isi |
+Seluruhnya berada di folder terpisah **`ACOS-IndoBERT/`**. Repo pipeline Inggris
+`ACOS-ASLI/` di folder induk dipakai hanya untuk dibaca: tidak satu berkas pun di
+sana diubah, dan tidak satu artefak run pun ditulis ke sana.
+
+```
+ACOS-IndoBERT/
+  acos_id/          7 modul; torch-free kecuali checkpoint.py
+  data/Apps-ACOS/   raw/, processed/, lexicon/ + appsid_quad_{train,dev,test}.tsv
+  tokenized_data/   appsid_{split}_quad_bert.tsv + appsid_{split}_pair.tsv
+  backbones/        indobert_base_p1/ (hasil rekey) + bert_base_uncased/ (vocab gate 2)
+  notebooks/        _build_v4_indobert.py + .ipynb V4 (80 sel / 48 kode, MD5 7de03d6c…)
+  build/            skrip verifikasi + keluaran sementara
+  results/          appsid_<timestamp>/ (checkpoints, csv, md, plots, logs)
+```
+
+| Modul | Isi |
 |---|---|
 | `acos_id/taxonomy.py` | 13 kategori, label sekuens, patch `get_labels`, gate vs `label_maps.json` |
 | `acos_id/build_acos.py` | `processed/*.csv` + `*.jsonl` → `appsid_quad_{train,dev,test}.tsv` |
-| `acos_id/tokenize_data.py` | generator `tokenized_data/*_quad_bert.tsv` + `*_pair.tsv`, tokenizer-agnostik |
-| `acos_id/checkpoint.py` | adapter rekey prefiks `bert.` + Gate 1 perbandingan bobot numerik |
-| `acos_id/eda.py` | EDA Indonesia dengan kontrak keluaran identik `colab_utils.analyze_and_plot_eda` |
-| `acos_id/selftest.py` | 5 gate torch-free + Gate 1 |
-| `notebooks/_build_v4_indobert.py` | generator notebook, berlapis di atas `_build_staged_v2.py` |
-| `notebooks/00_ACOS_Master_Pipeline_Colab_V4_INDOBERT.ipynb` | 80 sel / 48 kode, MD5 `8b2b72e4…` |
+| `acos_id/tokenize_data.py` | generator `*_quad_bert.tsv` + `*_pair.tsv`, tokenizer-agnostik |
+| `acos_id/checkpoint.py` | adapter rekey prefiks `bert.`, `ensure_vocab()`, Gate 1 numerik |
+| `acos_id/eda.py` | EDA Indonesia, kontrak keluaran identik `colab_utils.analyze_and_plot_eda` |
+| `acos_id/selftest.py` | 5 gate torch-free + Gate 1, `default_paths()` dua-root |
+| `acos_id/upstream.py` | menemukan & memasang `Extract-Classify-ACOS/` ke `sys.path` |
 
-Tidak satu pun berkas di `Extract-Classify-ACOS/` diubah. Seluruh perbedaan
-Indonesia masuk lewat patch runtime atau berkas data baru, sehingga jalur Inggris
-tetap berjalan sebagai kontrol: cukup ubah `DOMAIN` kembali ke `rest16` di sel 3.
+Jalur Inggris tetap berjalan sebagai kontrol: ubah `DOMAIN` ke `rest16` di sel 3,
+`BACKBONE` otomatis dipaksa ke `bert-en`, `tokenized_base` beralih ke repo
+upstream, dan ketiga sel Indonesia (4c, 4d, 5d2) melewati dirinya sendiri.
 
 ---
 
 ## 2. Keputusan yang menentukan hasil
 
-### 2.1 Satu baris ACOS = satu klausa, bukan satu ulasan
+### 2.1 Dua root, dan `tokenized_base` yang memisahkannya
+
+Berkas Indonesia ada di `indo_root` (`ACOS-IndoBERT/`), modul pipeline dibaca dari
+`acos_root` (`ACOS-ASLI/`). Yang tidak jelas sampai dicoba: processor upstream
+menyusun path-nya **sendiri**
+
+```python
+os.path.join(data_dir, "tokenized_data/" + domain_type + "_train_quad_bert.tsv")
+```
+
+sehingga yang bisa dialihkan bukan folder `tokenized_data`-nya, melainkan argumen
+`data_dir`. Karena itu ada satu variabel `tokenized_base` — `indo_root` untuk
+domain Indonesia, `extract_dir` untuk kontrol Inggris — dan generator notebook
+mengalihkan enam sel V2 ke variabel itu. Tanpa itu Step 1 membaca
+`Extract-Classify-ACOS/tokenized_data/`, yang tidak memuat berkas `appsid_*`
+sama sekali.
+
+`upstream.py` menuntut keempat berkas kunci (`modeling.py`,
+`run_classifier_dataset_utils.py`, `eval_metrics.py`,
+`bert_utils/tokenization.py`) ada sebelum memasang `sys.path`, jadi folder yang
+namanya benar tapi isinya tidak lengkap ditolak di sel 2c — bukan nanti saat
+`import modeling`, di mana pesannya tidak menunjuk penyebabnya.
+
+### 2.2 Satu baris ACOS = satu klausa, bukan satu ulasan
 
 `quintuples_weak.csv` memberi kolom `clause` per tuple. Diukur langsung:
 
@@ -48,7 +85,7 @@ klausa berasal dari varian normalisasi yang berbeda dari berkas `reviews_clean`.
 Memakai ulasan utuh sebagai baris berarti ~40 % span aspek berubah menjadi
 implisit palsu tanpa pesan apa pun. Klausa dipilih.
 
-### 2.2 Tokenisasi harus memisahkan tanda baca
+### 2.3 Tokenisasi harus memisahkan tanda baca
 
 Dengan `str.split()` biasa, aspek/opini terpetakan hanya 68,6 % / 60,0 %.
 Penyebabnya `text_norm` menyimpan `ribet,bebas` tanpa spasi di sekitar koma,
@@ -56,7 +93,7 @@ sehingga `bebas` tidak pernah cocok sebagai token. Dengan pola
 `\w+|[^\w\s]` — kata atau tanda baca sebagai token terpisah — angkanya menjadi
 100 % dari yang eksplisit. Ini bukan pilihan gaya; 31,4 % span hilang tanpanya.
 
-### 2.3 Kategori tanpa `#` justru jalur paling aman
+### 2.4 Kategori tanpa `#` justru jalur paling aman
 
 Kategori Apps-ACOS memakai nama datar (`AUTH_ACCESS`), berbeda dari rest16 yang
 memakai `ENTITAS#ATRIBUT`. Itu aman: `eval_metrics.py:226` memecah label gabungan
@@ -66,20 +103,26 @@ sebagai kategori, jadi kategori tanpa `#` tidak pernah ambigu.
 Jumlah kategori dijaga **13**, sama dengan rest16, sehingga `num_labels` Step 2
 tetap 13 × 3 = **39** dan dimensi head tidak berubah terhadap baseline Inggris.
 
-### 2.4 Satu folder cache per backbone
+### 2.5 Satu folder cache per backbone
 
 `bert_cache_dir` di V2 selalu `bert_base_uncased`. Di V4 namanya diturunkan dari
-`BACKBONE` (`indobert_base_p1`, `bert_base_uncased`, …). Kalau keduanya berbagi
-folder, checkpoint yang satu menimpa yang lain dan tokenizer tetap memuat vocab
-yang salah **tanpa error**: yang terlihat hanya F1 rendah. `BACKBONE` karena itu
-juga ikut disimpan ke `pipeline_state.pkl` dan dipulihkan bersamanya.
+`BACKBONE` (`indobert_base_p1`, `bert_base_uncased`, …) dan letaknya di
+`indo_root/backbones/`. Kalau keduanya berbagi folder, checkpoint yang satu
+menimpa yang lain dan tokenizer tetap memuat vocab yang salah **tanpa error**:
+yang terlihat hanya F1 rendah. `BACKBONE`, `indo_root`, dan `tokenized_dir`
+karena itu ikut disimpan ke `pipeline_state.pkl` dan dipulihkan bersamanya.
+
+Bobot backbone (±500 MB) tidak dilacak git, jadi `ensure_vocab()` mengunduh
+`vocab.txt` (±230 KB) sendiri saat gate membutuhkannya. Sudah diuji: menghapus
+kedua folder backbone lalu menjalankan `python -m acos_id.selftest` tetap
+menghasilkan lima gate hijau.
 
 ---
 
 ## 3. Hasil konversi
 
 ```
-sumber : data/Apps-ACOS/processed/
+sumber : ACOS-IndoBERT/data/Apps-ACOS/processed/
 split diambil dari stage2_{train,val,test}.jsonl berdasarkan review_id
 
          baris    tuple    aspek eksplisit   opini eksplisit
@@ -187,6 +230,15 @@ dan setelah restart kernel salah satu dari sel itu bisa menjadi yang pertama
 berjalan. `QuadProcessor` tidak terpengaruh (ia mengabaikan `domain_type`), jadi
 gejalanya hanya muncul di Step 2 — jauh dari penyebabnya.
 
+### 5.5 Sel dua-root harus disisipkan sesudah sel path V2, bukan sebelum
+
+Percobaan pertama menempatkan sel 2c tepat setelah sel 1b (pelacak progres), yang
+tampak wajar karena sel gate di bawahnya memakai keduanya. Hasilnya salah: dua sel
+path V2 di antaranya menetapkan `base_project_dir` dan `extract_dir` dari hasil
+deteksi Drive, jadi nilai dua-root yang baru ditulis sel 2c justru **ditimpa
+kembali** — tanpa pesan apa pun. Sel 2c sekarang berada setelah sel impor
+`colab_utils`, sebagai penimpa terakhir.
+
 ---
 
 ## 6. Sifat dataset yang perlu dilaporkan saat menulis hasil
@@ -223,14 +275,19 @@ dataset ini nanti dijalankan lewat V3.
 
 Sudah, di mesin ini, tanpa torch:
 
-- 5 gate torch-free hijau (`python -m acos_id.selftest`)
+- 5 gate torch-free hijau (`python -m acos_id.selftest`), dijalankan dari
+  `ACOS-IndoBERT/`
 - Regenerasi data Inggris identik dengan berkas repo, kecuali satu kalimat cacat
+- **Jalur klon segar**: kedua folder backbone dihapus, lalu `selftest` tetap
+  menghasilkan lima gate hijau — `ensure_vocab()` mengunduh `vocab.txt` IndoBERT
+  dan `bert-base-uncased` sendiri, dan `tokenized_data` dibangun ulang dari nol
 - 48 sel kode notebook lolos `compile()`, tidak ada shell-magic berindentasi
 - Generator deterministik: dua build berurutan menghasilkan MD5 identik
-  (`8b2b72e4a36ded2d707459d20825ea17`); V2 dan V3 tidak berubah
-- Sel 3 (impor), 4 (GPU), 1b (pelacak), 1s (paket), 3 (konfigurasi), sesi, dan
-  4d (gerbang) dieksekusi nyata dengan stub torch — `DOMAIN=appsid`,
-  `BACKBONE=indobert`, folder sesi `results/appsid_<ts>/`
+  (`7de03d6c9442162b2f8e5639a34cd7c0`); V2 dan V3 di repo upstream tidak berubah
+- Sel impor, GPU, 1b (pelacak), 2c (dua root), 3 (konfigurasi), sesi, dan 4d
+  (gerbang) dieksekusi nyata dengan stub torch. Enam pemeriksaan path lulus:
+  `indo_root`/`acos_root` benar, `tokenized_base` = `indo_root`, dan
+  `results_base`/`bert_cache_dir`/folder sesi semuanya di bawah `indo_root`
 - Pembentuk fitur **upstream asli** menerima data Indonesia: 500 contoh Step 1
   menghasilkan keempat jenis tag span, 0 `[UNK]`; 500 pasangan Step 2 menghasilkan
   `num_labels=39`, rata-rata 1,008 label positif, tidak ada label di luar taksonomi
@@ -246,19 +303,27 @@ Belum, dan hanya bisa di Colab:
 
 ## 8. Cara menjalankan
 
-```
-Colab:  buka notebooks/00_ACOS_Master_Pipeline_Colab_V4_INDOBERT.ipynb
-        jalankan berurutan; 1s dan 1b wajib diulang setiap restart kernel
-        sel 4c mengunduh + merekey IndoBERT, 4d menjalankan 5 gate
-        sel 5d2 adalah Gate 1 — kalau merah, berhenti, jangan lanjut
+Colab — buka `ACOS-IndoBERT/notebooks/00_ACOS_Master_Pipeline_Colab_V4_INDOBERT.ipynb`,
+jalankan berurutan. Sel 1b dan 2c wajib diulang setiap restart kernel. Sel 4c
+mengunduh + merekey IndoBERT, 4d menjalankan lima gate, 5d2 adalah Gate 1 — kalau
+merah, berhenti di situ.
 
-Lokal:  python -m acos_id.selftest .                # 5 gate torch-free
-        python -m acos_id.build_acos data           # konversi ulang berkas ACOS
-        python -m acos_id.eda . build/_eda_id       # EDA + 4 plot
-        python build/_verify_id_features.py         # fitur upstream vs data ID
-        python notebooks/_build_v4_indobert.py      # bangun ulang notebook
+Lokal, dari dalam `ACOS-IndoBERT/`:
+
+```bash
+python -m acos_id.selftest              # 5 gate torch-free
+python -m acos_id.build_acos            # processed/*.csv → appsid_quad_*.tsv
+python -m acos_id.tokenize_data         # → tokenized_data/ dengan vocab IndoBERT
+python -m acos_id.eda                   # statistik + 4 plot → build/_eda_id/
+python build/_sim_v4_cells.py           # eksekusi sel notebook torch-free
+python build/_verify_id_features.py     # fitur upstream vs data Indonesia
+python notebooks/_build_v4_indobert.py  # bangun ulang notebook (deterministik)
 ```
 
-Kontrol Inggris: ubah `DOMAIN = "rest16"` di sel 3. `BACKBONE` otomatis dipaksa
-ke `bert-en` dengan pesan, dan ketiga sel Indonesia (4c, 4d, 5d2) melewati
-dirinya sendiri.
+Semua perintah menghitung root dari lokasi paket, jadi tidak butuh argumen path.
+`python -m acos_id.checkpoint indobert backbones/indobert_base_p1` menyiapkan
+checkpoint tetapi butuh torch — jalankan di Colab.
+
+Kontrol Inggris: ubah `DOMAIN = "rest16"` di sel 3. `BACKBONE` otomatis dipaksa ke
+`bert-en` dengan pesan, `tokenized_base` beralih ke `Extract-Classify-ACOS/`, dan
+ketiga sel Indonesia (4c, 4d, 5d2) melewati dirinya sendiri.

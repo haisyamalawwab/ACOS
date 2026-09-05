@@ -197,21 +197,30 @@ def gate_acos_build(paths, *, rebuild: bool = False) -> dict:
 
 
 def gate_tokenized(paths, *, vocab_dir: str = None, out_dir: str = None,
-                   rebuild: bool = False) -> dict:
+                   rebuild: bool = False, backbone: str = "indobert") -> dict:
     """`tokenized_data` Indonesia: span tetap valid setelah retokenisasi WordPiece.
 
     Juga membandingkan jumlah quad sebelum/sesudah — retokenisasi tidak boleh
     membuang tuple. Ini yang menangkap span yang hilang karena pemecahan subword
     salah hitung.
     """
+    from . import checkpoint as ckpt
     from . import tokenize_data
 
     vocab_dir = vocab_dir or paths.get("bert_cache_dir")
     out_dir = out_dir or paths.get("tokenized_dir")
     detail = {"vocab_dir": vocab_dir, "out_dir": out_dir}
-    if not vocab_dir or not os.path.exists(os.path.join(vocab_dir, "vocab.txt")):
-        return _gate("tokenized", False,
-                     error=f"vocab.txt tidak ada di {vocab_dir}", **detail)
+    if not vocab_dir:
+        return _gate("tokenized", False, error="bert_cache_dir tidak diketahui", **detail)
+    if not os.path.exists(os.path.join(vocab_dir, "vocab.txt")):
+        # Bobot backbone tidak dilacak git, jadi klon segar tidak punya vocab.
+        # Unduh vocab-nya saja (±230 KB) supaya gate tetap bisa jalan tanpa torch.
+        try:
+            detail["vocab_diunduh"] = ckpt.ensure_vocab(backbone, vocab_dir)
+        except Exception as exc:
+            return _gate("tokenized", False,
+                         error=f"vocab.txt tidak ada di {vocab_dir} dan gagal diunduh: "
+                               f"{type(exc).__name__}: {exc}", **detail)
 
     src_dir = os.path.join(paths["data_root"], taxonomy.DATASET_DIRNAME)
     berkas = {s: os.path.join(out_dir, f"{taxonomy.DOMAIN}_{s}_quad_bert.tsv")
@@ -257,14 +266,21 @@ def gate_gate2_english(paths, *, en_vocab_dir: str = None, work_dir: str = None)
     upstream, bukan konvensi yang kita karang sendiri. Dijalankan dengan vocab
     `bert-base-uncased` pada `data/Restaurant-ACOS/`.
     """
+    from . import checkpoint as ckpt
     from . import tokenize_data
 
     en_vocab_dir = en_vocab_dir or paths.get("en_vocab_dir") or paths.get("bert_en_dir")
     work_dir = work_dir or os.path.join(paths.get("work_dir", "."), "_gate2_en")
     detail = {"en_vocab_dir": en_vocab_dir, "work_dir": work_dir}
-    if not en_vocab_dir or not os.path.exists(os.path.join(en_vocab_dir, "vocab.txt")):
-        return _gate("gate2_english", False,
-                     error=f"vocab bert-base-uncased tidak ada di {en_vocab_dir}", **detail)
+    if not en_vocab_dir:
+        return _gate("gate2_english", False, error="en_vocab_dir tidak diketahui", **detail)
+    if not os.path.exists(os.path.join(en_vocab_dir, "vocab.txt")):
+        try:
+            detail["vocab_diunduh"] = ckpt.ensure_vocab("bert-en", en_vocab_dir)
+        except Exception as exc:
+            return _gate("gate2_english", False,
+                         error=f"vocab bert-base-uncased tidak ada di {en_vocab_dir} "
+                               f"dan gagal diunduh: {type(exc).__name__}: {exc}", **detail)
 
     repo_dir = os.path.join(paths["extract_dir"], "tokenized_data")
     src_dir = os.path.join(paths.get("en_data_root") or paths["data_root"],
