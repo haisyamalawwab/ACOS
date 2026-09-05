@@ -1,0 +1,18 @@
+# Keluaran runtime: folder sesi bertimestamp, checkpoint, plot, log.
+results/
+
+# Isi folder backbone seluruhnya diunduh, bukan disimpan di git:
+# `acos_id.checkpoint.ensure_vocab()` mengambil vocab.txt (±230 KB) saat gate
+# membutuhkannya, dan `prepare_backbone()` mengambil + merekey pytorch_model.bin
+# (±500 MB) di Colab. Jalur klon-segar ini sudah diuji: hapus folder backbone,
+# jalankan `python -m acos_id.selftest`, kelima gate tetap hijau.
+backbones/*/
+
+# Keluaran sementara skrip verifikasi. Skrip .py-nya sendiri dilacak.
+build/_sim_v4/
+build/_eda_id/
+build/_gate2_en/
+
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
