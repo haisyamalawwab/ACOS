@@ -30,11 +30,34 @@ Modul:
 - `tokenize_data` — generator `tokenized_data/*_quad_bert.tsv` + `*_pair.tsv`
 - `eda` — EDA Indonesia dengan kontrak keluaran identik `colab_utils`
 - `selftest` — 5 gate torch-free + Gate 1
+- `upstream` — temukan `Extract-Classify-ACOS/` dan pasang ke `sys.path`
 
-Semua modul torch-free kecuali `checkpoint`, yang memang bertugas menyentuh
-state_dict.
+Ketujuh modul ini dituntut sel 2c notebook V4 (`ACOS_ID_MODULES`). Semua
+torch-free kecuali `checkpoint`, yang memang bertugas menyentuh state_dict.
 """
 
-__all__ = ["taxonomy", "checkpoint", "build_acos", "tokenize_data", "eda", "selftest"]
+import os as _os
 
-__version__ = "0.2.0"
+REQUIRED_MODULES = (
+    "taxonomy", "build_acos", "tokenize_data", "checkpoint",
+    "selftest", "eda", "upstream",
+)
+
+__all__ = list(REQUIRED_MODULES)
+
+__version__ = "0.2.1"
+
+
+def missing_modules(package_dir=None):
+    """Nama berkas `.py` yang hilang atau kosong di paket ini.
+
+    Sel 2c notebook menolak folder `acos_id/` yang tersinkron separuh; fungsi
+    ini adalah padanan yang bisa dipanggil di luar notebook (selftest, CI).
+    """
+    here = package_dir or _os.path.dirname(_os.path.abspath(__file__))
+    hilang = []
+    for name in REQUIRED_MODULES:
+        path = _os.path.join(here, name + ".py")
+        if not _os.path.isfile(path) or _os.path.getsize(path) == 0:
+            hilang.append(name + ".py")
+    return hilang

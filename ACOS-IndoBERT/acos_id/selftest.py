@@ -436,6 +436,13 @@ def main(argv=None):
     indo = indo_root_default()
     print(f"indo_root : {indo}")
     print(f"acos_root : {os.path.dirname(indo)} (baca saja)\n")
+
+    from . import missing_modules
+    _hilang = missing_modules()
+    if _hilang:
+        print(f"❌ acos_id tidak lengkap; hilang: {_hilang}")
+        return 1
+
     try:
         hasil = run_gates(indo, only=only, raise_on_fail=False)
     except Exception as exc:
