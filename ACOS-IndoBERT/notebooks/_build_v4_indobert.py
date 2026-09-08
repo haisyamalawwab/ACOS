@@ -672,6 +672,16 @@ def apply_patches(cells):
     if n_tb == 0:
         raise LookupError("tidak ada rujukan tokenized_data yang dialihkan")
 
+    # 14. Resume training per-epoch (rolling checkpoint + optimizer state): sel
+    #      deteksi 5b/8b membaca step1/2_resume.json (+ menyalin checkpoint epoch
+    #      terakhir dari sesi lama), sel training 5e/8e merestorasi bobot +
+    #      optimizer lalu melanjutkan dari epoch berikutnya. Keempat sel diganti
+    #      utuh dengan versi teruji di .ipynb V4 — pola yang sama dengan penulisan
+    #      ulang sel lain di generator ini. Dibangkitkan/diperbarui oleh
+    #      `ACOS-IndoBERT/build/_port_resume_to_v4.py`.
+    for _needles, _full in RESUME_SPECS:
+        cells[find_code(cells, *_needles)] = code(_full)
+
     return cells, {"n_sel_tokenized_base": n_tb}
 
 
@@ -877,6 +887,638 @@ CODE_SAMPLE_ANCHOR = ('# Contoh Pengujian Live Review\n'
                       'but the service was slow."')
 
 
+
+# ── Resume training per-epoch (port dari patch manual .ipynb V4) ───────────
+# Diport oleh ACOS-IndoBERT/build/_port_resume_to_v4.py. Keempat sel diganti
+# UTUH dengan isi versi teruji di .ipynb: sel deteksi 5b/8b membaca
+# step1/2_resume.json, sel training 5e/8e merestorasi bobot+optimizer lalu
+# melanjutkan dari epoch berikutnya (rolling checkpoint per epoch).
+RESUME_SPECS = [
+    (("""step1_already_done = os.path.exists(step1_bin)""", """STEP1_SKIP_TRAINING = (not FORCE_RETRAIN_STEP1)"""),
+     """require_vars("step_stage", "step1_bin", "pred_file", "step1_csv", "FORCE_RETRAIN_STEP1")
+
+with step_stage("5b. Deteksi cache Step 1 (sesi aktif lalu sesi lama)", 4) as st:
+    step1_already_done = os.path.exists(step1_bin) and os.path.exists(pred_file)
+    st.step("Sesi aktif — model: {} | pred4pipeline: {}".format(
+        f"{os.path.getsize(step1_bin) / 1024 ** 2:.1f} MB" if os.path.exists(step1_bin) else "belum ada",
+        f"{sum(1 for _ in open(pred_file, encoding='utf-8'))} baris" if os.path.exists(pred_file) else "belum ada"))
+
+    if step1_already_done:
+        st.step("Pencarian sesi lama dilewati (artefak sesi aktif sudah lengkap)")
+    else:
+        found_bin = auto_find_file("pytorch_model.bin", must_contain="step1_best", search_roots=[
+            results_base if 'results_base' in globals() else "",
+            "/content/drive/MyDrive/ACOS/Output/results",
+            os.path.join(base_project_dir, "Output", "results"),
+        ])
+        if found_bin and "step1_best" in found_bin:
+            src_dir = os.path.dirname(found_bin)
+            st.step(f"Checkpoint sesi sebelumnya ditemukan: {src_dir}")
+            for fn in ["pytorch_model.bin", "config.json", "vocab.txt"]:
+                fp = os.path.join(src_dir, fn)
+                if os.path.exists(fp):
+                    shutil.copy(fp, os.path.join(step1_ckpt, fn))
+                    st.note(f"↪ {fn} ({os.path.getsize(fp) / 1024 ** 2:.1f} MB) disalin ke sesi aktif")
+            found_pred = auto_find_file("pred4pipeline.txt")
+            if found_pred:
+                shutil.copy(found_pred, pred_file)
+                st.note(f"↪ pred4pipeline.txt disalin dari {found_pred}")
+            found_csv = auto_find_file("step1_training_history.csv")
+            if found_csv:
+                shutil.copy(found_csv, step1_csv)
+                st.note(f"↪ step1_training_history.csv disalin dari {found_csv}")
+            step1_already_done = os.path.exists(step1_bin) and os.path.exists(pred_file)
+        else:
+            st.step("Tidak ada checkpoint step1_best di sesi mana pun")
+
+    STEP1_SKIP_TRAINING = (not FORCE_RETRAIN_STEP1) and step1_already_done
+    st.step("Keputusan: " + ("CACHE HIT → sel 5c-5e dilewati"
+                             if STEP1_SKIP_TRAINING else
+                             f"TRAINING dijalankan ({NUM_EPOCHS} epoch)"))
+
+    if STEP1_SKIP_TRAINING:
+        print(f"⏩ [CACHE HIT] Model Step 1 : {step1_ckpt}")
+        print(f"⏩ [CACHE HIT] Prediksi     : {pred_file}")
+        if os.path.exists(step1_csv):
+            df_s1_saved = pd.read_csv(step1_csv)
+            step1_history = df_s1_saved.to_dict('records')
+            _row_c1, best_step1_f1, best1_epoch = best_epoch_row(step1_history)
+            best1_epoch = best1_epoch or NUM_EPOCHS
+            st.step(f"Riwayat tersimpan: {len(df_s1_saved)} epoch, terbaik epoch {best1_epoch}")
+            if len(df_s1_saved) < NUM_EPOCHS:
+                st.note(f"⚠️ Riwayat hanya {len(df_s1_saved)}/{NUM_EPOCHS} epoch — checkpoint ini "
+                        f"berasal dari run yang terhenti. Set FORCE_RETRAIN_STEP1=True bila "
+                        f"ingin melatih penuh.")
+        else:
+            step1_history = []
+            best_step1_f1 = 0.0
+            best1_epoch = NUM_EPOCHS
+            st.step("Riwayat CSV tidak ada — metrik per epoch tidak bisa dilaporkan")
+# ── Resume Epoch: cek apakah training Step 1 terhenti di tengah jalan ────────
+step1_resume_json = os.path.join(session_dirs["logs"], "step1_resume.json")
+STEP1_RESUME_EPOCH = 0  # epoch terakhir yang selesai (0 = belum ada / baru)
+
+if (not STEP1_SKIP_TRAINING) and (not FORCE_RETRAIN_STEP1):
+    if not os.path.exists(step1_resume_json):
+        _found_resume = auto_find_file("step1_resume.json", search_roots=[
+            results_base if 'results_base' in globals() else "",
+            "/content/drive/MyDrive/ACOS/Output/results",
+            os.path.join(base_project_dir, "Output", "results"),
+        ])
+        if _found_resume and os.path.exists(_found_resume):
+            try:
+                _rj_prev = json.load(open(_found_resume, encoding="utf-8"))
+                _last_prev = int(_rj_prev.get("last_completed_epoch", 0))
+                _prev_session_root = os.path.dirname(os.path.dirname(_found_resume))
+                _prev_epoch_dir = os.path.join(_prev_session_root, "checkpoints", f"step1_epoch_{_last_prev}")
+                if os.path.isdir(_prev_epoch_dir):
+                    _tgt_epoch_dir = os.path.join(session_dirs["checkpoints"], f"step1_epoch_{_last_prev}")
+                    os.makedirs(_tgt_epoch_dir, exist_ok=True)
+                    for _f in os.listdir(_prev_epoch_dir):
+                        shutil.copy(os.path.join(_prev_epoch_dir, _f), os.path.join(_tgt_epoch_dir, _f))
+                    shutil.copy(_found_resume, step1_resume_json)
+                    print(f"↪ [RESUME] Menyalin resume checkpoint dari sesi lama: epoch {_last_prev}")
+            except Exception as _e_copy:
+                print(f"⚠️ Gagal menyalin resume dari sesi lama: {_e_copy}")
+
+    if os.path.exists(step1_resume_json):
+        try:
+            _rj = json.load(open(step1_resume_json, encoding="utf-8"))
+            _last = int(_rj.get("last_completed_epoch", 0))
+            _total = int(_rj.get("total_epochs", NUM_EPOCHS))
+            _epoch_ckpt_check = os.path.join(
+                session_dirs["checkpoints"], f"step1_epoch_{_last}")
+            _epoch_bin_check  = os.path.join(_epoch_ckpt_check, "pytorch_model.bin")
+            if _total != NUM_EPOCHS:
+                print(f"⚠️  [RESUME] NUM_EPOCHS berubah ({_total}→{NUM_EPOCHS}). "
+                      f"Resume diabaikan — training dari awal.")
+            elif _last > 0 and _last < NUM_EPOCHS and os.path.exists(_epoch_bin_check):
+                STEP1_RESUME_EPOCH = _last
+                print(f"♻️  [RESUME] Step 1 terhenti di epoch {_last}/{NUM_EPOCHS}. "
+                      f"Akan dilanjutkan dari epoch {_last + 1}.")
+            elif _last >= NUM_EPOCHS:
+                print(f"✅ [RESUME] step1_resume.json menunjukkan training sudah "
+                      f"selesai ({_last}/{NUM_EPOCHS} epoch).")
+        except Exception as _re:
+            print(f"⚠️  Tidak bisa membaca step1_resume.json: {_re}. Training dari awal.")
+
+elif STEP1_SKIP_TRAINING:
+    if os.path.exists(step1_resume_json):
+        try:
+            _rj_info = json.load(open(step1_resume_json, encoding="utf-8"))
+            _ep_info = _rj_info.get("last_completed_epoch", "?")
+            print(f"ℹ️  step1_resume.json ada (epoch {_ep_info}/{NUM_EPOCHS}) "
+                  f"— diabaikan karena cache hit sudah lengkap.")
+        except Exception:
+            pass
+
+if STEP1_RESUME_EPOCH > 0:
+    STEP1_SKIP_TRAINING = False  # paksa jalankan training (lanjut dari epoch berikutnya)
+    print(f"   → STEP1_SKIP_TRAINING di-override: training akan lanjut dari "
+          f"epoch {STEP1_RESUME_EPOCH + 1}.")
+"""),
+    (("""step2_already_done = os.path.exists(step2_bin)""", """STEP2_SKIP_TRAINING = (not FORCE_RETRAIN_STEP2)"""),
+     """require_vars("step_stage", "step2_bin", "step2_csv", "FORCE_RETRAIN_STEP2")
+
+with step_stage("8b. Deteksi cache Step 2 (sesi aktif lalu sesi lama)", 4) as st:
+    step2_already_done = os.path.exists(step2_bin)
+    st.step("Sesi aktif — model: " + (
+        f"{os.path.getsize(step2_bin) / 1024 ** 2:.1f} MB" if step2_already_done
+        else "belum ada"))
+
+    if step2_already_done:
+        st.step("Pencarian sesi lama dilewati (checkpoint sesi aktif sudah ada)")
+    else:
+        found_bin2 = auto_find_file("pytorch_model.bin", must_contain="step2_best",
+                                    search_roots=[
+                                        results_base if 'results_base' in globals() else "",
+                                        "/content/drive/MyDrive/ACOS/Output/results",
+                                        os.path.join(base_project_dir, "Output", "results"),
+                                    ])
+        if found_bin2 and "step2_best" in found_bin2:
+            src_dir2 = os.path.dirname(found_bin2)
+            st.step(f"Checkpoint sesi sebelumnya ditemukan: {src_dir2}")
+            for fn in ["pytorch_model.bin", "config.json", "vocab.txt"]:
+                fp = os.path.join(src_dir2, fn)
+                if os.path.exists(fp):
+                    shutil.copy(fp, os.path.join(step2_ckpt, fn))
+                    st.note(f"↪ {fn} ({os.path.getsize(fp) / 1024 ** 2:.1f} MB) disalin")
+            found_csv2 = auto_find_file("step2_training_history.csv")
+            if found_csv2:
+                shutil.copy(found_csv2, step2_csv)
+                st.note(f"↪ step2_training_history.csv disalin dari {found_csv2}")
+            step2_already_done = os.path.exists(step2_bin)
+        else:
+            st.step("Tidak ada checkpoint step2_best di sesi mana pun")
+
+    STEP2_SKIP_TRAINING = (not FORCE_RETRAIN_STEP2) and step2_already_done
+    st.step("Keputusan: " + ("CACHE HIT → sel 8d-8e dilewati"
+                             if STEP2_SKIP_TRAINING else
+                             f"TRAINING dijalankan ({NUM_EPOCHS} epoch)"))
+
+    if STEP2_SKIP_TRAINING:
+        print(f"⏩ [CACHE HIT] Model Step 2 : {step2_ckpt}")
+        if os.path.exists(step2_csv):
+            df_s2_saved = pd.read_csv(step2_csv)
+            step2_history = df_s2_saved.to_dict('records')
+            _row_c2, best_step2_f1, best2_epoch = best_epoch_row(step2_history)
+            best2_epoch = best2_epoch or NUM_EPOCHS
+            _ada_hitungan = all(c in df_s2_saved.columns for c in ("tp", "fp", "fn"))
+            st.step(f"Riwayat tersimpan: {len(df_s2_saved)} epoch, terbaik epoch {best2_epoch}"
+                    + (" (TP/FP/FN tersedia)" if _ada_hitungan
+                       else " (tanpa kolom TP/FP/FN — CSV dari run lama)"))
+            if len(df_s2_saved) < NUM_EPOCHS:
+                st.note(f"⚠️ Riwayat hanya {len(df_s2_saved)}/{NUM_EPOCHS} epoch — "
+                        f"checkpoint dari run yang terhenti. Set FORCE_RETRAIN_STEP2=True "
+                        f"bila ingin melatih penuh.")
+        else:
+            step2_history = []
+            best_step2_f1 = 0.0
+            best2_epoch = NUM_EPOCHS
+            st.step("Riwayat CSV tidak ada — metrik per epoch tidak bisa dilaporkan")
+# ── Resume Epoch: cek apakah training Step 2 terhenti di tengah jalan ────────
+step2_resume_json = os.path.join(session_dirs["logs"], "step2_resume.json")
+STEP2_RESUME_EPOCH = 0  # epoch terakhir yang selesai (0 = belum ada / baru)
+
+if (not STEP2_SKIP_TRAINING) and (not FORCE_RETRAIN_STEP2):
+    if not os.path.exists(step2_resume_json):
+        _found_resume2 = auto_find_file("step2_resume.json", search_roots=[
+            results_base if 'results_base' in globals() else "",
+            "/content/drive/MyDrive/ACOS/Output/results",
+            os.path.join(base_project_dir, "Output", "results"),
+        ])
+        if _found_resume2 and os.path.exists(_found_resume2):
+            try:
+                _rj2_prev = json.load(open(_found_resume2, encoding="utf-8"))
+                _last2_prev = int(_rj2_prev.get("last_completed_epoch", 0))
+                _prev_session_root2 = os.path.dirname(os.path.dirname(_found_resume2))
+                _prev_epoch_dir2 = os.path.join(_prev_session_root2, "checkpoints", f"step2_epoch_{_last2_prev}")
+                if os.path.isdir(_prev_epoch_dir2):
+                    _tgt_epoch_dir2 = os.path.join(session_dirs["checkpoints"], f"step2_epoch_{_last2_prev}")
+                    os.makedirs(_tgt_epoch_dir2, exist_ok=True)
+                    for _f in os.listdir(_prev_epoch_dir2):
+                        shutil.copy(os.path.join(_prev_epoch_dir2, _f), os.path.join(_tgt_epoch_dir2, _f))
+                    shutil.copy(_found_resume2, step2_resume_json)
+                    print(f"↪ [RESUME] Menyalin resume checkpoint Step 2 dari sesi lama: epoch {_last2_prev}")
+            except Exception as _e_copy2:
+                print(f"⚠️ Gagal menyalin resume Step 2 dari sesi lama: {_e_copy2}")
+
+    if os.path.exists(step2_resume_json):
+        try:
+            _rj2 = json.load(open(step2_resume_json, encoding="utf-8"))
+            _last2  = int(_rj2.get("last_completed_epoch", 0))
+            _total2 = int(_rj2.get("total_epochs", NUM_EPOCHS))
+            _epoch_ckpt_check2 = os.path.join(
+                session_dirs["checkpoints"], f"step2_epoch_{_last2}")
+            _epoch_bin_check2  = os.path.join(_epoch_ckpt_check2, "pytorch_model.bin")
+            if _total2 != NUM_EPOCHS:
+                print(f"⚠️  [RESUME] NUM_EPOCHS berubah ({_total2}→{NUM_EPOCHS}). "
+                      f"Resume Step 2 diabaikan — training dari awal.")
+            elif _last2 > 0 and _last2 < NUM_EPOCHS and os.path.exists(_epoch_bin_check2):
+                STEP2_RESUME_EPOCH = _last2
+                print(f"♻️  [RESUME] Step 2 terhenti di epoch {_last2}/{NUM_EPOCHS}. "
+                      f"Akan dilanjutkan dari epoch {_last2 + 1}.")
+            elif _last2 >= NUM_EPOCHS:
+                print(f"✅ [RESUME] step2_resume.json menunjukkan training sudah "
+                      f"selesai ({_last2}/{NUM_EPOCHS} epoch).")
+        except Exception as _re2:
+            print(f"⚠️  Tidak bisa membaca step2_resume.json: {_re2}. Training dari awal.")
+
+elif STEP2_SKIP_TRAINING:
+    if os.path.exists(step2_resume_json):
+        try:
+            _rj2_info = json.load(open(step2_resume_json, encoding="utf-8"))
+            _ep2_info = _rj2_info.get("last_completed_epoch", "?")
+            print(f"ℹ️  step2_resume.json ada (epoch {_ep2_info}/{NUM_EPOCHS}) "
+                  f"— diabaikan karena cache hit sudah lengkap.")
+        except Exception:
+            pass
+
+if STEP2_RESUME_EPOCH > 0:
+    STEP2_SKIP_TRAINING = False  # paksa jalankan training (lanjut dari epoch berikutnya)
+    print(f"   → STEP2_SKIP_TRAINING di-override: training akan lanjut dari "
+          f"epoch {STEP2_RESUME_EPOCH + 1}.")
+"""),
+    (("""5e. Training Step 1 BERT-CRF""", """optimizer_1.step()"""),
+     """require_vars("step_stage", "STEP1_SKIP_TRAINING")
+
+if STEP1_SKIP_TRAINING:
+    print("⏩ 5e dilewati — training Step 1 tidak dijalankan (cache hit).")
+    print(f"   Micro-F1 terbaik tersimpan: {best_step1_f1 * 100:.2f}% (epoch {best1_epoch})")
+else:
+    require_vars("model_step1", "optimizer_1", "train_loader_1", "eval_loader_1")
+    with step_stage(f"5e. Training Step 1 BERT-CRF — {NUM_EPOCHS} epoch pada {device}",
+                    NUM_EPOCHS) as st:
+        # ── Resume State ─────────────────────────────────────────────────────
+        step1_resume_json = os.path.join(session_dirs["logs"], "step1_resume.json")
+        start_epoch    = 1
+        best_step1_f1  = 0.0
+        best1_epoch    = 1
+        step1_history  = []
+
+        _resume_ep = globals().get("STEP1_RESUME_EPOCH", 0)
+        if _resume_ep > 0 and not FORCE_RETRAIN_STEP1:
+            _epoch_ckpt_r = os.path.join(
+                session_dirs["checkpoints"], f"step1_epoch_{_resume_ep}")
+            _model_path_r = os.path.join(_epoch_ckpt_r, "pytorch_model.bin")
+            _opt_path_r   = os.path.join(_epoch_ckpt_r, "optimizer.pt")
+            try:
+                model_step1.load_state_dict(
+                    torch.load(_model_path_r, map_location=device))
+                st.note(f"✅ Bobot model direstorasi dari epoch {_resume_ep}")
+                if os.path.exists(_opt_path_r):
+                    optimizer_1.load_state_dict(
+                        torch.load(_opt_path_r, map_location="cpu"))
+                    st.note(f"✅ Optimizer state direstorasi dari epoch {_resume_ep}")
+                else:
+                    st.note(f"⚠️  optimizer.pt tidak ada — optimizer mulai baru "
+                            f"(bobot model tetap dari epoch {_resume_ep})")
+                _rj_r = json.load(open(step1_resume_json, encoding="utf-8"))
+                step1_history = _rj_r.get("history", [])
+                best_step1_f1 = float(_rj_r.get("best_micro_f1", 0.0))
+                best1_epoch   = int(_rj_r.get("best_epoch", 1))
+                start_epoch   = _resume_ep + 1
+                st.step(f"♻️  Resume dari epoch {_resume_ep} → mulai epoch {start_epoch} "
+                        f"| best F1 sejauh ini: {best_step1_f1 * 100:.2f}% "
+                        f"(epoch {best1_epoch})")
+            except Exception as _load_err:
+                st.note(f"❌ Gagal load resume checkpoint: {_load_err}. "
+                        f"Training dimulai dari awal (epoch 1).")
+                start_epoch   = 1
+                best_step1_f1 = 0.0
+                best1_epoch   = 1
+                step1_history = []
+        else:
+            st.step("Memulai training baru dari epoch 1")
+        # ─────────────────────────────────────────────────────────────────────
+
+        epoch_bar = tqdm(range(start_epoch, NUM_EPOCHS + 1), desc="Step 1 epoch",
+                         unit="epoch", initial=start_epoch - 1, total=NUM_EPOCHS)
+        for epoch in epoch_bar:
+            model_step1.train()
+            t_loss = 0.0
+            batch_bar = tqdm(train_loader_1, desc=f"  epoch {epoch}/{NUM_EPOCHS}",
+                             unit="batch", leave=False)
+            for step, batch in enumerate(batch_bar, 1):
+                batch = tuple(t.to(device) for t in batch)
+                _len, _ids, _mask, _lbls, _seg, _imp_a, _imp_o = batch
+                out1 = model_step1(aspect_input_ids=_ids, aspect_labels=_lbls,
+                                   aspect_token_type_ids=_seg, aspect_attention_mask=_mask,
+                                   exist_imp_aspect=_imp_a, exist_imp_opinion=_imp_o)
+                loss, _ = unpack_model_output(out1)
+                loss.backward()
+                optimizer_1.step()
+                optimizer_1.zero_grad()
+                t_loss += loss.item()
+                if step % 10 == 0 or step == len(train_loader_1):
+                    batch_bar.set_postfix(loss=f"{t_loss / step:.4f}")
+            batch_bar.close()
+
+            avg_loss = t_loss / len(train_loader_1)
+            model_step1.eval()
+            print(f"   Epoch {epoch:02d}: evaluasi test set ({len(eval_loader_1)} batch)...",
+                  flush=True)
+            val_res = pred_eval(epoch, args_h, logger, tokenizer, model_step1, eval_loader_1,
+                                eval_gold_1, label_list_step1, device, "quad", eval_type='test')
+            val_f1 = val_res.get('micro-F1', 0.0)
+            # tp/fp/fn tersedia karena patch_eval_metrics_counts() di sel 5a.
+            val_tp = float(val_res.get('tp', float('nan')))
+            val_fp = float(val_res.get('fp', float('nan')))
+            val_fn = float(val_res.get('fn', float('nan')))
+
+            peak_vram = torch.cuda.max_memory_allocated(device) / (1024 ** 2) if torch.cuda.is_available() else 0.0
+            st.step(f"Epoch {epoch:02d} | loss {avg_loss:.4f} | TP {val_tp:.0f} FP {val_fp:.0f} "
+                    f"FN {val_fn:.0f} | P {val_res.get('precision', 0.0) * 100:.2f}% "
+                    f"| R {val_res.get('recall', 0.0) * 100:.2f}% "
+                    f"| F1 {val_f1 * 100:.2f}% | peak VRAM {peak_vram:.0f} MB")
+
+            step1_history.append({
+                "epoch": epoch, "loss": avg_loss,
+                "tp": val_tp, "fp": val_fp, "fn": val_fn,
+                "precision": val_res.get('precision', 0.0),
+                "recall": val_res.get('recall', 0.0),
+                "micro-F1": val_f1,
+                "peak_vram_mb": round(peak_vram, 2)
+            })
+
+            if val_f1 > best_step1_f1:
+                best_step1_f1 = val_f1
+                best1_epoch = epoch
+                torch.save(model_step1.state_dict(), step1_bin)
+                model_step1.config.to_json_file(os.path.join(step1_ckpt, "config.json"))
+                tokenizer.save_vocabulary(step1_ckpt)
+                st.note(f"🔥 Checkpoint terbaik diperbarui → {step1_ckpt}")
+
+            # ── Rolling epoch checkpoint (resume per-epoch) ───────────────────
+            _epoch_ckpt_dir = os.path.join(
+                session_dirs["checkpoints"], f"step1_epoch_{epoch}")
+            os.makedirs(_epoch_ckpt_dir, exist_ok=True)
+            torch.save(model_step1.state_dict(),
+                       os.path.join(_epoch_ckpt_dir, "pytorch_model.bin"))
+            torch.save(optimizer_1.state_dict(),
+                       os.path.join(_epoch_ckpt_dir, "optimizer.pt"))
+            st.note(f"💾 Rolling checkpoint epoch {epoch} disimpan")
+
+            # Hapus rolling checkpoint epoch sebelumnya (hemat storage)
+            _prev_epoch_dir = os.path.join(
+                session_dirs["checkpoints"], f"step1_epoch_{epoch - 1}")
+            if epoch > start_epoch and os.path.isdir(_prev_epoch_dir):
+                shutil.rmtree(_prev_epoch_dir, ignore_errors=True)
+                st.note(f"🗑️  Rolling checkpoint epoch {epoch - 1} dihapus")
+
+            # Update resume JSON setiap akhir epoch
+            with open(step1_resume_json, "w", encoding="utf-8") as _rjfw:
+                json.dump({
+                    "last_completed_epoch": epoch,
+                    "total_epochs": NUM_EPOCHS,
+                    "best_micro_f1": best_step1_f1,
+                    "best_epoch": best1_epoch,
+                    "history": step1_history,
+                    "saved_at": datetime.now().isoformat(),
+                }, _rjfw, indent=2)
+            # ─────────────────────────────────────────────────────────────────
+
+            # Jejak progres yang bertahan meski runtime terputus di tengah training.
+            pd.DataFrame(step1_history).to_csv(step1_csv, index=False, encoding="utf-8")
+            write_stage_progress(step1_progress_json, stage="STEP1_TRAINING",
+                                 epoch=epoch, total_epochs=NUM_EPOCHS,
+                                 last_loss=avg_loss, last_tp=val_tp, last_fp=val_fp,
+                                 last_fn=val_fn, last_micro_f1=val_f1,
+                                 best_micro_f1=best_step1_f1,
+                                 best_epoch=best1_epoch,
+                                 peak_vram_mb=round(peak_vram, 2))
+            update_mcp_manifest("STEP1_TRAINING", 3, {
+                "step1_epoch_progress": f"{epoch}/{NUM_EPOCHS}",
+                "step1_best_micro_f1": float(best_step1_f1 * 100),
+                "step1_best_epoch": best1_epoch,
+            })
+            epoch_bar.set_postfix(best_f1=f"{best_step1_f1 * 100:.2f}%", loss=f"{avg_loss:.4f}")
+        epoch_bar.close()
+
+        # Hapus rolling checkpoint setelah training selesai penuh
+        _last_rolling_dir = os.path.join(
+            session_dirs["checkpoints"], f"step1_epoch_{NUM_EPOCHS}")
+        if os.path.isdir(_last_rolling_dir):
+            shutil.rmtree(_last_rolling_dir, ignore_errors=True)
+            st.note(f"🗑️  Rolling checkpoint epoch final dihapus (training selesai penuh)")
+
+        print(f"🏁 Training selesai. Micro-F1 terbaik {best_step1_f1 * 100:.2f}% "
+              f"pada epoch {best1_epoch}.", flush=True)
+
+# Ringkasan satu berkas untuk kedua cabang (training maupun cache hit).
+step1_run_json = os.path.join(session_dirs["logs"], "step1_run_result.json")
+_best_row1, _best_f1_1, _best_ep1 = best_epoch_row(globals().get("step1_history", []))
+with open(step1_run_json, "w", encoding="utf-8") as _jf:
+    json.dump({
+        "mode": "cache_hit" if STEP1_SKIP_TRAINING else "trained",
+        "domain": DOMAIN,
+        "total_epochs_target": NUM_EPOCHS,
+        "epochs_recorded": len(globals().get("step1_history", [])),
+        "best_epoch": _best_ep1 or best1_epoch,
+        "best_micro_f1": _best_f1_1,
+        "best_micro_f1_pct": round(_best_f1_1 * 100, 2),
+        "best_row": _best_row1,
+        "history": globals().get("step1_history", []),
+        "checkpoint": step1_ckpt,
+        "csv": step1_csv,
+        "saved_at": datetime.now().isoformat(),
+    }, _jf, indent=2)
+print(f"🧾 Ringkasan run Step 1 (termasuk TP/FP/FN per epoch) → {step1_run_json}")"""),
+    (("""8e. Training Step 2 Category-Sentiment""", """optimizer_2.step()"""),
+     """require_vars("step_stage", "STEP2_SKIP_TRAINING")
+
+if STEP2_SKIP_TRAINING:
+    print("⏩ 8e dilewati — training Step 2 tidak dijalankan (cache hit).")
+    print(f"   Micro-F1 terbaik tersimpan: {best_step2_f1 * 100:.2f}% (epoch {best2_epoch})")
+else:
+    require_vars("model_step2", "optimizer_2", "train_loader_2", "eval_loader_2")
+    with step_stage(f"8e. Training Step 2 Category-Sentiment — {NUM_EPOCHS} epoch pada {device}",
+                    NUM_EPOCHS) as st:
+        # ── Resume State ─────────────────────────────────────────────────────
+        step2_resume_json = os.path.join(session_dirs["logs"], "step2_resume.json")
+        start_epoch2   = 1
+        best_step2_f1  = 0.0
+        best2_epoch    = 1
+        step2_history  = []
+
+        _resume_ep2 = globals().get("STEP2_RESUME_EPOCH", 0)
+        if _resume_ep2 > 0 and not FORCE_RETRAIN_STEP2:
+            _epoch_ckpt_r2 = os.path.join(
+                session_dirs["checkpoints"], f"step2_epoch_{_resume_ep2}")
+            _model_path_r2 = os.path.join(_epoch_ckpt_r2, "pytorch_model.bin")
+            _opt_path_r2   = os.path.join(_epoch_ckpt_r2, "optimizer.pt")
+            try:
+                model_step2.load_state_dict(
+                    torch.load(_model_path_r2, map_location=device))
+                st.note(f"✅ Bobot model Step 2 direstorasi dari epoch {_resume_ep2}")
+                if os.path.exists(_opt_path_r2):
+                    optimizer_2.load_state_dict(
+                        torch.load(_opt_path_r2, map_location="cpu"))
+                    st.note(f"✅ Optimizer state Step 2 direstorasi dari epoch {_resume_ep2}")
+                else:
+                    st.note(f"⚠️  optimizer.pt tidak ada — optimizer Step 2 mulai baru "
+                            f"(bobot model tetap dari epoch {_resume_ep2})")
+                _rj_r2 = json.load(open(step2_resume_json, encoding="utf-8"))
+                step2_history = _rj_r2.get("history", [])
+                best_step2_f1 = float(_rj_r2.get("best_micro_f1", 0.0))
+                best2_epoch   = int(_rj_r2.get("best_epoch", 1))
+                start_epoch2  = _resume_ep2 + 1
+                st.step(f"♻️  Resume Step 2 dari epoch {_resume_ep2} → mulai epoch {start_epoch2} "
+                        f"| best F1 sejauh ini: {best_step2_f1 * 100:.2f}% "
+                        f"(epoch {best2_epoch})")
+            except Exception as _load_err2:
+                st.note(f"❌ Gagal load resume checkpoint Step 2: {_load_err2}. "
+                        f"Training dimulai dari awal (epoch 1).")
+                start_epoch2  = 1
+                best_step2_f1 = 0.0
+                best2_epoch   = 1
+                step2_history = []
+        else:
+            st.step("Memulai training Step 2 baru dari epoch 1")
+        # ─────────────────────────────────────────────────────────────────────
+
+        epoch_bar = tqdm(range(start_epoch2, NUM_EPOCHS + 1), desc="Step 2 epoch",
+                         unit="epoch", initial=start_epoch2 - 1, total=NUM_EPOCHS)
+        for epoch in epoch_bar:
+            model_step2.train()
+            t_loss = 0.0
+            batch_bar = tqdm(train_loader_2, desc=f"  epoch {epoch}/{NUM_EPOCHS}",
+                             unit="batch", leave=False)
+            for step, batch in enumerate(batch_bar, 1):
+                batch = tuple(t.to(device) for t in batch)
+                _len, _ids, _mask, _seg, _cand_a, _cand_o, _lbls = batch
+                out2 = model_step2(tokenizer, epoch, aspect_input_ids=_ids,
+                                   aspect_token_type_ids=_seg, aspect_attention_mask=_mask,
+                                   candidate_aspect=_cand_a, candidate_opinion=_cand_o,
+                                   label_id=_lbls)
+                loss, _ = unpack_model_output(out2)
+                loss.backward()
+                optimizer_2.step()
+                optimizer_2.zero_grad()
+                t_loss += loss.item()
+                if step % 10 == 0 or step == len(train_loader_2):
+                    batch_bar.set_postfix(loss=f"{t_loss / step:.4f}")
+            batch_bar.close()
+
+            avg_loss = t_loss / len(train_loader_2)
+            model_step2.eval()
+            print(f"   Epoch {epoch:02d}: evaluasi pasangan ({len(eval_loader_2)} batch)...",
+                  flush=True)
+            val_res = pair_eval(epoch, args_h, logger2, tokenizer, model_step2, eval_loader_2,
+                                eval_gold_2, label_list_step2, device, "categorysenti",
+                                eval_type='test')
+            val_f1 = val_res.get('micro-F1', 0.0)
+            # tp/fp/fn tersedia karena patch_eval_metrics_counts() di sel 8a.
+            val_tp = float(val_res.get('tp', float('nan')))
+            val_fp = float(val_res.get('fp', float('nan')))
+            val_fn = float(val_res.get('fn', float('nan')))
+            peak_vram2 = torch.cuda.max_memory_allocated(device) / (1024 ** 2) if torch.cuda.is_available() else 0.0
+
+            st.step(f"Epoch {epoch:02d} | loss {avg_loss:.4f} | TP {val_tp:.0f} FP {val_fp:.0f} "
+                    f"FN {val_fn:.0f} | P {val_res.get('precision', 0.0) * 100:.2f}% "
+                    f"| R {val_res.get('recall', 0.0) * 100:.2f}% "
+                    f"| quadruple micro-F1 {val_f1 * 100:.2f}% | peak VRAM {peak_vram2:.0f} MB")
+
+            step2_history.append({
+                "epoch": epoch, "loss": avg_loss,
+                "tp": val_tp, "fp": val_fp, "fn": val_fn,
+                "precision": val_res.get('precision', 0.0),
+                "recall": val_res.get('recall', 0.0),
+                "micro-F1": val_f1,
+                "peak_vram_mb": round(peak_vram2, 2)
+            })
+
+            if val_f1 > best_step2_f1 or epoch == 1 or not os.path.exists(step2_bin):
+                if val_f1 > best_step2_f1:
+                    best_step2_f1 = val_f1
+                    best2_epoch = epoch
+                torch.save(model_step2.state_dict(), step2_bin)
+                model_step2.config.to_json_file(os.path.join(step2_ckpt, "config.json"))
+                tokenizer.save_vocabulary(step2_ckpt)
+                st.note(f"🔥 Checkpoint diperbarui (epoch {epoch}, F1 {val_f1 * 100:.2f}%) → {step2_ckpt}")
+
+            # ── Rolling epoch checkpoint (resume per-epoch) ───────────────────
+            _epoch_ckpt_dir2 = os.path.join(
+                session_dirs["checkpoints"], f"step2_epoch_{epoch}")
+            os.makedirs(_epoch_ckpt_dir2, exist_ok=True)
+            torch.save(model_step2.state_dict(),
+                       os.path.join(_epoch_ckpt_dir2, "pytorch_model.bin"))
+            torch.save(optimizer_2.state_dict(),
+                       os.path.join(_epoch_ckpt_dir2, "optimizer.pt"))
+            st.note(f"💾 Rolling checkpoint Step 2 epoch {epoch} disimpan")
+
+            # Hapus rolling checkpoint epoch sebelumnya (hemat storage)
+            _prev_epoch_dir2 = os.path.join(
+                session_dirs["checkpoints"], f"step2_epoch_{epoch - 1}")
+            if epoch > start_epoch2 and os.path.isdir(_prev_epoch_dir2):
+                shutil.rmtree(_prev_epoch_dir2, ignore_errors=True)
+                st.note(f"🗑️  Rolling checkpoint Step 2 epoch {epoch - 1} dihapus")
+
+            # Update resume JSON setiap akhir epoch
+            with open(step2_resume_json, "w", encoding="utf-8") as _rjfw2:
+                json.dump({
+                    "last_completed_epoch": epoch,
+                    "total_epochs": NUM_EPOCHS,
+                    "best_micro_f1": best_step2_f1,
+                    "best_epoch": best2_epoch,
+                    "history": step2_history,
+                    "saved_at": datetime.now().isoformat(),
+                }, _rjfw2, indent=2)
+            # ─────────────────────────────────────────────────────────────────
+
+            pd.DataFrame(step2_history).to_csv(step2_csv, index=False, encoding="utf-8")
+            write_stage_progress(step2_progress_json, stage="STEP2_TRAINING", epoch=epoch,
+                                 total_epochs=NUM_EPOCHS, last_loss=avg_loss,
+                                 last_tp=val_tp, last_fp=val_fp, last_fn=val_fn,
+                                 last_micro_f1=val_f1, best_micro_f1=best_step2_f1,
+                                 best_epoch=best2_epoch,
+                                 peak_vram_mb=round(peak_vram2, 2))
+            update_mcp_manifest("STEP2_TRAINING", 5, {
+                "step2_epoch_progress": f"{epoch}/{NUM_EPOCHS}",
+                "step2_best_micro_f1": float(best_step2_f1 * 100),
+                "step2_best_epoch": best2_epoch,
+            })
+            epoch_bar.set_postfix(best_f1=f"{best_step2_f1 * 100:.2f}%",
+                                  loss=f"{avg_loss:.4f}")
+        epoch_bar.close()
+
+        # Hapus rolling checkpoint setelah training selesai penuh
+        _last_rolling_dir2 = os.path.join(
+            session_dirs["checkpoints"], f"step2_epoch_{NUM_EPOCHS}")
+        if os.path.isdir(_last_rolling_dir2):
+            shutil.rmtree(_last_rolling_dir2, ignore_errors=True)
+            st.note(f"🗑️  Rolling checkpoint Step 2 epoch final dihapus (training selesai penuh)")
+
+        if not os.path.exists(step2_bin):
+            torch.save(model_step2.state_dict(), step2_bin)
+            model_step2.config.to_json_file(os.path.join(step2_ckpt, "config.json"))
+            tokenizer.save_vocabulary(step2_ckpt)
+            st.note(f"💾 Checkpoint final Step 2 disimpan → {step2_ckpt}")
+
+        print(f"🏁 Training Step 2 selesai. Micro-F1 terbaik {best_step2_f1 * 100:.2f}% "
+              f"pada epoch {best2_epoch}.", flush=True)
+
+# Ringkasan satu berkas untuk kedua cabang (training maupun cache hit).
+step2_run_json = os.path.join(session_dirs["logs"], "step2_run_result.json")
+_best_row2, _best_f1_2, _best_ep2 = best_epoch_row(globals().get("step2_history", []))
+with open(step2_run_json, "w", encoding="utf-8") as _jf:
+    json.dump({
+        "mode": "cache_hit" if STEP2_SKIP_TRAINING else "trained",
+        "domain": DOMAIN,
+        "total_epochs_target": NUM_EPOCHS,
+        "epochs_recorded": len(globals().get("step2_history", [])),
+        "best_epoch": _best_ep2 or best2_epoch,
+        "best_micro_f1": _best_f1_2,
+        "best_micro_f1_pct": round(_best_f1_2 * 100, 2),
+        "best_row": _best_row2,
+        "history": globals().get("step2_history", []),
+        "checkpoint": step2_ckpt,
+        "csv": step2_csv,
+        "sumber_kandidat": "step1" if globals().get("pakai_1st", True) else "gold",
+        "saved_at": datetime.now().isoformat(),
+    }, _jf, indent=2)
+print(f"🧾 Ringkasan run Step 2 (termasuk TP/FP/FN per epoch) → {step2_run_json}")"""),
+]
 
 
 def main():
