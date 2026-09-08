@@ -2,7 +2,10 @@
 
 **File:** `ACOS-IndoBERT/notebooks/00_ACOS_Master_Pipeline_Colab_V4_INDOBERT.ipynb`
 **Tanggal:** 2026-09-06
-**Status:** Draft
+**Status:** Selesai — diimplementasikan di notebook (2026-09-06) dan di-port ke generator
+`_build_v4_indobert.py` (2026-09-08) via `RESUME_SPECS` + langkah patch ke-14, sehingga
+fitur ini kini reproducible dari build (sebelumnya hanya ada di .ipynb hasil patch manual
+dan akan hilang saat generator dijalankan ulang). Portir: `ACOS-IndoBERT/build/_port_resume_to_v4.py`.
 
 ---
 
