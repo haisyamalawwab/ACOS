@@ -710,6 +710,12 @@ STEP2_LR = 5e-5
 NUM_EPOCHS = 15      # 15 epoch optimal untuk Colab GPU T4/A100 (Default paper: 30)
 SEED = 42
 
+# Early Stopping: berhenti jika F1 tidak membaik selama N epoch berturut-turut
+# (menghemat waktu Colab saat training sudah plateau). Set PATIENCE = 0 untuk
+# menonaktifkan early stopping.
+PATIENCE = 5
+MIN_EPOCHS_BEFORE_STOP = 5  # Training minimal jalan N epoch dulu sebelum early stopping aktif
+
 # do_lower_case WAJIB True untuk indobert-base-p1: tokenizer_config.json-nya
 # kosong ({}), jadi tidak ada default yang bisa dipercaya, dan tanpa lowercasing
 # token berhuruf kapital berubah menjadi [UNK] dalam jumlah besar.
@@ -1155,6 +1161,8 @@ else:
         best_step1_f1  = 0.0
         best1_epoch    = 1
         step1_history  = []
+        epochs_since_best_1 = 0  # Counter untuk early stopping
+        early_stopped_step1 = False  # Flag apakah training berhenti karena early stopping
 
         _resume_ep = globals().get("STEP1_RESUME_EPOCH", 0)
         if _resume_ep > 0 and not FORCE_RETRAIN_STEP1:
@@ -1244,10 +1252,13 @@ else:
             if val_f1 > best_step1_f1:
                 best_step1_f1 = val_f1
                 best1_epoch = epoch
+                epochs_since_best_1 = 0  # Reset counter early stopping
                 torch.save(model_step1.state_dict(), step1_bin)
                 model_step1.config.to_json_file(os.path.join(step1_ckpt, "config.json"))
                 tokenizer.save_vocabulary(step1_ckpt)
                 st.note(f"🔥 Checkpoint terbaik diperbarui → {step1_ckpt}")
+            else:
+                epochs_since_best_1 += 1  # Increment counter early stopping
 
             # ── Rolling epoch checkpoint (resume per-epoch) ───────────────────
             _epoch_ckpt_dir = os.path.join(
@@ -1266,6 +1277,15 @@ else:
                 shutil.rmtree(_prev_epoch_dir, ignore_errors=True)
                 st.note(f"🗑️  Rolling checkpoint epoch {epoch - 1} dihapus")
 
+            # ── Early stopping check ──────────────────────────────────────────
+            if (PATIENCE > 0 and epoch >= MIN_EPOCHS_BEFORE_STOP and 
+                epochs_since_best_1 >= PATIENCE):
+                st.note(f"⏹️ Early stopping: F1 tidak membaik selama {PATIENCE} epoch "
+                        f"(terbaik di epoch {best1_epoch}, F1 {best_step1_f1 * 100:.2f}%)")
+                early_stopped_step1 = True
+                break
+            # ─────────────────────────────────────────────────────────────────
+
             # Update resume JSON setiap akhir epoch
             with open(step1_resume_json, "w", encoding="utf-8") as _rjfw:
                 json.dump({
@@ -1274,6 +1294,8 @@ else:
                     "best_micro_f1": best_step1_f1,
                     "best_epoch": best1_epoch,
                     "history": step1_history,
+                    "early_stopped": early_stopped_step1,
+                    "stopped_at_epoch": epoch if early_stopped_step1 else None,
                     "saved_at": datetime.now().isoformat(),
                 }, _rjfw, indent=2)
             # ─────────────────────────────────────────────────────────────────
@@ -1302,8 +1324,13 @@ else:
             shutil.rmtree(_last_rolling_dir, ignore_errors=True)
             st.note(f"🗑️  Rolling checkpoint epoch final dihapus (training selesai penuh)")
 
-        print(f"🏁 Training selesai. Micro-F1 terbaik {best_step1_f1 * 100:.2f}% "
-              f"pada epoch {best1_epoch}.", flush=True)
+        if early_stopped_step1:
+            print(f"⏹️ Training berhenti (early stopping) di epoch {epoch}. "
+                  f"Micro-F1 terbaik {best_step1_f1 * 100:.2f}% pada epoch {best1_epoch}.", 
+                  flush=True)
+        else:
+            print(f"🏁 Training selesai. Micro-F1 terbaik {best_step1_f1 * 100:.2f}% "
+                  f"pada epoch {best1_epoch}.", flush=True)
 
 # Ringkasan satu berkas untuk kedua cabang (training maupun cache hit).
 step1_run_json = os.path.join(session_dirs["logs"], "step1_run_result.json")
@@ -1316,6 +1343,8 @@ with open(step1_run_json, "w", encoding="utf-8") as _jf:
         "epochs_recorded": len(globals().get("step1_history", [])),
         "best_epoch": _best_ep1 or best1_epoch,
         "best_micro_f1": _best_f1_1,
+        "early_stopped": globals().get("early_stopped_step1", False),
+        "stopped_at_epoch": epoch if globals().get("early_stopped_step1", False) else None,
         "best_micro_f1_pct": round(_best_f1_1 * 100, 2),
         "best_row": _best_row1,
         "history": globals().get("step1_history", []),
@@ -1340,6 +1369,8 @@ else:
         best_step2_f1  = 0.0
         best2_epoch    = 1
         step2_history  = []
+        epochs_since_best_2 = 0  # Counter untuk early stopping
+        early_stopped_step2 = False  # Flag apakah training Step 2 berhenti karena early stopping
 
         _resume_ep2 = globals().get("STEP2_RESUME_EPOCH", 0)
         if _resume_ep2 > 0 and not FORCE_RETRAIN_STEP2:
@@ -1432,10 +1463,15 @@ else:
                 if val_f1 > best_step2_f1:
                     best_step2_f1 = val_f1
                     best2_epoch = epoch
+                    epochs_since_best_2 = 0  # Reset counter early stopping
+                else:
+                    epochs_since_best_2 += 1  # Increment counter early stopping
                 torch.save(model_step2.state_dict(), step2_bin)
                 model_step2.config.to_json_file(os.path.join(step2_ckpt, "config.json"))
                 tokenizer.save_vocabulary(step2_ckpt)
                 st.note(f"🔥 Checkpoint diperbarui (epoch {epoch}, F1 {val_f1 * 100:.2f}%) → {step2_ckpt}")
+            else:
+                epochs_since_best_2 += 1  # Increment counter early stopping
 
             # ── Rolling epoch checkpoint (resume per-epoch) ───────────────────
             _epoch_ckpt_dir2 = os.path.join(
@@ -1454,6 +1490,15 @@ else:
                 shutil.rmtree(_prev_epoch_dir2, ignore_errors=True)
                 st.note(f"🗑️  Rolling checkpoint Step 2 epoch {epoch - 1} dihapus")
 
+            # ── Early stopping check ──────────────────────────────────────────
+            if (PATIENCE > 0 and epoch >= MIN_EPOCHS_BEFORE_STOP and 
+                epochs_since_best_2 >= PATIENCE):
+                st.note(f"⏹️ Early stopping: F1 Step 2 tidak membaik selama {PATIENCE} epoch "
+                        f"(terbaik di epoch {best2_epoch}, F1 {best_step2_f1 * 100:.2f}%)")
+                early_stopped_step2 = True
+                break
+            # ─────────────────────────────────────────────────────────────────
+
             # Update resume JSON setiap akhir epoch
             with open(step2_resume_json, "w", encoding="utf-8") as _rjfw2:
                 json.dump({
@@ -1462,6 +1507,8 @@ else:
                     "best_micro_f1": best_step2_f1,
                     "best_epoch": best2_epoch,
                     "history": step2_history,
+                    "early_stopped": early_stopped_step2,
+                    "stopped_at_epoch": epoch if early_stopped_step2 else None,
                     "saved_at": datetime.now().isoformat(),
                 }, _rjfw2, indent=2)
             # ─────────────────────────────────────────────────────────────────
@@ -1495,8 +1542,13 @@ else:
             tokenizer.save_vocabulary(step2_ckpt)
             st.note(f"💾 Checkpoint final Step 2 disimpan → {step2_ckpt}")
 
-        print(f"🏁 Training Step 2 selesai. Micro-F1 terbaik {best_step2_f1 * 100:.2f}% "
-              f"pada epoch {best2_epoch}.", flush=True)
+        if early_stopped_step2:
+            print(f"⏹️ Training Step 2 berhenti (early stopping) di epoch {epoch}. "
+                  f"Micro-F1 terbaik {best_step2_f1 * 100:.2f}% pada epoch {best2_epoch}.", 
+                  flush=True)
+        else:
+            print(f"🏁 Training Step 2 selesai. Micro-F1 terbaik {best_step2_f1 * 100:.2f}% "
+                  f"pada epoch {best2_epoch}.", flush=True)
 
 # Ringkasan satu berkas untuk kedua cabang (training maupun cache hit).
 step2_run_json = os.path.join(session_dirs["logs"], "step2_run_result.json")
@@ -1510,6 +1562,8 @@ with open(step2_run_json, "w", encoding="utf-8") as _jf:
         "best_epoch": _best_ep2 or best2_epoch,
         "best_micro_f1": _best_f1_2,
         "best_micro_f1_pct": round(_best_f1_2 * 100, 2),
+        "early_stopped": globals().get("early_stopped_step2", False),
+        "stopped_at_epoch": epoch if globals().get("early_stopped_step2", False) else None,
         "best_row": _best_row2,
         "history": globals().get("step2_history", []),
         "checkpoint": step2_ckpt,
