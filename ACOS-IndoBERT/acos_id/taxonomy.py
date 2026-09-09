@@ -124,6 +124,70 @@ def num_labels_step2() -> int:
     return len(catsenti_labels())
 
 
+# ── Dual-Head Step 2: label terpisah per komponen ────────────────────────────
+
+def label_list_category() -> list:
+    """13 label kategori untuk head Category pada arsitektur Dual-Head.
+
+    Urutan identik dengan lingkar luar `catsenti_labels()` sehingga indeks
+    head Category konsisten dengan label gabungan lama jika diperlukan mapping.
+    """
+    return list(CATEGORIES)
+
+
+def label_list_sentiment() -> list:
+    """3 label sentimen untuk head Sentiment pada arsitektur Dual-Head.
+
+    Encoding: '0' = negatif, '1' = netral, '2' = positif (Cai 2021).
+    """
+    return list(SENTIMENTS)
+
+
+def num_labels_category() -> int:
+    """Jumlah kelas head Category (13)."""
+    return len(CATEGORIES)
+
+
+def num_labels_sentiment() -> int:
+    """Jumlah kelas head Sentiment (3)."""
+    return len(SENTIMENTS)
+
+
+def patch_processor_labels_dualhead(processors: dict) -> dict:
+    """Tambahkan `get_labels_category` dan `get_labels_sentiment` ke CategorySentiProcessor.
+
+    Dipanggil bersama `patch_processor_labels()` di sel 8a ketika `USE_DUAL_HEAD=True`.
+    Method baru ini mengembalikan label terpisah per komponen; method `get_labels()`
+    asli tetap utuh sehingga backward-compat pipeline Inggris terjaga.
+    """
+    cs_cls = processors["categorysenti"]
+
+    if getattr(cs_cls, "_acos_id_dualhead_patched", False):
+        return {"patched": False, "reason": "dual-head sudah dipatch di sesi ini"}
+
+    def get_labels_category(self, domain_type):
+        if is_id_domain(domain_type):
+            return label_list_category()
+        return None  # domain Inggris tidak menggunakan dual-head
+
+    def get_labels_sentiment(self, domain_type):
+        if is_id_domain(domain_type):
+            return label_list_sentiment()
+        return None
+
+    cs_cls.get_labels_category = get_labels_category
+    cs_cls.get_labels_sentiment = get_labels_sentiment
+    cs_cls._acos_id_dualhead_patched = True
+    return {
+        "patched": True,
+        "num_labels_category": num_labels_category(),
+        "num_labels_sentiment": num_labels_sentiment(),
+    }
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+
+
 def is_id_domain(domain_type: str) -> bool:
     """True untuk domain Indonesia yang ditangani modul ini."""
     return str(domain_type).lower().startswith("apps")

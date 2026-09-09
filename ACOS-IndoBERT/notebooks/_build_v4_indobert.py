@@ -37,6 +37,11 @@ import json
 import os
 import sys
 
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8')
+if hasattr(sys.stderr, 'reconfigure'):
+    sys.stderr.reconfigure(encoding='utf-8')
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 INDO_ROOT = os.path.dirname(HERE)
 ACOS_ROOT = os.path.dirname(INDO_ROOT)
@@ -521,6 +526,119 @@ with step_stage("5d2. Gate 1: bobot IndoBERT benar-benar termuat", 4) as st:
         st.step("Gate 1 LULUS — fine-tuning berjalan di atas bobot IndoBERT terlatih")'''
 
 
+# ── Dual-Head Step 2 ─────────────────────────────────────────────────────────
+# Kelas ini disisipkan ke sel 8a setelah import agar tersedia sebelum 8d.
+# Dua head terpisah memungkinkan evaluasi Category F1 dan Sentiment F1 secara
+# mandiri — berbeda dari CategorySentiClassification yang memakai label gabungan.
+
+CODE_DUAL_HEAD_MODEL = '''
+class CategorySentiDualHead(BertPreTrainedModel):
+    """Step 2 Dual-Head: representasi kandidat pasangan (aspect-opinion) bersama,
+    dengan dua output head terpisah:
+    - category_head  : Linear(hidden_size * 2, num_categories) — multi-label BCE
+    - sentiment_head : Linear(hidden_size * 2, num_sentiments) — multi-class CE
+
+    Menghasilkan kombinasi fused_logits (num_categories * num_sentiments) untuk
+    kompatibilitas 100% dengan `pair_eval` upstream, sekaligus mengekspos
+    `cat_logits` dan `senti_logits` untuk evaluasi mandiri.
+    """
+    def __init__(self, config, num_categories=13, num_sentiments=3,
+                 output_attentions=False, keep_multihead_output=False, **kwargs):
+        super(CategorySentiDualHead, self).__init__(config)
+        self.output_attentions = output_attentions
+        self.num_categories = num_categories
+        self.num_sentiments = num_sentiments
+        self.num_labels = [num_categories * num_sentiments, 2]
+        self.bert = BertModel(config, output_attentions=output_attentions,
+                              keep_multihead_output=keep_multihead_output)
+        self.dropout = nn.Dropout(config.hidden_dropout_prob)
+        self.category_head = nn.Linear(config.hidden_size * 2, num_categories)
+        self.sentiment_head = nn.Linear(config.hidden_size * 2, num_sentiments)
+        self.apply(self.init_bert_weights)
+
+    def forward(self, tokenizer, _e, aspect_input_ids,
+                aspect_token_type_ids, aspect_attention_mask,
+                candidate_aspect, candidate_opinion, label_id=None):
+        aspect_seq_len = torch.max(torch.sum(aspect_attention_mask, dim=-1))
+        max_seq_len = aspect_seq_len
+        aspect_input_ids = aspect_input_ids[:, :max_seq_len].contiguous()
+        aspect_token_type_ids = aspect_token_type_ids[:, :max_seq_len].contiguous()
+        aspect_attention_mask = aspect_attention_mask[:, :max_seq_len].contiguous()
+        candidate_aspect = candidate_aspect[:, :max_seq_len].contiguous()
+        candidate_opinion = candidate_opinion[:, :max_seq_len].contiguous()
+
+        pooled_outputs, pooled_output = self.bert(
+            aspect_input_ids, aspect_token_type_ids, aspect_attention_mask,
+            output_all_encoded_layers=False, head_mask=None
+        )
+
+        hidden_size = pooled_output.shape[-1]
+
+        candidate_aspect_sum = torch.sum(candidate_aspect, -1).float()
+        aspect_denominator = (candidate_aspect_sum + candidate_aspect_sum.eq(0).float()).unsqueeze(-1).repeat(1, hidden_size)
+        candidate_aspect_rep = torch.div(
+            torch.matmul(candidate_aspect.float().unsqueeze(1), pooled_outputs).squeeze(1),
+            aspect_denominator
+        )
+
+        candidate_opinion_sum = torch.sum(candidate_opinion, -1).float()
+        opinion_denominator = (candidate_opinion_sum + candidate_opinion_sum.eq(0).float()).unsqueeze(-1).repeat(1, hidden_size)
+        candidate_opinion_rep = torch.div(
+            torch.matmul(candidate_opinion.float().unsqueeze(1), pooled_outputs).squeeze(1),
+            opinion_denominator
+        )
+
+        rep = self.dropout(torch.cat([candidate_aspect_rep, candidate_opinion_rep], -1))
+        cat_logits = self.category_head(rep)       # (batch, num_categories)
+        senti_logits = self.sentiment_head(rep)    # (batch, num_sentiments)
+
+        loss = None
+        if label_id is not None:
+            reshaped = label_id.view(-1, self.num_categories, self.num_sentiments)
+            cat_targets = reshaped.sum(dim=-1).clamp(max=1.0)  # multi-hot (batch, 13)
+
+            senti_per_sample = reshaped.sum(dim=1)  # (batch, 3)
+            has_senti = (senti_per_sample.sum(dim=-1) > 0)
+            senti_targets = torch.where(
+                has_senti,
+                senti_per_sample.argmax(dim=-1),
+                torch.full((label_id.size(0),), -1, dtype=torch.long, device=label_id.device)
+            )
+
+            bce = nn.BCEWithLogitsLoss()
+            cat_loss = bce(cat_logits, cat_targets.float())
+            ce = nn.CrossEntropyLoss(ignore_index=-1)
+            senti_loss = ce(senti_logits, senti_targets)
+            loss = cat_loss + senti_loss
+
+        # Rekonstruksi fused_logits untuk pair_eval upstream: (batch, num_categories * num_sentiments)
+        # Prediksi pasangan (c, s) aktif jika kategori c aktif (cat_logits[c] > 0)
+        # dan s adalah argmax dari head sentimen
+        bs = cat_logits.size(0)
+        best_senti = senti_logits.argmax(dim=-1)
+        expanded_cat = cat_logits.unsqueeze(2).expand(-1, -1, self.num_sentiments)
+        senti_mask = (torch.arange(self.num_sentiments, device=cat_logits.device).unsqueeze(0).unsqueeze(0) == best_senti.unsqueeze(1).unsqueeze(2))
+        fused_logits = torch.where(senti_mask, expanded_cat, expanded_cat - 10000.0).view(bs, -1)
+
+        self.latest_cat_logits = cat_logits.detach()
+        self.latest_senti_logits = senti_logits.detach()
+
+        if loss is not None:
+            return [loss], [fused_logits]
+        return [fused_logits]
+'''
+
+# Anchor untuk sisipan: tepat setelah import BertPreTrainedModel di sel 8a.
+_DUAL_HEAD_IMPORT_ANCHOR = 'from modeling import CategorySentiClassification'
+_DUAL_HEAD_INSERT = (
+    'from modeling import CategorySentiClassification\n'
+    'from modeling import BertModel\n'
+    'import torch.nn as nn'
+)
+
+# ─────────────────────────────────────────────────────────────────────────────
+
+
 def apply_patches(cells):
     """Terapkan seluruh perubahan V4 pada daftar sel V2 (in-place)."""
     # 1. Judul.
@@ -681,6 +799,161 @@ def apply_patches(cells):
     #      `ACOS-IndoBERT/build/_port_resume_to_v4.py`.
     for _needles, _full in RESUME_SPECS:
         cells[find_code(cells, *_needles)] = code(_full)
+
+    # 15. Dual-Head Step 2 — pisah head Category (13 kelas, BCE) dan Sentiment
+    #     (3 kelas, CE). Hanya aktif untuk domain Indonesia (USE_DUAL_HEAD=True);
+    #     domain Inggris tetap pakai CategorySentiClassification (single-head).
+    #
+    #     15a. Sisipkan class CategorySentiDualHead setelah import di sel 8a,
+    #          dan tambah inisialisasi label terpisah + flag USE_DUAL_HEAD.
+    i_8a = find_code(cells, "8a. Inisialisasi Step 2", "processor_step2")
+    src_8a = "".join(cells[i_8a]["source"])
+
+    # Sisipkan import BertModel + nn dan class definition setelah baris import awal.
+    if _DUAL_HEAD_IMPORT_ANCHOR in src_8a and 'CategorySentiDualHead' not in src_8a:
+        src_8a = src_8a.replace(
+            _DUAL_HEAD_IMPORT_ANCHOR,
+            _DUAL_HEAD_INSERT + CODE_DUAL_HEAD_MODEL
+        )
+
+    # Tambah inisialisasi label terpisah + flag USE_DUAL_HEAD setelah baris
+    # num_labels_step2 yang sudah ada.
+    _anchor_labels = (
+        '    num_labels_step2 = len(label_list_step2[0])\n'
+        '    st.step(f"Label category-sentiment: {num_labels_step2} kelas")'
+    )
+    _dual_label_init = (
+        '    num_labels_step2 = len(label_list_step2[0])\n'
+        '    st.step(f"Label category-sentiment: {num_labels_step2} kelas")\n'
+        '\n'
+        '    # Dual-Head: label terpisah per komponen (hanya domain Indonesia)\n'
+        '    USE_DUAL_HEAD = acos_taxonomy.is_id_domain(DOMAIN)\n'
+        '    if USE_DUAL_HEAD:\n'
+        '        _dh_patch = acos_taxonomy.patch_processor_labels_dualhead(processors)\n'
+        '        label_list_cat   = processor_step2.get_labels_category(DOMAIN)\n'
+        '        label_list_senti = processor_step2.get_labels_sentiment(DOMAIN)\n'
+        '        num_labels_cat   = len(label_list_cat)   # 13\n'
+        '        num_labels_senti = len(label_list_senti)  # 3\n'
+        '        st.step(f"Dual-Head aktif: {num_labels_cat} kategori | "\
+                f"{num_labels_senti} sentimen (domain Indonesia)")\n'
+        '    else:\n'
+        '        USE_DUAL_HEAD = False\n'
+        '        st.step(f"Single-Head: {num_labels_step2} label gabungan "\
+                f"(domain Inggris {DOMAIN})")'
+    )
+    if _anchor_labels in src_8a and 'USE_DUAL_HEAD' not in src_8a:
+        src_8a = src_8a.replace(_anchor_labels, _dual_label_init)
+
+    cells[i_8a] = code(src_8a)
+
+    #     15b. Patch sel 8d: conditional model instantiation DualHead vs SingleHead.
+    i_8d = find_code(cells, "8d. Model Category-Sentiment",
+                     "CategorySentiClassification.from_pretrained")
+    src_8d = "".join(cells[i_8d]["source"])
+    _anchor_8d = (
+        '        model_step2 = CategorySentiClassification.from_pretrained(\n'
+        '            bert_cache_dir, num_labels=num_labels_step2).to(device)'
+    )
+    _replace_8d = (
+        '        if globals().get("USE_DUAL_HEAD", False):\n'
+        '            require_vars("num_labels_cat", "num_labels_senti")\n'
+        '            model_step2 = CategorySentiDualHead.from_pretrained(\n'
+        '                bert_cache_dir,\n'
+        '                num_categories=num_labels_cat,\n'
+        '                num_sentiments=num_labels_senti).to(device)\n'
+        '            st.step(f"Model: CategorySentiDualHead ({num_labels_cat} cat + {num_labels_senti} senti)")\n'
+        '        else:\n'
+        '            model_step2 = CategorySentiClassification.from_pretrained(\n'
+        '                bert_cache_dir, num_labels=num_labels_step2).to(device)\n'
+        '            st.step(f"Model: CategorySentiClassification ({num_labels_step2} label gabungan)")'
+    )
+    if _anchor_8d in src_8d and 'USE_DUAL_HEAD' not in src_8d:
+        src_8d = src_8d.replace(_anchor_8d, _replace_8d)
+        cells[i_8d] = code(src_8d)
+
+    #     15c. Patch sel 9a: conditional model loading (DualHead vs SingleHead)
+    #          dan evaluasi mandiri per-head setelah pair_eval selesai.
+    i_9a = find_code(cells, "9a. Evaluasi final quadruple", "pair_eval")
+    src_9a = "".join(cells[i_9a]["source"])
+
+    # 15c-1: Conditional loading model_step2_best
+    _anchor_load_9a = (
+        '        model_step2_best = CategorySentiClassification.from_pretrained(\n'
+        '            session_dirs["step2_checkpoint"], num_labels=num_labels_step2).to(device)'
+    )
+    _replace_load_9a = (
+        '        if globals().get("USE_DUAL_HEAD", False):\n'
+        '            require_vars("num_labels_cat", "num_labels_senti")\n'
+        '            model_step2_best = CategorySentiDualHead.from_pretrained(\n'
+        '                session_dirs["step2_checkpoint"],\n'
+        '                num_categories=num_labels_cat,\n'
+        '                num_sentiments=num_labels_senti).to(device)\n'
+        '            st.step(f"Model terbaik dimuat: CategorySentiDualHead ({num_labels_cat} cat + {num_labels_senti} senti)")\n'
+        '        else:\n'
+        '            model_step2_best = CategorySentiClassification.from_pretrained(\n'
+        '                session_dirs["step2_checkpoint"], num_labels=num_labels_step2).to(device)\n'
+        '            st.step(f"Model terbaik dimuat: CategorySentiClassification ({num_labels_step2} label gabungan)")'
+    )
+    if _anchor_load_9a in src_9a and 'num_labels_cat' not in src_9a:
+        src_9a = src_9a.replace(_anchor_load_9a, _replace_load_9a)
+
+    # 15c-2: Evaluasi mandiri per head disimpan ke master_metrics.json
+    _dual_eval_append = (
+        '        if globals().get("USE_DUAL_HEAD", False) and \'model_step2_best\' in globals():\n'
+        '            # Evaluasi per head: category precision/recall F1 dan sentiment accuracy/macro-F1\n'
+        '            from sklearn.metrics import f1_score, accuracy_score\n'
+        '            import numpy as _np\n'
+        '            _cat_preds, _cat_golds = [], []\n'
+        '            _senti_preds, _senti_golds = [], []\n'
+        '            model_step2_best.eval()\n'
+        '            with torch.no_grad():\n'
+        '                for _batch in eval_loader_2:\n'
+        '                    _b = tuple(t.to(device) for t in _batch)\n'
+        '                    model_step2_best(tokenizer, 0, aspect_input_ids=_b[1],\n'
+        '                                    aspect_token_type_ids=_b[3], aspect_attention_mask=_b[2],\n'
+        '                                    candidate_aspect=_b[4], candidate_opinion=_b[5],\n'
+        '                                    label_id=_b[6])\n'
+        '                    _cl = getattr(model_step2_best, "latest_cat_logits", None)\n'
+        '                    _sl = getattr(model_step2_best, "latest_senti_logits", None)\n'
+        '                    if _cl is not None and _sl is not None:\n'
+        '                        _resh = _b[6].view(-1, 13, 3)\n'
+        '                        _ct = _resh.sum(dim=-1).clamp(max=1.0)\n'
+        '                        _sp = _resh.sum(dim=1)\n'
+        '                        _has_s = (_sp.sum(dim=-1) > 0)\n'
+        '                        _cat_preds.append((_cl.sigmoid() > 0.5).int().cpu().numpy())\n'
+        '                        _cat_golds.append(_ct.int().cpu().numpy())\n'
+        '                        if _has_s.any():\n'
+        '                            _senti_preds.append(_sl.argmax(dim=-1)[_has_s].cpu().numpy())\n'
+        '                            _senti_golds.append(_sp.argmax(dim=-1)[_has_s].cpu().numpy())\n'
+        '            _cg_arr = _np.vstack(_cat_golds) if _cat_golds else _np.array([])\n'
+        '            _cp_arr = _np.vstack(_cat_preds) if _cat_preds else _np.array([])\n'
+        '            _sg_arr = _np.concatenate(_senti_golds) if _senti_golds else _np.array([])\n'
+        '            _sp_arr = _np.concatenate(_senti_preds) if _senti_preds else _np.array([])\n'
+        '            _dh_metrics = {\n'
+        '                "category_micro_f1": float(f1_score(_cg_arr, _cp_arr, average="micro", zero_division=0)) if len(_cg_arr) else 0.0,\n'
+        '                "category_macro_f1": float(f1_score(_cg_arr, _cp_arr, average="macro", zero_division=0)) if len(_cg_arr) else 0.0,\n'
+        '                "sentiment_accuracy": float(accuracy_score(_sg_arr, _sp_arr)) if len(_sg_arr) else 0.0,\n'
+        '                "sentiment_macro_f1": float(f1_score(_sg_arr, _sp_arr, average="macro", zero_division=0)) if len(_sg_arr) else 0.0,\n'
+        '            }\n'
+        '            final_res["use_dual_head"] = True\n'
+        '            final_res["dual_head"] = _dh_metrics\n'
+        '            st.step(f"Dual-Head evaluasi mandiri | Cat micro-F1: {_dh_metrics[\'category_micro_f1\']*100:.2f}% " +\n'
+        '                    f"macro-F1: {_dh_metrics[\'category_macro_f1\']*100:.2f}% | " +\n'
+        '                    f"Senti Acc: {_dh_metrics[\'sentiment_accuracy\']*100:.2f}% " +\n'
+        '                    f"macro-F1: {_dh_metrics[\'sentiment_macro_f1\']*100:.2f}%")\n'
+        '        else:\n'
+        '            final_res["use_dual_head"] = False\n'
+    )
+    # Sisipkan sebelum penutup blok pair_eval (deteksi via baris simpan JSON)
+    _json_save_anchor = (
+        '        with open(metrics_json, "w", encoding="utf-8") as jf:'
+    )
+    if _json_save_anchor in src_9a and 'use_dual_head' not in src_9a:
+        src_9a = src_9a.replace(
+            _json_save_anchor,
+            _dual_eval_append + _json_save_anchor
+        )
+    cells[i_9a] = code(src_9a)
 
     return cells, {"n_sel_tokenized_base": n_tb}
 
@@ -1450,14 +1723,45 @@ else:
                     f"| R {val_res.get('recall', 0.0) * 100:.2f}% "
                     f"| quadruple micro-F1 {val_f1 * 100:.2f}% | peak VRAM {peak_vram2:.0f} MB")
 
-            step2_history.append({
+            _entry2 = {
                 "epoch": epoch, "loss": avg_loss,
                 "tp": val_tp, "fp": val_fp, "fn": val_fn,
                 "precision": val_res.get('precision', 0.0),
                 "recall": val_res.get('recall', 0.0),
                 "micro-F1": val_f1,
                 "peak_vram_mb": round(peak_vram2, 2)
-            })
+            }
+
+            if globals().get("USE_DUAL_HEAD", False):
+                from sklearn.metrics import f1_score, accuracy_score
+                _cp_list, _cg_list = [], []
+                _sp_list, _sg_list = [], []
+                with torch.no_grad():
+                    for _eb in eval_loader_2:
+                        _eb = tuple(t.to(device) for t in _eb)
+                        model_step2(tokenizer, epoch, aspect_input_ids=_eb[1],
+                                    aspect_token_type_ids=_eb[3], aspect_attention_mask=_eb[2],
+                                    candidate_aspect=_eb[4], candidate_opinion=_eb[5],
+                                    label_id=_eb[6])
+                        _cl = getattr(model_step2, "latest_cat_logits", None)
+                        _sl = getattr(model_step2, "latest_senti_logits", None)
+                        if _cl is not None and _sl is not None:
+                            _resh = _eb[6].view(-1, 13, 3)
+                            _ct = _resh.sum(dim=-1).clamp(max=1.0)
+                            _sp = _resh.sum(dim=1)
+                            _has_s = (_sp.sum(dim=-1) > 0)
+                            _cp_list.append((_cl.sigmoid() > 0.5).int().cpu().numpy())
+                            _cg_list.append(_ct.int().cpu().numpy())
+                            if _has_s.any():
+                                _sp_list.append(_sl.argmax(dim=-1)[_has_s].cpu().numpy())
+                                _sg_list.append(_sp.argmax(dim=-1)[_has_s].cpu().numpy())
+                _val_cat_f1 = float(f1_score(np.vstack(_cg_list), np.vstack(_cp_list), average="micro", zero_division=0)) if _cp_list else 0.0
+                _val_senti_acc = float(accuracy_score(np.concatenate(_sg_list), np.concatenate(_sp_list))) if _sp_list else 0.0
+                _entry2["category_micro_f1"] = _val_cat_f1
+                _entry2["sentiment_acc"] = _val_senti_acc
+                st.step(f"   🎯 Dual-Head [Epoch {epoch:02d}]: Category micro-F1: {_val_cat_f1 * 100:.2f}% | Sentiment Acc: {_val_senti_acc * 100:.2f}%")
+
+            step2_history.append(_entry2)
 
             if val_f1 > best_step2_f1 or epoch == 1 or not os.path.exists(step2_bin):
                 if val_f1 > best_step2_f1:
@@ -1557,6 +1861,7 @@ with open(step2_run_json, "w", encoding="utf-8") as _jf:
     json.dump({
         "mode": "cache_hit" if STEP2_SKIP_TRAINING else "trained",
         "domain": DOMAIN,
+        "use_dual_head": globals().get("USE_DUAL_HEAD", False),
         "total_epochs_target": NUM_EPOCHS,
         "epochs_recorded": len(globals().get("step2_history", [])),
         "best_epoch": _best_ep2 or best2_epoch,

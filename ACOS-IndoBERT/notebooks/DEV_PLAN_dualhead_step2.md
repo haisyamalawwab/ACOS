@@ -1,8 +1,8 @@
-﻿# Dev Plan: Dual-Head Step 2 — Pisah Category & Sentiment Classifier
+# Dev Plan: Dual-Head Step 2 — Pisah Category & Sentiment Classifier
 
 **File Target:** `ACOS-IndoBERT/notebooks/_build_v4_indobert.py` (patch in-place)  
 **Tanggal:** 2026-09-09  
-**Status:** Rencana — belum diimplementasikan  
+**Status:** Selesai Diimplementasikan ✅  
 **Merujuk ke:** `DEV_PLAN_acos_pipeline_4step_analysis.md` → Opsi B
 
 ---
@@ -224,15 +224,15 @@ if USE_DUAL_HEAD:
 ## 6. Urutan Implementasi
 
 ```
-[ ] 1. Update taxonomy.py — tambah label_list_category(), label_list_sentiment(),
+[x] 1. Update taxonomy.py — tambah label_list_category(), label_list_sentiment(),
         num_labels_category(), num_labels_sentiment(), patch_processor_labels_dualhead()
-[ ] 2. Tambah CODE_DUAL_HEAD_MODEL ke _build_v4_indobert.py
-[ ] 3. Patch sel 8a — deteksi USE_DUAL_HEAD + inisialisasi label terpisah
-[ ] 4. Patch sel 8d — conditional model instantiation (DualHead vs SingleHead)
-[ ] 5. Patch sel 8e — forward pass dual-head (category_labels + sentiment_labels)
-[ ] 6. Patch sel 9a — evaluasi per head + simpan category_f1 & sentiment_f1
-[ ] 7. Jalankan _build_v4_indobert.py → regenerate .ipynb
-[ ] 8. Verifikasi: DOMAIN=appsid → DualHead aktif | DOMAIN=rest16 → SingleHead
+[x] 2. Tambah CODE_DUAL_HEAD_MODEL ke _build_v4_indobert.py
+[x] 3. Patch sel 8a — deteksi USE_DUAL_HEAD + inisialisasi label terpisah
+[x] 4. Patch sel 8d — conditional model instantiation (DualHead vs SingleHead)
+[x] 5. Patch sel 8e — dual loss calculation & per-epoch per-head evaluation
+[x] 6. Patch sel 9a — conditional model loading + evaluasi per head ke master_metrics.json
+[x] 7. Jalankan _build_v4_indobert.py → regenerate .ipynb
+[x] 8. Verifikasi: DOMAIN=appsid → DualHead aktif | DOMAIN=rest16 → SingleHead | 0 syntax errors
 ```
 
 ---
