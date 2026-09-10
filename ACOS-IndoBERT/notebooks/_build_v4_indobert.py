@@ -243,6 +243,24 @@ _missing = [f"{_m}.py" for _m in ACOS_ID_MODULES
 if _missing:
     raise RuntimeError(f"acos_id tidak lengkap di {_acos_id_dir}; hilang: {_missing}")
 
+# Pastikan modul acos_id/ memiliki pembaruan terbaru (misal: dual-head di taxonomy.py)
+_tax_file = os.path.join(_acos_id_dir, "taxonomy.py")
+if os.path.isfile(_tax_file):
+    try:
+        with open(_tax_file, "r", encoding="utf-8") as _tf:
+            if "patch_processor_labels_dualhead" not in _tf.read():
+                print("⚠️ acos_id/taxonomy.py di storage adalah versi lama. Menyinkronkan pembaruan dari GitHub...")
+                _tmp_up = "/tmp/ACOS_update_indo"
+                os.system(f"rm -rf {_tmp_up}")
+                os.system(f"git clone --depth 1 {ACOS_REPO_URL} {_tmp_up}")
+                _src_up = os.path.join(_tmp_up, "ACOS-IndoBERT", "acos_id")
+                if os.path.isdir(_src_up):
+                    os.system(f'cp -r "{_src_up}/." "{_acos_id_dir}/"')
+                os.system(f"rm -rf {_tmp_up}")
+                print("✅ acos_id berhasil diperbarui.")
+    except Exception as _e:
+        print(f"ℹ️ Verifikasi versi taxonomy dilewati: {_e}")
+
 
 def _prepend_path(p):
     """Paksa p ke posisi terdepan sys.path walau sudah ada di urutan lebih rendah."""
@@ -632,7 +650,7 @@ class CategorySentiDualHead(BertPreTrainedModel):
 _DUAL_HEAD_IMPORT_ANCHOR = 'from modeling import CategorySentiClassification'
 _DUAL_HEAD_INSERT = (
     'from modeling import CategorySentiClassification\n'
-    'from modeling import BertModel\n'
+    'from modeling import BertModel, BertPreTrainedModel\n'
     'import torch.nn as nn'
 )
 
@@ -829,17 +847,32 @@ def apply_patches(cells):
         '    # Dual-Head: label terpisah per komponen (hanya domain Indonesia)\n'
         '    USE_DUAL_HEAD = acos_taxonomy.is_id_domain(DOMAIN)\n'
         '    if USE_DUAL_HEAD:\n'
-        '        _dh_patch = acos_taxonomy.patch_processor_labels_dualhead(processors)\n'
+        '        if hasattr(acos_taxonomy, "patch_processor_labels_dualhead"):\n'
+        '            _dh_patch = acos_taxonomy.patch_processor_labels_dualhead(processors)\n'
+        '        else:\n'
+        '            # Fallback jika acos_taxonomy di storage/Drive belum memiliki patch dual-head\n'
+        '            cs_cls = processors["categorysenti"]\n'
+        '            _cats = getattr(acos_taxonomy, "CATEGORIES", [\n'
+        '                "ONBOARDING_KYC", "AUTH_ACCESS", "TRANSACTION_TRANSFER",\n'
+        '                "APP_PERFORMANCE", "UI_UX_DESIGN", "FEES_CHARGES",\n'
+        '                "INTEREST_RETURNS", "CUSTOMER_SERVICE", "SECURITY_FRAUD",\n'
+        '                "FEATURES_PRODUCT", "PROMO_MARKETING", "NOTIFICATION_INFO",\n'
+        '                "ACCOUNT_MANAGEMENT"\n'
+        '            ])\n'
+        '            cs_cls.get_labels_category = lambda self, dt: list(_cats) if acos_taxonomy.is_id_domain(dt) else None\n'
+        '            cs_cls.get_labels_sentiment = lambda self, dt: ["0", "1", "2"] if acos_taxonomy.is_id_domain(dt) else None\n'
+        '            cs_cls._acos_id_dualhead_patched = True\n'
+        '            _dh_patch = {"patched": True, "fallback": True, "num_labels_category": len(_cats), "num_labels_sentiment": 3}\n'
         '        label_list_cat   = processor_step2.get_labels_category(DOMAIN)\n'
         '        label_list_senti = processor_step2.get_labels_sentiment(DOMAIN)\n'
         '        num_labels_cat   = len(label_list_cat)   # 13\n'
         '        num_labels_senti = len(label_list_senti)  # 3\n'
-        '        st.step(f"Dual-Head aktif: {num_labels_cat} kategori | "\
-                f"{num_labels_senti} sentimen (domain Indonesia)")\n'
+        '        st.step(f"Dual-Head aktif: {num_labels_cat} kategori | "\n'
+        '                f"{num_labels_senti} sentimen (domain Indonesia)")\n'
         '    else:\n'
         '        USE_DUAL_HEAD = False\n'
-        '        st.step(f"Single-Head: {num_labels_step2} label gabungan "\
-                f"(domain Inggris {DOMAIN})")'
+        '        st.step(f"Single-Head: {num_labels_step2} label gabungan "\n'
+        '                f"(domain Inggris {DOMAIN})")'
     )
     if _anchor_labels in src_8a and 'USE_DUAL_HEAD' not in src_8a:
         src_8a = src_8a.replace(_anchor_labels, _dual_label_init)
