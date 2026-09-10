@@ -53,7 +53,11 @@ This production-grade master notebook executes the **entire ACOS benchmark pipel
 > **Petunjuk Eksekusi di Kaggle:**  
 > 1. Aktifkan **Accelerator**: Pilih **GPU T4 x2** atau **GPU P100** di panel kanan (*Settings* -> *Accelerator*).  
 > 2. Aktifkan **Internet**: Pastikan status **Internet ON** di panel kanan (*Settings* -> *Internet*) untuk download dependensi & model pretrained IndoBERT.  
-> 3. Seluruh output (model checkpoint, tabel CSV metrik, kurva loss PNG) akan otomatis tersimpan di `/kaggle/working/` dan dapat langsung di-download dari tab *Output*.
+> 3. Pasang **Dataset Input**: Pastikan dataset Indonesia terpasang di panel input Kaggle (*Input* -> *Add Input*):  
+>    - `/kaggle/input/datasets/rozanhaisyam/appsid-gplay`  
+>    - `/kaggle/input/datasets/rozanhaisyam/appsid`  
+>    (Pipeline akan otomatis mendeteksi dan menyinkronkan data ke `/kaggle/working/`).  
+> 4. Seluruh output (model checkpoint, tabel CSV metrik, kurva loss PNG) akan otomatis tersimpan di `/kaggle/working/` dan dapat langsung di-download dari tab *Output*.
 """
 
 CODE_SETUP_KAGGLE = """# 1. Deteksi Lingkungan (Kaggle vs Google Colab vs Lokal)
@@ -93,6 +97,12 @@ if IS_KAGGLE:
         "/kaggle/working",
         "/kaggle/input/acos-asli",
         "/kaggle/input/acos-indobert",
+        "/kaggle/input/datasets/rozanhaisyam/appsid-gplay",
+        "/kaggle/input/datasets/rozanhaisyam/appsid",
+        "/kaggle/input/appsid-gplay",
+        "/kaggle/input/appsid",
+        "/kaggle/input/rozanhaisyam/appsid-gplay",
+        "/kaggle/input/rozanhaisyam/appsid",
     ]
 if HAS_DRIVE:
     drive_candidates += [
@@ -191,7 +201,7 @@ def apply_kaggle_patches(cells):
             cells[idx]["source"] = [line + "\n" for line in CODE_PATH_KAGGLE.splitlines()]
             break
 
-    # 4. Dua Root: Deteksi indo_root di Kaggle (Sel 11)
+    # 4. Dua Root & Dataset Kaggle: Deteksi indo_root & sinkronisasi data di Kaggle (Sel 11)
     for idx, c in enumerate(cells):
         src = "".join(c.get("source", []))
         if "def _cari_indo_root():" in src and "ACOS-IndoBERT" in src:
@@ -205,12 +215,86 @@ def apply_kaggle_patches(cells):
                 '            "/kaggle/input/acos-indobert/ACOS-IndoBERT",\n'
                 '            "/kaggle/input/acos-indobert",\n'
                 '            "/kaggle/input/acos-asli/ACOS-IndoBERT",\n'
+                '            "/kaggle/input/datasets/rozanhaisyam/appsid-gplay/ACOS-IndoBERT",\n'
+                '            "/kaggle/input/datasets/rozanhaisyam/appsid-gplay",\n'
+                '            "/kaggle/input/datasets/rozanhaisyam/appsid/ACOS-IndoBERT",\n'
+                '            "/kaggle/input/datasets/rozanhaisyam/appsid",\n'
+                '            "/kaggle/input/appsid-gplay/ACOS-IndoBERT",\n'
+                '            "/kaggle/input/appsid-gplay",\n'
+                '            "/kaggle/input/appsid/ACOS-IndoBERT",\n'
+                '            "/kaggle/input/appsid",\n'
                 '        ]\n'
                 '    if os.path.exists("/content/drive/MyDrive"):'
             )
             if _old_anchor in src and "/kaggle" not in src:
                 src = src.replace(_old_anchor, _kaggle_branch)
-                cells[idx]["source"] = [line + "\n" for line in src.splitlines()]
+
+            _old_init_dirs = (
+                'for _d in (data_root, tokenized_dir, backbones_dir,\n'
+                '           os.path.join(indo_root, "results"), os.path.join(indo_root, "build")):\n'
+                '    os.makedirs(_d, exist_ok=True)'
+            )
+            _kaggle_dataset_sync = (
+                'for _d in (data_root, tokenized_dir, backbones_dir,\n'
+                '           os.path.join(indo_root, "results"), os.path.join(indo_root, "build")):\n'
+                '    os.makedirs(_d, exist_ok=True)\n'
+                '\n'
+                '# ============================================================\n'
+                '#  Deteksi & Sinkronisasi Dataset Kaggle (appsid-gplay / appsid)\n'
+                '# ============================================================\n'
+                'KAGGLE_DATASET_CANDIDATES = [\n'
+                '    "/kaggle/input/datasets/rozanhaisyam/appsid-gplay",\n'
+                '    "/kaggle/input/datasets/rozanhaisyam/appsid",\n'
+                '    "/kaggle/input/appsid-gplay",\n'
+                '    "/kaggle/input/appsid",\n'
+                '    "/kaggle/input/rozanhaisyam/appsid-gplay",\n'
+                '    "/kaggle/input/rozanhaisyam/appsid",\n'
+                ']\n'
+                '\n'
+                '_target_apps = os.path.join(data_root, "Apps-ACOS")\n'
+                'os.makedirs(_target_apps, exist_ok=True)\n'
+                '_synced_datasets = []\n'
+                '\n'
+                'for _kd in KAGGLE_DATASET_CANDIDATES:\n'
+                '    if os.path.isdir(_kd):\n'
+                '        _synced_datasets.append(_kd)\n'
+                '        print(f"📊 Dataset Kaggle terdeteksi: {_kd}")\n'
+                '        # 1. Sinkronisasi folder Apps-ACOS / processed / tsv dataset\n'
+                '        _cand_apps = [\n'
+                '            os.path.join(_kd, "Apps-ACOS"),\n'
+                '            os.path.join(_kd, "data", "Apps-ACOS"),\n'
+                '            _kd,\n'
+                '        ]\n'
+                '        _apps_src = next((p for p in _cand_apps if os.path.exists(os.path.join(p, "processed")) or os.path.exists(os.path.join(p, "appsid_quad_train.tsv"))), None)\n'
+                '        if _apps_src:\n'
+                '            print(f"   📥 Menyinkronkan data {_apps_src} -> {_target_apps}...")\n'
+                '            os.system(f\'cp -rn "{_apps_src}/"* "{_target_apps}/" 2>/dev/null || cp -r "{_apps_src}/"* "{_target_apps}/"\')\n'
+                '        # 2. Sinkronisasi tokenized_data jika ada\n'
+                '        _sub_tok = os.path.join(_kd, "tokenized_data")\n'
+                '        if os.path.isdir(_sub_tok):\n'
+                '            print(f"   📥 Menyinkronkan tokenized_data {_sub_tok} -> {tokenized_dir}...")\n'
+                '            os.system(f\'cp -rn "{_sub_tok}/"* "{tokenized_dir}/" 2>/dev/null || cp -r "{_sub_tok}/"* "{tokenized_dir}/"\')\n'
+                '        else:\n'
+                '            try:\n'
+                '                if any("quad_bert.tsv" in f for f in os.listdir(_kd)):\n'
+                '                    print(f"   📥 Menyinkronkan tokenized_data langsung dari {_kd} -> {tokenized_dir}...")\n'
+                '                    os.system(f\'cp -rn "{_kd}"/*_quad_bert.tsv "{tokenized_dir}/" 2>/dev/null || true\')\n'
+                '                    os.system(f\'cp -rn "{_kd}"/*_pair.tsv "{tokenized_dir}/" 2>/dev/null || true\')\n'
+                '            except Exception:\n'
+                '                pass\n'
+                '        # 3. Sinkronisasi pretrained backbones jika ada\n'
+                '        _sub_bb = os.path.join(_kd, "backbones")\n'
+                '        if os.path.isdir(_sub_bb):\n'
+                '            print(f"   📥 Menyinkronkan pretrained backbone {_sub_bb} -> {backbones_dir}...")\n'
+                '            os.system(f\'cp -rn "{_sub_bb}/"* "{backbones_dir}/" 2>/dev/null || cp -r "{_sub_bb}/"* "{backbones_dir}/"\')\n'
+                '\n'
+                'if _synced_datasets:\n'
+                '    print(f"✅ Selesai konfigurasi {len(_synced_datasets)} sumber dataset Kaggle ke {data_root}.")'
+            )
+            if _old_init_dirs in src and "KAGGLE_DATASET_CANDIDATES" not in src:
+                src = src.replace(_old_init_dirs, _kaggle_dataset_sync)
+
+            cells[idx]["source"] = [line + "\n" for line in src.splitlines()]
             break
 
     # 5. Tambahkan search roots Kaggle pada pencarian checkpoint
