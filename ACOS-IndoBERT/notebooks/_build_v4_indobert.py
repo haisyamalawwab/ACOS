@@ -986,7 +986,70 @@ def apply_patches(cells):
             _json_save_anchor,
             _dual_eval_append + _json_save_anchor
         )
+
+    # 15c-3: Cetak metrik quadruple akhir secara aman (hanya numerik) + cetak metrik dual-head
+    _old_print_anchor = (
+        '    print("\\n🏆 Metrik Quadruple Akhir:")\n'
+        '    for k, v in final_res.items():\n'
+        '        if k in ("tp", "fp", "fn"):\n'
+        '            print(f"   {k.upper():15s}: {float(v):.0f}")\n'
+        '        else:\n'
+        '            print(f"   {k:15s}: {float(v) * 100:.2f}%")'
+    )
+    _safe_print_block = (
+        '    print("\\n🏆 Metrik Quadruple Akhir:")\n'
+        '    for k, v in final_res.items():\n'
+        '        if k in ("tp", "fp", "fn"):\n'
+        '            print(f"   {k.upper():15s}: {float(v):.0f}")\n'
+        '        elif isinstance(v, (int, float)) and not isinstance(v, bool):\n'
+        '            print(f"   {k:15s}: {float(v) * 100:.2f}%")\n'
+        '    if final_res.get("use_dual_head") and "dual_head" in final_res and isinstance(final_res["dual_head"], dict):\n'
+        '        print("\\n🎯 Metrik Dual-Head (Evaluasi Mandiri):")\n'
+        '        for dk, dv in final_res["dual_head"].items():\n'
+        '            if isinstance(dv, (int, float)) and not isinstance(dv, bool):\n'
+        '                print(f"   {dk:22s}: {float(dv) * 100:.2f}%")'
+    )
+    if _old_print_anchor in src_9a:
+        src_9a = src_9a.replace(_old_print_anchor, _safe_print_block)
+    elif 'Metrik Dual-Head (Evaluasi Mandiri)' not in src_9a:
+        _new_print_anchor = (
+            '        elif isinstance(v, (int, float)) and not isinstance(v, bool):\n'
+            '            print(f"   {k:15s}: {float(v) * 100:.2f}%")'
+        )
+        if _new_print_anchor in src_9a:
+            src_9a = src_9a.replace(
+                _new_print_anchor,
+                _new_print_anchor + '\n' +
+                '    if final_res.get("use_dual_head") and "dual_head" in final_res and isinstance(final_res["dual_head"], dict):\n'
+                '        print("\\n🎯 Metrik Dual-Head (Evaluasi Mandiri):")\n'
+                '        for dk, dv in final_res["dual_head"].items():\n'
+                '            if isinstance(dv, (int, float)) and not isinstance(dv, bool):\n'
+                '                print(f"   {dk:22s}: {float(dv) * 100:.2f}%")'
+            )
     cells[i_9a] = code(src_9a)
+
+    # 15d: Patch sel 9b agar tabel master_07 bebas dari flag non-metrik dan mengekspor master_07b dual-head
+    i_9b = find_code(cells, 'require_vars("step_stage", "final_res", "df_subtasks")')
+    src_9b = "".join(cells[i_9b]["source"])
+    _anchor_rep_table = '    rep.table(df_overall, caption="Metrik quadruple akhir")'
+    _dual_table_block = (
+        '    rep.table(df_overall, caption="Metrik quadruple akhir")\n'
+        '    if final_res.get("use_dual_head") and "dual_head" in final_res and isinstance(final_res["dual_head"], dict):\n'
+        '        df_dual = pd.DataFrame([\n'
+        '            {"Metrik": k, "Nilai_%": f"{float(v) * 100:.2f}%"}\n'
+        '            for k, v in final_res["dual_head"].items()\n'
+        '            if isinstance(v, (int, float)) and not isinstance(v, bool)\n'
+        '        ])\n'
+        '        if not df_dual.empty:\n'
+        '            export_step_table(df_dual, name="master_07b_metrik_dualhead",\n'
+        '                              csv_dir=csv_dir, md_dir=md_dir,\n'
+        '                              title=f"Metrik Mandiri Dual-Head Step 2 ({DOMAIN.upper()})")\n'
+        '            rep.table(df_dual, caption="Metrik mandiri dual-head Step 2")\n'
+        '            st.step(f"Tabel master_07b diekspor (Dual-Head mandiri: {len(df_dual)} metrik)")'
+    )
+    if _anchor_rep_table in src_9b and 'master_07b_metrik_dualhead' not in src_9b:
+        src_9b = src_9b.replace(_anchor_rep_table, _dual_table_block)
+        cells[i_9b] = code(src_9b)
 
     return cells, {"n_sel_tokenized_base": n_tb}
 

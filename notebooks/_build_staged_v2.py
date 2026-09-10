@@ -248,7 +248,7 @@ def metrics_display_frame(res):
     """Satu dict metrik → tabel dua-jenis: hitungan mentah dan laju dalam persen."""
     rows = []
     for k, v in res.items():
-        if not isinstance(v, (int, float)):
+        if isinstance(v, bool) or not isinstance(v, (int, float)):
             continue
         is_count = k in METRIC_COUNT_COLS
         rows.append({"Metrik": {"tp": "TP", "fp": "FP", "fn": "FN"}.get(k, k),
@@ -1230,7 +1230,7 @@ with step_stage("9a. Evaluasi final quadruple + metrik sub-task", 5) as st:
     for k, v in final_res.items():
         if k in ("tp", "fp", "fn"):
             print(f"   {k.upper():15s}: {float(v):.0f}")
-        else:
+        elif isinstance(v, (int, float)) and not isinstance(v, bool):
             print(f"   {k:15s}: {float(v) * 100:.2f}%")'''
 
 MD_9B = """### 9b. Tabel & Plot Benchmark

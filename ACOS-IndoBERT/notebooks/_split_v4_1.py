@@ -107,7 +107,8 @@ def metrics_display_frame(res):
     import pandas as pd
     if not res:
         return pd.DataFrame()
-    rows = [{"Metric": k, "Value": v} for k, v in res.items()]
+    rows = [{"Metric": k, "Value": v} for k, v in res.items()
+            if isinstance(v, (int, float)) and not isinstance(v, bool)]
     return pd.DataFrame(rows)
 
 def best_epoch_row(history, f1_key="micro-F1"):
