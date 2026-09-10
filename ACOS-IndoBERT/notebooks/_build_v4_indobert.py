@@ -57,7 +57,7 @@ sys.path.insert(0, V2_DIR)
 import _build_staged_v2 as V2  # noqa: E402
 
 SRC_V2 = V2.DST
-DST = os.path.join(HERE, "00_ACOS_Master_Pipeline_Colab_V4_INDOBERT.ipynb")
+DST = os.path.join(HERE, "00_ACOS_Master_Pipeline_Colab_V4_1_INDOBERT.ipynb")
 
 md = V2.md
 code = V2.code
@@ -1009,12 +1009,21 @@ BACKBONE = "indobert"
 
 # Hyperparameter Pelatihan
 MAX_SEQ_LENGTH = 128
-STEP1_BATCH_SIZE = 24
-STEP2_BATCH_SIZE = 16
+STEP1_BATCH_SIZE = 32
+STEP2_BATCH_SIZE = 32
 STEP1_LR = 2e-5
 STEP2_LR = 5e-5
 NUM_EPOCHS = 15      # 15 epoch optimal untuk Colab GPU T4/A100 (Default paper: 30)
 SEED = 42
+
+# Mode per-epoch: jumlah epoch yang dilatih dalam satu kali eksekusi sel training.
+# 0 = jalankan semua epoch sekaligus (perilaku lama).
+# 1 = train 1 epoch, simpan state, berhenti — untuk lanjut di sesi Colab berikutnya.
+MAX_EPOCHS_THIS_RUN = 1
+
+# Mixed Precision (AMP): akselerasi FP16 pada T4/A100 via tensor core.
+# Nonaktifkan (False) hanya jika GradScaler menyebabkan NaN pada optimizer lama.
+USE_AMP = True
 
 # Early Stopping: berhenti jika F1 tidak membaik selama N epoch berturut-turut
 # (menghemat waktu Colab saat training sudah plateau). Set PATIENCE = 0 untuk
@@ -1506,8 +1515,13 @@ else:
             st.step("Memulai training baru dari epoch 1")
         # ─────────────────────────────────────────────────────────────────────
 
-        epoch_bar = tqdm(range(start_epoch, NUM_EPOCHS + 1), desc="Step 1 epoch",
-                         unit="epoch", initial=start_epoch - 1, total=NUM_EPOCHS)
+        _max_run = globals().get("MAX_EPOCHS_THIS_RUN", 0)
+        _run_until = (start_epoch + _max_run - 1) if _max_run else NUM_EPOCHS
+        _run_until = min(_run_until, NUM_EPOCHS)
+        _use_amp = globals().get("USE_AMP", True) and torch.cuda.is_available()
+        scaler1 = torch.cuda.amp.GradScaler(enabled=_use_amp)
+        epoch_bar = tqdm(range(start_epoch, _run_until + 1), desc="Step 1 epoch",
+                         unit="epoch", initial=start_epoch - 1, total=_run_until)
         for epoch in epoch_bar:
             model_step1.train()
             t_loss = 0.0
@@ -1516,13 +1530,15 @@ else:
             for step, batch in enumerate(batch_bar, 1):
                 batch = tuple(t.to(device) for t in batch)
                 _len, _ids, _mask, _lbls, _seg, _imp_a, _imp_o = batch
-                out1 = model_step1(aspect_input_ids=_ids, aspect_labels=_lbls,
-                                   aspect_token_type_ids=_seg, aspect_attention_mask=_mask,
-                                   exist_imp_aspect=_imp_a, exist_imp_opinion=_imp_o)
+                with torch.cuda.amp.autocast(enabled=_use_amp):
+                    out1 = model_step1(aspect_input_ids=_ids, aspect_labels=_lbls,
+                                       aspect_token_type_ids=_seg, aspect_attention_mask=_mask,
+                                       exist_imp_aspect=_imp_a, exist_imp_opinion=_imp_o)
                 loss, _ = unpack_model_output(out1)
-                loss.backward()
-                optimizer_1.step()
-                optimizer_1.zero_grad()
+                scaler1.scale(loss).backward()
+                scaler1.step(optimizer_1)
+                scaler1.update()
+                optimizer_1.zero_grad(set_to_none=True)
                 t_loss += loss.item()
                 if step % 10 == 0 or step == len(train_loader_1):
                     batch_bar.set_postfix(loss=f"{t_loss / step:.4f}")
@@ -1714,8 +1730,13 @@ else:
             st.step("Memulai training Step 2 baru dari epoch 1")
         # ─────────────────────────────────────────────────────────────────────
 
-        epoch_bar = tqdm(range(start_epoch2, NUM_EPOCHS + 1), desc="Step 2 epoch",
-                         unit="epoch", initial=start_epoch2 - 1, total=NUM_EPOCHS)
+        _max_run2 = globals().get("MAX_EPOCHS_THIS_RUN", 0)
+        _run_until2 = (start_epoch2 + _max_run2 - 1) if _max_run2 else NUM_EPOCHS
+        _run_until2 = min(_run_until2, NUM_EPOCHS)
+        _use_amp2 = globals().get("USE_AMP", True) and torch.cuda.is_available()
+        scaler2 = torch.cuda.amp.GradScaler(enabled=_use_amp2)
+        epoch_bar = tqdm(range(start_epoch2, _run_until2 + 1), desc="Step 2 epoch",
+                         unit="epoch", initial=start_epoch2 - 1, total=_run_until2)
         for epoch in epoch_bar:
             model_step2.train()
             t_loss = 0.0
@@ -1724,14 +1745,16 @@ else:
             for step, batch in enumerate(batch_bar, 1):
                 batch = tuple(t.to(device) for t in batch)
                 _len, _ids, _mask, _seg, _cand_a, _cand_o, _lbls = batch
-                out2 = model_step2(tokenizer, epoch, aspect_input_ids=_ids,
-                                   aspect_token_type_ids=_seg, aspect_attention_mask=_mask,
-                                   candidate_aspect=_cand_a, candidate_opinion=_cand_o,
-                                   label_id=_lbls)
+                with torch.cuda.amp.autocast(enabled=_use_amp2):
+                    out2 = model_step2(tokenizer, epoch, aspect_input_ids=_ids,
+                                       aspect_token_type_ids=_seg, aspect_attention_mask=_mask,
+                                       candidate_aspect=_cand_a, candidate_opinion=_cand_o,
+                                       label_id=_lbls)
                 loss, _ = unpack_model_output(out2)
-                loss.backward()
-                optimizer_2.step()
-                optimizer_2.zero_grad()
+                scaler2.scale(loss).backward()
+                scaler2.step(optimizer_2)
+                scaler2.update()
+                optimizer_2.zero_grad(set_to_none=True)
                 t_loss += loss.item()
                 if step % 10 == 0 or step == len(train_loader_2):
                     batch_bar.set_postfix(loss=f"{t_loss / step:.4f}")
