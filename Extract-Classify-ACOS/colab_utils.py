@@ -268,7 +268,7 @@ def verify_session_save_paths(session_dirs, domain="rest16"):
     is_drive = "/content/drive/MyDrive" in root
     
     probes_ok = True
-    for sub in ["logs", "checkpoints", "csv", "plots"]:
+    for sub in ["logs", "checkpoints", "csv", "plots", "md", "reports"]:
         sp = session_dirs.get(sub, "")
         if sp:
             os.makedirs(sp, exist_ok=True)
@@ -291,15 +291,30 @@ def verify_session_save_paths(session_dirs, domain="rest16"):
     return probes_ok
 
 
-def find_resumable_session(search_dirs, domain="rest16"):
+def find_resumable_session(search_dirs, domain="rest16", max_age_minutes=None, now=None):
     """
     Mencari folder sesi terbaik untuk domain tertentu dengan memeriksa
     beberapa kandidat folder results (di Drive maupun lokal).
     Menjamin domain safety: hanya memilih sesi yang diawali dengan f"{domain}_".
+    V4.3: bila max_age_minutes diisi (mis. 60), hanya sesi dengan cap waktu
+    DDMMYYYY_HM/HMS dalam jendela tersebut yang dipertimbangkan (anti-resume basi).
     """
     if isinstance(search_dirs, str):
         search_dirs = [search_dirs]
-        
+
+    def _parse_stamp(name):
+        if not name.startswith(f"{domain}_"):
+            return None
+        stamp = name[len(domain) + 1:].split("_")
+        stamp = "_".join(stamp[:2]) if len(stamp) >= 2 else stamp[0]
+        for fmt in ("%d%m%Y_%H%M", "%d%m%Y_%H%M%S"):
+            try:
+                return datetime.strptime(stamp, fmt)
+            except ValueError:
+                continue
+        return None
+
+    ref = now or datetime.now()
     ranked = []
     seen = set()
     for base_dir in search_dirs:
@@ -312,6 +327,13 @@ def find_resumable_session(search_dirs, domain="rest16"):
             seen.add(p)
             if not name.startswith(f"{domain}_"):
                 continue
+            if max_age_minutes is not None:
+                stamp = _parse_stamp(name)
+                if stamp is None:
+                    continue
+                delta_min = (ref - stamp).total_seconds() / 60.0
+                if not (0 <= delta_min <= max_age_minutes):
+                    continue
             
             s1_bin = os.path.join(p, "checkpoints", "step1_best", "pytorch_model.bin")
             s2_bin = os.path.join(p, "checkpoints", "step2_best", "pytorch_model.bin")
@@ -383,18 +405,25 @@ def auto_find_file(filename, search_roots=None, must_contain=None, domain=None, 
 def setup_timestamped_run_dir(base_dir="results", domain="rest16"):
     """
     Creates a unique timestamped session directory with isolated subfolders:
-    results/<domain>_<DDMMYYYY_HMS>/
+    results/<domain>_<DDMMYYYY_HM>/  (V4.3: presisi menit + suffix _01 bila tabrakan)
         ├── checkpoints/
         │   ├── step1_best/
         │   └── step2_best/
-        ├── plots/
-        ├── csv/
-        ├── md/
-        └── logs/
+        ├── plots/      (grafik laporan)
+        ├── csv/        (tabel laporan)
+        ├── md/         (laporan markdown)
+        ├── logs/       (json/txt: master_metrics, run_result, result.txt)
+        └── reports/    (indeks laporan: REPORT_INDEX.md)
+    pickle state (pipeline_state.pkl) + session_manifest.json di root sesi.
     """
-    timestamp = datetime.now().strftime("%d%m%Y_%H%M%S")
+    timestamp = datetime.now().strftime("%d%m%Y_%H%M")
     run_dir = os.path.join(base_dir, f"{domain}_{timestamp}")
-    
+    if os.path.exists(run_dir):
+        suffix = 1
+        while os.path.exists(f"{run_dir}_{suffix:02d}"):
+            suffix += 1
+        run_dir = f"{run_dir}_{suffix:02d}"
+
     dirs = {
         "root": run_dir,
         "checkpoints": os.path.join(run_dir, "checkpoints"),
@@ -403,14 +432,70 @@ def setup_timestamped_run_dir(base_dir="results", domain="rest16"):
         "plots": os.path.join(run_dir, "plots"),
         "csv": os.path.join(run_dir, "csv"),
         "md": os.path.join(run_dir, "md"),
-        "logs": os.path.join(run_dir, "logs")
+        "logs": os.path.join(run_dir, "logs"),
+        "reports": os.path.join(run_dir, "reports"),
     }
-    
+
     for path in dirs.values():
         os.makedirs(path, exist_ok=True)
-        
+
     print(f"📁 Initialized timestamped session directory: {run_dir}")
     return dirs
+
+
+def find_nearest_session_hm(base_dir="results", domain="rest16", max_minutes=60, now=None):
+    """Sesi domain terbaru dalam jendela menit (dukung HM + HMS lama)."""
+    ref = now or datetime.now()
+    best = None
+    if not base_dir or not os.path.isdir(base_dir):
+        return None
+    for name in os.listdir(base_dir):
+        if not name.startswith(f"{domain}_"):
+            continue
+        stamp_raw = name[len(domain) + 1:].split("_")
+        stamp_raw = "_".join(stamp_raw[:2]) if len(stamp_raw) >= 2 else stamp_raw[0]
+        stamp = None
+        for fmt in ("%d%m%Y_%H%M", "%d%m%Y_%H%M%S"):
+            try:
+                stamp = datetime.strptime(stamp_raw, fmt)
+                break
+            except ValueError:
+                continue
+        if stamp is None:
+            continue
+        delta = (ref - stamp).total_seconds() / 60.0
+        if 0 <= delta <= max_minutes:
+            if best is None or stamp > best[0]:
+                best = (stamp, os.path.join(base_dir, name), delta)
+    return {"time": best[0], "path": best[1], "delta_min": best[2],
+            "name": os.path.basename(best[1])} if best else None
+
+
+def ensure_session_dir_hm(base_dir="results", domain="rest16", max_reuse_minutes=60,
+                           resume=True, force_new=False, now=None):
+    """V4.3: pakai ulang sesi terdekat <=60 mnt, selain itu buat baru (HM)."""
+    ref = now or datetime.now()
+    os.makedirs(base_dir, exist_ok=True)
+    if resume and not force_new and max_reuse_minutes > 0:
+        hit = find_nearest_session_hm(base_dir, domain, max_reuse_minutes, ref)
+        if hit is not None:
+            root = hit["path"]
+            dirs = {
+                "root": root,
+                "checkpoints": os.path.join(root, "checkpoints"),
+                "step1_checkpoint": os.path.join(root, "checkpoints", "step1_best"),
+                "step2_checkpoint": os.path.join(root, "checkpoints", "step2_best"),
+                "plots": os.path.join(root, "plots"),
+                "csv": os.path.join(root, "csv"),
+                "md": os.path.join(root, "md"),
+                "logs": os.path.join(root, "logs"),
+                "reports": os.path.join(root, "reports"),
+            }
+            for path in dirs.values():
+                os.makedirs(path, exist_ok=True)
+            print(f"♻️  Reuse sesi HM terdekat: {root} (Δ {hit['delta_min']:.1f} mnt)")
+            return dirs
+    return setup_timestamped_run_dir(base_dir=base_dir, domain=domain)
 
 
 def download_bert_pretrained(target_dir="./bert_base_uncased"):
