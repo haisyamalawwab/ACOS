@@ -13,6 +13,10 @@ build/_sim_v4/
 build/_eda_id/
 build/_gate2_en/
 
+# Cache tokenized_data V5 (Inggris) hasil gerbang 4e; dibangun ulang otomatis
+# dari folder root data/ via vocab bert_cache_dir bila belum ada.
+v5_en/
+
 __pycache__/
 *.py[cod]
 .ipynb_checkpoints/
