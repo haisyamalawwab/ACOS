@@ -17,8 +17,6 @@ def load_quad_tsv_dataset(tsv_path, tokenizer, max_seq_length=128):
     Returns:
         TensorDataset dengan format compatible untuk BertForQuadABSA
     """
-    from .taxonomy import ASPECT_LABELS, OPINION_LABELS
-    
     instances = []
     with open(tsv_path, 'r', encoding='utf-8') as f:
         for line in f:
