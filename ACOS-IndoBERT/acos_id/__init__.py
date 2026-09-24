@@ -31,16 +31,18 @@ Modul:
 - `eda` — EDA Indonesia dengan kontrak keluaran identik `colab_utils`
 - `selftest` — 5 gate torch-free + Gate 1
 - `upstream` — temukan `Extract-Classify-ACOS/` dan pasang ke `sys.path`
+- `model_wrappers` — helper functions untuk data loading dan evaluasi
 
-Ketujuh modul ini dituntut sel 2c notebook V4 (`ACOS_ID_MODULES`). Semua
+Ketujuh modul pertama dituntut sel 2c notebook V4 (`ACOS_ID_MODULES`). Semua
 torch-free kecuali `checkpoint`, yang memang bertugas menyentuh state_dict.
+`model_wrappers` ditambahkan untuk notebook V5 eksperimen.
 """
 
 import os as _os
 
 REQUIRED_MODULES = (
     "taxonomy", "build_acos", "tokenize_data", "checkpoint",
-    "selftest", "eda", "upstream",
+    "selftest", "eda", "upstream", "model_wrappers",
 )
 
 __all__ = list(REQUIRED_MODULES)
