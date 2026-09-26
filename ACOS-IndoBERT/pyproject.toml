@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "acos-id"
+version = "0.3.0"
+description = "ACOS Indonesia (IndoBERT) modular pipeline"
+readme = "001_README_04092026_1413.md"
+requires-python = ">=3.9"
+dependencies = ["numpy", "pandas", "matplotlib", "scikit-learn"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["acos_id*"]
