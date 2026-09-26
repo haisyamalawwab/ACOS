@@ -1,0 +1,88 @@
+# Implementation Plan
+
+- [ ] 1. Write bug condition exploration test
+  - **Property 1: Bug Condition** - Sys.Path Timing Issue Causing BERT Utils Import Failure
+  - **CRITICAL**: This test MUST FAIL on unfixed code - failure confirms the bug exists
+  - **DO NOT attempt to fix the test or the code when it fails**
+  - **NOTE**: This test encodes the expected behavior - it will validate the fix when it passes after implementation
+  - **GOAL**: Surface counterexamples that demonstrate the bug exists
+  - **Scoped PBT Approach**: For deterministic bugs, scope the property to the concrete failing case(s) to ensure reproducibility
+  - Test that V5_1 notebook cell 3 execution fails to import bert_utils despite validation showing True
+  - The test assertions should match the Expected Behavior Properties from design:
+    - Assert that `from bert_utils.tokenization import BertTokenizer` succeeds after proper sys.path setup
+    - Assert that sys.path contains the validated upstream_root path before imports
+    - Assert that _prepend_path is called after ensure_path() validation completes
+  - Run test on UNFIXED code (original V5_1 notebook)
+  - **EXPECTED OUTCOME**: Test FAILS (this is correct - it proves the bug exists)
+  - Document counterexamples found to understand root cause:
+    - sys.path[0] state before and after ensure_path() call
+    - upstream_root value changes during execution
+    - ModuleNotFoundError despite bert_utils/ validation showing True
+  - Mark task complete when test is written, run, and failure is documented
+  - _Requirements: 1.1, 1.2, 1.3_
+
+- [ ] 2. Write preservation property tests (BEFORE implementing fix)
+  - **Property 2: Preservation** - Existing Validation and Setup Logic Unchanged
+  - **IMPORTANT**: Follow observation-first methodology
+  - Observe behavior on UNFIXED code for non-buggy functionality:
+    - Directory search through candidate paths (lines 635-671)
+    - File validation logic using _is_upstream() checks
+    - Validation print statements showing file existence status
+    - Git clone operation for missing Extract-Classify-ACOS repository
+    - Other sys.path manipulations for indo_root and base_project_dir
+    - Import success for acos_id, taxonomy, checkpoint modules
+  - Write property-based tests capturing observed behavior patterns from Preservation Requirements:
+    - Property: Directory search produces identical candidate results
+    - Property: File validation prints show identical True/False values
+    - Property: Git clone operations execute identically when needed
+    - Property: Non-bert_utils imports continue working correctly
+  - Property-based testing generates many test cases for stronger guarantees
+  - Run tests on UNFIXED code
+  - **EXPECTED OUTCOME**: Tests PASS (this confirms baseline behavior to preserve)
+  - Mark task complete when tests are written, run, and passing on unfixed code
+  - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5_
+
+- [ ] 3. Fix for V5.1 BERT utils import timing issue
+
+  - [ ] 3.1 Implement the minimal fix
+    - Remove the premature `_prepend_path(upstream_root)` call at line 659 in V5_1 notebook cell 3
+    - Keep the existing `_prepend_path(upstream_root)` call at line 703 (after ensure_path validation)
+    - Preserve all other _prepend_path calls for indo_root and base_project_dir unchanged
+    - Maintain import order: bert_utils imports at line 706, modeling imports follow immediately
+    - Keep all existing validation logic unchanged (directory search, file validation, git clone operations)
+    - Follow V4/V4_1 proven pattern: ensure_path validation → sys.path update → imports
+    - _Bug_Condition: isBugCondition(execution_state) where _prepend_path called before upstream_root reassignment_
+    - _Expected_Behavior: expectedBehavior(result) - successful bert_utils imports after validated sys.path setup_
+    - _Preservation: Preservation Requirements - unchanged validation, search, and git operations_
+    - _Requirements: 2.1, 2.2, 2.3, 3.1, 3.2, 3.3, 3.4, 3.5_
+
+  - [ ] 3.2 Verify bug condition exploration test now passes
+    - **Property 1: Expected Behavior** - BERT Utils Import Success After Path Validation
+    - **IMPORTANT**: Re-run the SAME test from task 1 - do NOT write a new test
+    - The test from task 1 encodes the expected behavior
+    - When this test passes, it confirms the expected behavior is satisfied
+    - Run bug condition exploration test from step 1 on FIXED V5_1 notebook
+    - **EXPECTED OUTCOME**: Test PASSES (confirms bug is fixed)
+    - Verify that bert_utils.tokenization.BertTokenizer imports successfully
+    - Verify that sys.path contains the correct validated upstream_root path
+    - Verify that _prepend_path timing issue is resolved
+    - _Requirements: Expected Behavior Properties from design_
+
+  - [ ] 3.3 Verify preservation tests still pass
+    - **Property 2: Preservation** - Existing Validation and Setup Logic Unchanged
+    - **IMPORTANT**: Re-run the SAME tests from task 2 - do NOT write new tests
+    - Run preservation property tests from step 2 on FIXED V5_1 notebook
+    - **EXPECTED OUTCOME**: Tests PASS (confirms no regressions)
+    - Confirm directory search logic produces identical results
+    - Confirm file validation prints show identical True/False values
+    - Confirm git clone operations execute identically when needed
+    - Confirm other module imports (acos_id, modeling, etc.) continue working
+    - Confirm all tests still pass after fix (no regressions)
+
+- [ ] 4. Checkpoint - Ensure all tests pass
+  - Ensure all tests pass, ask the user if questions arise.
+  - Verify complete V5_1 notebook cell 3 execution succeeds
+  - Verify bert_utils.tokenization.BertTokenizer import works
+  - Verify modeling.BertForQuadABSA import works
+  - Verify subsequent cells can use imported modules successfully
+  - Verify no regression in existing validation and setup functionality
