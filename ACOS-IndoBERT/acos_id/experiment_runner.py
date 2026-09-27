@@ -152,6 +152,19 @@ def prepare_all_data(
     return prepared
 
 
+def _unique_run_dir(results_base: str, domain: str, ts: str) -> str:
+    """Folder run format DATASET_DDMMYYYY_HM; tambah _01/_02 bila tabrakan menit."""
+    root = os.path.join(results_base, "%s_%s" % (domain, ts))
+    if not os.path.exists(root):
+        return root
+    suffix = 1
+    while True:
+        cand = "%s_%02d" % (root, suffix)
+        if not os.path.exists(cand):
+            return cand
+        suffix += 1
+
+
 def run_all_experiments(
     train_fn,
     indo_root: str,
@@ -162,11 +175,14 @@ def run_all_experiments(
     seed: int = 42,
     mode: str = "all",
     dry_run: bool = False,
+    domain: str = "appsid",
 ) -> List[dict]:
     """Jalankan semua kombinasi eksperimen secara berurutan (1 per 1).
 
     Otomatis: setiap eksperimen selesai → lanjut ke berikutnya.
-    Setiap hasil disimpan di folder bertimestamp terpisah.
+    Setiap hasil disimpan di folder format DATASET_DDMMYYYY_HM
+    (mis. appsid_27092026_1530; tambah _01 bila tabrakan menit).
+    Identitas run (run_id, epochs, split/fold) tersimpan di run_result.json.
 
     Args:
         train_fn    : fungsi training dengan signature:
@@ -221,7 +237,7 @@ def run_all_experiments(
     for run_idx, cfg in enumerate(grid, 1):
         run_id = cfg["run_id"]
         ts = datetime.now().strftime("%d%m%Y_%H%M")
-        result_dir = os.path.join(results_base, f"{run_id}_{ts}")
+        result_dir = _unique_run_dir(results_base, domain, ts)
         os.makedirs(result_dir, exist_ok=True)
 
         # Tentukan tokenized_dir berdasarkan tipe eksperimen
