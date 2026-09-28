@@ -1,0 +1,33 @@
+{
+  "berkas": {
+    "dev": "/shared-docker/ACOS-IndoBERT/data/Apps-ACOS/split_602020/appsid_quad_dev.tsv",
+    "test": "/shared-docker/ACOS-IndoBERT/data/Apps-ACOS/split_602020/appsid_quad_test.tsv",
+    "train": "/shared-docker/ACOS-IndoBERT/data/Apps-ACOS/split_602020/appsid_quad_train.tsv"
+  },
+  "dev_ratio": 0.2,
+  "domain": "appsid",
+  "reviews_per_split": {
+    "dev": 7364,
+    "test": 7365,
+    "train": 22092
+  },
+  "seed": 42,
+  "stats": {
+    "aspek_eksplisit": 64348,
+    "aspek_implisit": 27726,
+    "baris_dev": 15318,
+    "baris_test": 15271,
+    "baris_train": 45488,
+    "kategori_asing": {},
+    "klausa_dibuang_tanpa_split": 4183,
+    "opini_eksplisit": 54800,
+    "opini_implisit": 37274,
+    "tuple_dev": 18493,
+    "tuple_test": 18429,
+    "tuple_train": 55152
+  },
+  "test_ratio": 0.2,
+  "total_reviews": 36821,
+  "train_ratio": 0.6,
+  "type": "ratio_split"
+}

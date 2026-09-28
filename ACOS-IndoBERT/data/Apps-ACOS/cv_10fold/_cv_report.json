@@ -1,0 +1,229 @@
+{
+  "dev_ratio": 0.1,
+  "domain": "appsid",
+  "folds": {
+    "fold_1": {
+      "baris": {
+        "dev": 6722,
+        "test": 7539,
+        "train": 61816
+      },
+      "dev_reviews": 3313,
+      "dir": "/shared-docker/ACOS-IndoBERT/data/Apps-ACOS/cv_10fold/fold_1",
+      "mapping": "/shared-docker/ACOS-IndoBERT/data/Apps-ACOS/cv_10fold/fold_1/id_to_split.json",
+      "test_reviews": 3683,
+      "train_reviews": 29825,
+      "tsv": {
+        "dev": "/shared-docker/ACOS-IndoBERT/data/Apps-ACOS/cv_10fold/fold_1/appsid_quad_dev.tsv",
+        "test": "/shared-docker/ACOS-IndoBERT/data/Apps-ACOS/cv_10fold/fold_1/appsid_quad_test.tsv",
+        "train": "/shared-docker/ACOS-IndoBERT/data/Apps-ACOS/cv_10fold/fold_1/appsid_quad_train.tsv"
+      },
+      "tuple": {
+        "dev": 8092,
+        "test": 9238,
+        "train": 74744
+      }
+    },
+    "fold_10": {
+      "baris": {
+        "dev": 6794,
+        "test": 7520,
+        "train": 61763
+      },
+      "dev_reviews": 3313,
+      "dir": "/shared-docker/ACOS-IndoBERT/data/Apps-ACOS/cv_10fold/fold_10",
+      "mapping": "/shared-docker/ACOS-IndoBERT/data/Apps-ACOS/cv_10fold/fold_10/id_to_split.json",
+      "test_reviews": 3682,
+      "train_reviews": 29826,
+      "tsv": {
+        "dev": "/shared-docker/ACOS-IndoBERT/data/Apps-ACOS/cv_10fold/fold_10/appsid_quad_dev.tsv",
+        "test": "/shared-docker/ACOS-IndoBERT/data/Apps-ACOS/cv_10fold/fold_10/appsid_quad_test.tsv",
+        "train": "/shared-docker/ACOS-IndoBERT/data/Apps-ACOS/cv_10fold/fold_10/appsid_quad_train.tsv"
+      },
+      "tuple": {
+        "dev": 8323,
+        "test": 9123,
+        "train": 74628
+      }
+    },
+    "fold_2": {
+      "baris": {
+        "dev": 6794,
+        "test": 7464,
+        "train": 61819
+      },
+      "dev_reviews": 3313,
+      "dir": "/shared-docker/ACOS-IndoBERT/data/Apps-ACOS/cv_10fold/fold_2",
+      "mapping": "/shared-docker/ACOS-IndoBERT/data/Apps-ACOS/cv_10fold/fold_2/id_to_split.json",
+      "test_reviews": 3682,
+      "train_reviews": 29826,
+      "tsv": {
+        "dev": "/shared-docker/ACOS-IndoBERT/data/Apps-ACOS/cv_10fold/fold_2/appsid_quad_dev.tsv",
+        "test": "/shared-docker/ACOS-IndoBERT/data/Apps-ACOS/cv_10fold/fold_2/appsid_quad_test.tsv",
+        "train": "/shared-docker/ACOS-IndoBERT/data/Apps-ACOS/cv_10fold/fold_2/appsid_quad_train.tsv"
+      },
+      "tuple": {
+        "dev": 8323,
+        "test": 8998,
+        "train": 74753
+      }
+    },
+    "fold_3": {
+      "baris": {
+        "dev": 6794,
+        "test": 7675,
+        "train": 61608
+      },
+      "dev_reviews": 3313,
+      "dir": "/shared-docker/ACOS-IndoBERT/data/Apps-ACOS/cv_10fold/fold_3",
+      "mapping": "/shared-docker/ACOS-IndoBERT/data/Apps-ACOS/cv_10fold/fold_3/id_to_split.json",
+      "test_reviews": 3682,
+      "train_reviews": 29826,
+      "tsv": {
+        "dev": "/shared-docker/ACOS-IndoBERT/data/Apps-ACOS/cv_10fold/fold_3/appsid_quad_dev.tsv",
+        "test": "/shared-docker/ACOS-IndoBERT/data/Apps-ACOS/cv_10fold/fold_3/appsid_quad_test.tsv",
+        "train": "/shared-docker/ACOS-IndoBERT/data/Apps-ACOS/cv_10fold/fold_3/appsid_quad_train.tsv"
+      },
+      "tuple": {
+        "dev": 8323,
+        "test": 9301,
+        "train": 74450
+      }
+    },
+    "fold_4": {
+      "baris": {
+        "dev": 6794,
+        "test": 7534,
+        "train": 61749
+      },
+      "dev_reviews": 3313,
+      "dir": "/shared-docker/ACOS-IndoBERT/data/Apps-ACOS/cv_10fold/fold_4",
+      "mapping": "/shared-docker/ACOS-IndoBERT/data/Apps-ACOS/cv_10fold/fold_4/id_to_split.json",
+      "test_reviews": 3682,
+      "train_reviews": 29826,
+      "tsv": {
+        "dev": "/shared-docker/ACOS-IndoBERT/data/Apps-ACOS/cv_10fold/fold_4/appsid_quad_dev.tsv",
+        "test": "/shared-docker/ACOS-IndoBERT/data/Apps-ACOS/cv_10fold/fold_4/appsid_quad_test.tsv",
+        "train": "/shared-docker/ACOS-IndoBERT/data/Apps-ACOS/cv_10fold/fold_4/appsid_quad_train.tsv"
+      },
+      "tuple": {
+        "dev": 8323,
+        "test": 9134,
+        "train": 74617
+      }
+    },
+    "fold_5": {
+      "baris": {
+        "dev": 6794,
+        "test": 7750,
+        "train": 61533
+      },
+      "dev_reviews": 3313,
+      "dir": "/shared-docker/ACOS-IndoBERT/data/Apps-ACOS/cv_10fold/fold_5",
+      "mapping": "/shared-docker/ACOS-IndoBERT/data/Apps-ACOS/cv_10fold/fold_5/id_to_split.json",
+      "test_reviews": 3682,
+      "train_reviews": 29826,
+      "tsv": {
+        "dev": "/shared-docker/ACOS-IndoBERT/data/Apps-ACOS/cv_10fold/fold_5/appsid_quad_dev.tsv",
+        "test": "/shared-docker/ACOS-IndoBERT/data/Apps-ACOS/cv_10fold/fold_5/appsid_quad_test.tsv",
+        "train": "/shared-docker/ACOS-IndoBERT/data/Apps-ACOS/cv_10fold/fold_5/appsid_quad_train.tsv"
+      },
+      "tuple": {
+        "dev": 8323,
+        "test": 9375,
+        "train": 74376
+      }
+    },
+    "fold_6": {
+      "baris": {
+        "dev": 6794,
+        "test": 7528,
+        "train": 61755
+      },
+      "dev_reviews": 3313,
+      "dir": "/shared-docker/ACOS-IndoBERT/data/Apps-ACOS/cv_10fold/fold_6",
+      "mapping": "/shared-docker/ACOS-IndoBERT/data/Apps-ACOS/cv_10fold/fold_6/id_to_split.json",
+      "test_reviews": 3682,
+      "train_reviews": 29826,
+      "tsv": {
+        "dev": "/shared-docker/ACOS-IndoBERT/data/Apps-ACOS/cv_10fold/fold_6/appsid_quad_dev.tsv",
+        "test": "/shared-docker/ACOS-IndoBERT/data/Apps-ACOS/cv_10fold/fold_6/appsid_quad_test.tsv",
+        "train": "/shared-docker/ACOS-IndoBERT/data/Apps-ACOS/cv_10fold/fold_6/appsid_quad_train.tsv"
+      },
+      "tuple": {
+        "dev": 8323,
+        "test": 9109,
+        "train": 74642
+      }
+    },
+    "fold_7": {
+      "baris": {
+        "dev": 6794,
+        "test": 7632,
+        "train": 61651
+      },
+      "dev_reviews": 3313,
+      "dir": "/shared-docker/ACOS-IndoBERT/data/Apps-ACOS/cv_10fold/fold_7",
+      "mapping": "/shared-docker/ACOS-IndoBERT/data/Apps-ACOS/cv_10fold/fold_7/id_to_split.json",
+      "test_reviews": 3682,
+      "train_reviews": 29826,
+      "tsv": {
+        "dev": "/shared-docker/ACOS-IndoBERT/data/Apps-ACOS/cv_10fold/fold_7/appsid_quad_dev.tsv",
+        "test": "/shared-docker/ACOS-IndoBERT/data/Apps-ACOS/cv_10fold/fold_7/appsid_quad_test.tsv",
+        "train": "/shared-docker/ACOS-IndoBERT/data/Apps-ACOS/cv_10fold/fold_7/appsid_quad_train.tsv"
+      },
+      "tuple": {
+        "dev": 8323,
+        "test": 9206,
+        "train": 74545
+      }
+    },
+    "fold_8": {
+      "baris": {
+        "dev": 6794,
+        "test": 7685,
+        "train": 61598
+      },
+      "dev_reviews": 3313,
+      "dir": "/shared-docker/ACOS-IndoBERT/data/Apps-ACOS/cv_10fold/fold_8",
+      "mapping": "/shared-docker/ACOS-IndoBERT/data/Apps-ACOS/cv_10fold/fold_8/id_to_split.json",
+      "test_reviews": 3682,
+      "train_reviews": 29826,
+      "tsv": {
+        "dev": "/shared-docker/ACOS-IndoBERT/data/Apps-ACOS/cv_10fold/fold_8/appsid_quad_dev.tsv",
+        "test": "/shared-docker/ACOS-IndoBERT/data/Apps-ACOS/cv_10fold/fold_8/appsid_quad_test.tsv",
+        "train": "/shared-docker/ACOS-IndoBERT/data/Apps-ACOS/cv_10fold/fold_8/appsid_quad_train.tsv"
+      },
+      "tuple": {
+        "dev": 8323,
+        "test": 9285,
+        "train": 74466
+      }
+    },
+    "fold_9": {
+      "baris": {
+        "dev": 6794,
+        "test": 7750,
+        "train": 61533
+      },
+      "dev_reviews": 3313,
+      "dir": "/shared-docker/ACOS-IndoBERT/data/Apps-ACOS/cv_10fold/fold_9",
+      "mapping": "/shared-docker/ACOS-IndoBERT/data/Apps-ACOS/cv_10fold/fold_9/id_to_split.json",
+      "test_reviews": 3682,
+      "train_reviews": 29826,
+      "tsv": {
+        "dev": "/shared-docker/ACOS-IndoBERT/data/Apps-ACOS/cv_10fold/fold_9/appsid_quad_dev.tsv",
+        "test": "/shared-docker/ACOS-IndoBERT/data/Apps-ACOS/cv_10fold/fold_9/appsid_quad_test.tsv",
+        "train": "/shared-docker/ACOS-IndoBERT/data/Apps-ACOS/cv_10fold/fold_9/appsid_quad_train.tsv"
+      },
+      "tuple": {
+        "dev": 8323,
+        "test": 9305,
+        "train": 74446
+      }
+    }
+  },
+  "n_splits": 10,
+  "seed": 42,
+  "total_reviews": 36821
+}
