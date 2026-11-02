@@ -233,3 +233,183 @@ Jika Q2 menjadi prioritas tunggal: tambahkan 6–10 minggu untuk versi Inggris, 
 ---
 
 **Kesimpulan satu paragraf.** Bahan mentahnya cukup untuk artikel yang layak: satu resource Indonesia yang belum ada padanannya, satu baseline rest16 yang tereproduksi, satu dekomposisi 15 sub-task lintas domain, dan satu temuan metodologis yang benar-benar baru (ledakan pasangan kandidat dan inflasi gold). Yang belum ada adalah **bukti bahwa pipeline-nya sendiri bekerja pada kapasitas penuh** — dan itu yang pertama dicari reviewer Q2, serta yang paling sering menggagalkan artikel di S2. Enam sampai delapan minggu kerja eksperimen yang terarah (P1–P10) cukup untuk mengubah skor kesiapan dari 3,15 menjadi ±7,4 dan memindahkan artikel dari "berisiko" ke "layak submit".
+
+---
+
+## 14. Rekomendasi teknis untuk perbaikan
+
+### 14.1 Urutan pengerjaan: validitas dulu, eksperimen kemudian
+
+Kesalahan yang paling sering terjadi adalah menambah eksperimen (seed, dataset, model) di atas protokol yang masih cacat. Urutan yang benar:
+
+1. **Data** (dedupe & split ulang) — T01
+2. **Evaluator** (satu definisi gold) — T02
+3. **Protokol pemilihan model** (dev, bukan test) — T03
+4. **Statistik** (seed, CI) — T04
+5. **Pembanding** (baseline eksternal) — T05
+6. **Validasi manusia** (κ, gold subset) — T06
+7. **Kebaruan** (eksperimen *pair-ratio sweep*) — T12
+
+Empat langkah pertama tidak menambah klaim baru; keempatnya hanya membuat klaim yang sudah ada menjadi sah. Tanpa itu, seluruh angka di Bagian 5 tetap rapuh.
+
+**Catatan penting untuk T03.** Ini bukan sekadar preferensi metodologis. Kode `02` dan `04` mengevaluasi **test set pada setiap epoch** dan menyimpan checkpoint ketika F1 test naik (`best_val_f1`), sehingga angka yang dilaporkan (81,27% dan 48,24%) adalah **maksimum atas 15 evaluasi test** — estimasi yang optimistis secara sistematis. Split dev sebenarnya tersedia (rest16: 171 kalimat; appsid: 8.027 klausa) tetapi tidak dipakai untuk seleksi. Memperbaiki ini adalah perubahan satu baris per notebook (`eval_type="dev"` + loader dev), dan hampir pasti menurunkan angka final 1–3 poin.
+
+### 14.2 Peta kelemahan teknis (T01–T12)
+
+| ID | Akar masalah | Bukti | Perbaikan teknis | Usaha | Dampak |
+|---|---|---|---|---|---|
+| **T01** | Split hanya by `review_id`; klausa pendek berulang lintas split | 9,0% klausa unik test ada di train; 14,7% baris test (1.157 baris) | *Union-find* atas (`review_id`, hash teks ternormalisasi) + deteksi near-dup (Jaccard 5-gram ≥0,8); laporkan F1 subset unik | 3–5 hari | Sangat tinggi |
+| **T02** | Dua evaluator: `pair_eval` vs `SubtaskMetricCapture` | Gold 9.006 vs 19.528 (2,17×) | Satu evaluator kanonik; 15 sub-task dihitung sebagai **proyeksi** dari himpunan gold yang sama | 5–7 hari | Sangat tinggi |
+| **T03** | **Seleksi checkpoint di test set**, bukan dev | `02` sel 11 dan `04` sel 10 memanggil `pred_eval(..., eval_type="test")` di dalam loop epoch lalu menyimpan bila `val_f1` naik; "Epoch terbaik: 8 (81,27%)" / "12 (48,24%)"; `UPDATE` mencetak "Test Micro-F1" 15 kali | Pilih checkpoint di **dev**, evaluasi test sekali di akhir; bila dev terlalu kecil (rest16: 171 kalimat), pakai 5-fold pada train+dev | 1–2 hari kode + re-run | Sangat tinggi |
+| **T04** | 1 seed; tanpa interval kepercayaan | SEED 42; CV 0/54 | 5 seed + median/IQR; bootstrap 1.000× untuk CI; McNemar untuk perbandingan sistem | 1–2 minggu GPU | Tinggi |
+| **T05** | Tanpa baseline pada split sama | Publikasi 44,52; SOTA 67,15 | Jalankan single-head + satu generatif (T5/PyABSA) pada split identik | 2–3 minggu | Tinggi |
+| **T06** | Tanpa gold manusia | κ tidak ada | 300 klausa stratified (jumlah elemen × sentimen × implisit), 2 anotator, adjudikasi | 2–3 minggu | Tinggi |
+| **T07** | Dual-head tidak terukur | `category_micro_f1` = `sentiment_accuracy` = 0,00% | Persistensi logit per-head ke JSONL saat evaluasi; ablasi dual vs single, 3 seed | 1–2 minggu | Sedang |
+| **T08** | Gate gagal tetapi eksekusi lanjut | `V4_BERT_rest16` sel 43, `V5_EN` sel 44 | Gate menghentikan sel (`raise`), tulis `missing_keys=0` ke JSON, tambah gate ukuran gold (9.006/895) dan hash kode evaluator | 2–3 hari | Sedang (kredibilitas) |
+| **T09** | Cache tidak dikunci konfigurasi/domain | 97,94 & 67,86 muncul di sesi rest16 | Kunci cache = SHA-1(`domain`, `backbone`, `data_sha1`, `cfg`, `seed`, `git_sha`); tolak hit bila metadata berbeda | 3–4 hari | Sedang–tinggi |
+| **T10** | Pipeline hidup di notebook, bukan skrip | 45 notebook, 575 sel tak pernah jalan, 89 output yatim | Satu entrypoint `run_pipeline.py` + konfigurasi YAML; notebook jadi dokumentasi | 1 minggu | Sedang |
+| **T11** | Pelaporan tidak seragam | Tabel tanpa CI/CI lebar tidak dilaporkan | Template tabel wajib: mean±std, CI95, n gold, protokol seleksi | 1 minggu | Tinggi |
+| **T12** | Kebaruan belum diuji terkontrol | Rasio 12,0× → F1 0,00 hanya 1 titik data | *Pair-ratio sweep*: evaluasi model Step-2 tetap pada kandidat 1,5× / 3× / 6× / 12× / 25× gold → kurva F1 vs rasio | 1–2 minggu | **Sangat tinggi (Q2)** |
+
+### 14.3 Empat perubahan kode inti
+
+**(a) Split bebas kebocoran — gabungkan `review_id` dan teks identik**
+
+```python
+import hashlib, re
+
+def norm(t: str) -> str:
+    t = t.lower()
+    t = re.sub(r"[^a-z0-9\s]", " ", t)
+    return re.sub(r"\s+", " ", t).strip()
+
+def text_key(t: str) -> str:
+    return hashlib.sha1(norm(t).encode()).hexdigest()[:16]
+
+# union-find: review_id dan hash teks adalah simpul; teks yang muncul di
+# beberapa review akan menyatukan review-review tersebut ke satu grup.
+parent = {}
+def find(x):
+    parent.setdefault(x, x)
+    while parent[x] != x:
+        parent[x] = parent[parent[x]]
+        x = parent[x]
+    return x
+def union(a, b):
+    parent[find(a)] = find(b)
+
+for r in rows:                      # r.review_id, r.text
+    union(f"rev:{r.review_id}", f"txt:{text_key(r.text)}")
+# split dilakukan atas grup (bukan baris) -> 0 teks identik lintas split
+```
+
+Setelah itu: laporkan F1 pada **seluruh test** dan pada **test unik** (satu baris per teks). Selisih keduanya adalah ukuran inflasi akibat pengulangan.
+
+**(b) Evaluator kanonik + proyeksi 15 sub-task**
+
+```python
+# q = (category, sentiment, asp_start, asp_end, opi_start, opi_end)
+def proj(q, keep):
+    c, s, a0, a1, o0, o1 = q
+    out = []
+    if "category"  in keep: out.append(c)
+    if "sentiment" in keep: out.append(s)
+    if "aspect"    in keep: out.append((a0, a1))
+    if "opinion"   in keep: out.append((o0, o1))
+    return tuple(out)
+
+def prf(gold, pred, keep):
+    G = {proj(q, keep) for q in gold}
+    P = {proj(q, keep) for q in pred}
+    tp = len(G & P)
+    if not P or not G:
+        return 0.0, 0.0, 0.0, tp, len(P) - tp, len(G) - tp
+    p, r = tp / len(P), tp / len(G)
+    f1 = 0.0 if p + r == 0 else 2 * p * r / (p + r)
+    return p, r, f1, tp, len(P) - tp, len(G) - tp
+```
+
+Uji wajib: `len(gold(appsid_test)) == 9006`, `len(gold(rest16_test)) == 895`, dan `TP + FN == len(gold)` pada setiap baris. Ketiga asersi ini mencegah T02 terulang.
+
+**(c) Pemilihan model di dev + bootstrap CI**
+
+```python
+# 1) pilih epoch terbaik HANYA dari dev
+best_epoch = max(range(len(dev_hist)), key=lambda e: dev_hist[e]["f1"])
+# 2) evaluasi test sekali, dengan checkpoint dev-terbaik
+test_metrics = evaluate(test, ckpt[best_epoch])
+
+# 3) CI bootstrap atas contoh test (bukan atas epoch)
+import random
+def bootstrap_ci(pairs, n=1000, seed=42):
+    rng, out = random.Random(seed), []
+    for _ in range(n):
+        s = [pairs[rng.randrange(len(pairs))] for _ in pairs]
+        out.append(f1_of(s))
+    out.sort()
+    return out[int(0.025 * n)], out[int(0.975 * n)]
+```
+
+Dengan 895 gold, lebar CI95 pada F1 biasanya **±2–3 poin**. Konsekuensinya: selisih 47,68 vs 48,24 (0,56) dan 67,16 vs 67,86 (0,70) **tidak boleh** diklaim sebagai perbedaan.
+
+**(d) Cache berprovenans**
+
+```python
+meta = {"domain": cfg.domain, "backbone": cfg.backbone,
+        "data_sha1": sha1_file(cfg.data_path), "cfg": cfg.hash(),
+        "seed": cfg.seed, "git_sha": git_sha(), "eval_version": "v2"}
+key = hashlib.sha1(json.dumps(meta, sort_keys=True).encode()).hexdigest()
+
+if cache_hit(key):
+    cached = json.load(open(cache_path(key) / "provenance.json"))
+    assert cached == meta, "cache metadata mismatch -> recompute"
+else:
+    run_and_write(key, meta)
+```
+
+Dengan ini, kejadian 041 (angka appsid 97,94/67,86 muncul di folder rest16) tidak mungkin terulang tanpa error.
+
+### 14.4 Tambahan analisis yang menaikkan nilai terbit (murah)
+
+| Analisis | Alasan | Biaya |
+|---|---|---|
+| **Eksplisit vs implisit** | Aspek implisit 30,1%, opini implisit 40,5%; paper asli ACOS juga menganalisis ini → langsung sebanding dengan literatur | 2–3 hari |
+| **Per-kelas kategori & sentimen** | Netral hanya 11,3%; recall netral hampir pasti terburuk dan perlu dilaporkan | 1–2 hari |
+| **Kurva F1 vs jumlah elemen pada satu evaluator** | Menggantikan klaim "peluruhan 8–9 poin" dengan angka yang sah | sudah tercakup T02 |
+| **Analisis error 200 sampel** (batas span, kategori tertukar, sentimen terbalik, pasangan salah) | Reviewer menyukai bukti kedalaman; murah | 3–4 hari |
+| **Efisiensi**: parameter, waktu latih, latensi inferensi | Nilai tambah untuk jurnal terapan (S2) | 1 hari |
+| **Generalisasi domain**: split bank vs e-wallet dalam appsid | Menambah klaim generalisasi tanpa data baru | 3–5 hari |
+
+### 14.5 Matriks dampak vs usaha
+
+| Kuadran | Item | Tindakan |
+|---|---|---|
+| **Dampak tinggi, usaha kecil** | T03 (dev selection), T01 (dedupe), T02 (satu evaluator), T08 (gate), T09 (cache key) | Kerjakan **minggu 1–2**; ini yang paling sering menggagalkan review |
+| **Dampak tinggi, usaha sedang** | T04 (seed + CI), T05 (baseline), T06 (gold manusia), T11 (pelaporan) | Minggu 2–6 |
+| **Dampak tinggi, usaha besar** | T12 (*pair-ratio sweep*), T07 (ablasi dual-head) | Minggu 4–8 |
+| **Dampak sedang** | T10 (paket reproduksi), analisis tambahan §14.4 | Minggu 6–8 |
+
+### 14.6 Ekspektasi angka setelah perbaikan
+
+Perbaikan validitas **akan menurunkan** angka, dan itu normal serta harus diantisipasi:
+
+| Skenario | Angka sekarang | Perkiraan setelah perbaikan | Alasan |
+|---|---|---|---|
+| Step-2 rest16 | 48,24% | 45–48% | Seleksi di dev (bukan test) + dedupe test |
+| Step-2 appsid | 67,69% | 64–67% | Idem, ditambah evaluator tunggal |
+| Step-1 appsid | 97,94% | 96–98% | Relatif stabil (span pendek), tetapi tidak lagi dipilih di test |
+| 15 sub-task | 66,08% (gold 19.528) | 66–68% (gold 9.006) | Definisi gold berubah; angka tidak lagi sebanding dengan tabel lama |
+
+Naskah harus menulis transisi ini secara eksplisit ("angka revisi menggantikan angka pra-registrasi protokol"), bukan menyembunyikannya. Reviewer Q2 menghargai protokol yang diperbaiki; reviewer akan menghukum angka yang tidak dapat direproduksi.
+
+### 14.7 Definition of done sebelum submit
+
+- [ ] `python -m acos_eval --self-test` lulus: `|gold|=9006/895`, `TP+FN=|gold|`, `TP+FP=|pred|`
+- [ ] Split final 0 teks identik lintas split; F1 penuh vs unik dilaporkan
+- [ ] Semua checkpoint dipilih di dev; test dievaluasi sekali
+- [ ] ≥5 seed; setiap angka punya CI95
+- [ ] ≥2 baseline pada split identik, dijalankan dengan skrip yang sama
+- [ ] κ dan gold subset dilaporkan; F1 weak→human diukur
+- [ ] `provenance.json` ada di setiap folder sesi; tidak ada cache lintas domain
+- [ ] Satu perintah mereproduksi seluruh tabel: `make paper-tables`
+- [ ] 40+ referensi (Q2) / 25+ (S2); seluruh gambar 300 DPI
