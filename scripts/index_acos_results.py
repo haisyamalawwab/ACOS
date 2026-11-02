@@ -111,6 +111,15 @@ def index_partitions() -> list[dict]:
             glob.glob(os.path.join(tok, "appsid_*_quad_bert.tsv"))) if os.path.isdir(tok) else 0
         rec["id_to_split_present"] = os.path.exists(os.path.join(path, "id_to_split.json"))
         rec["report_present"] = bool(glob.glob(os.path.join(path, "_*.json")))
+        # Deteksi apakah dev adalah irisan dari train (bukan bagian hold-out terpisah),
+        # dengan membandingkan jumlah baris/quad terhadap laporan partition aslinya.
+        rec["sum_lines"] = sum(int(rec[f"{s}_lines"] or 0) for s in ("train", "dev", "test"))
+        rec["sum_quads"] = sum(int(rec[f"{s}_quads"] or 0) for s in ("train", "dev", "test"))
+        rec["exceeds_dataset"] = rec["sum_lines"] > 76077 or rec["sum_quads"] > 92074
+        rec["quad_share_of_total"] = round(100 * rec["sum_quads"] / 92074, 2)
+        rec["train_share_of_fold"] = (
+            round(100 * int(rec["train_quads"] or 0) / rec["sum_quads"], 2)
+            if rec["sum_quads"] else "")
         rows.append(rec)
     return rows
 
@@ -122,21 +131,63 @@ def write(path: str, rows: list[dict]) -> None:
         w.writerows(rows)
 
 
+def index_grid(rows: list[dict]) -> list[dict]:
+    """Matriks sel grid (family x epochs x fold) beserta jumlah percobaannya."""
+    per_cell: dict[tuple, list[dict]] = {}
+    for r in rows:
+        per_cell.setdefault((r["family"], r["n_folds"], r["epochs"], int(r["fold"])), []).append(r)
+    out = []
+    for (fam, nf, ep, fold), runs in sorted(
+            per_cell.items(), key=lambda x: (x[0][0], -int(x[0][1]), int(x[0][2]), x[0][3])):
+        waves = sorted(r["wave_ts"] for r in runs)
+        statuses = {r["status"] for r in runs}
+        out.append({
+            "family": fam, "n_folds": nf, "epochs": ep, "fold": fold,
+            "n_attempts": len(runs), "attempt_waves": ";".join(waves),
+            "run_idx": runs[0]["run_idx"],
+            "statuses": ";".join(sorted(statuses)),
+            "max_duration_sec": max((float(r["duration_sec"]) for r in runs if r["duration_sec"]),
+                                    default=""),
+            "has_training_log": any(int(r["training_log_count"]) > 0 for r in runs),
+            "grid_cell_exists": True,
+        })
+    # Sel yang seharusnya ada di grid tapi tidak punya folder sama sekali
+    missing = []
+    for fam, nf in (("cv5", 5), ("cv10", 10)):
+        for ep in ("50", "75", "100"):
+            for fold in range(1, nf + 1):
+                if (fam, nf, ep, fold) not in per_cell:
+                    missing.append({"family": fam, "n_folds": nf, "epochs": ep,
+                                    "fold": fold, "n_attempts": 0, "attempt_waves": "",
+                                    "run_idx": "", "statuses": "TIDAK_PERNAH_DIJALANKAN",
+                                    "max_duration_sec": "", "has_training_log": False,
+                                    "grid_cell_exists": False})
+    return out + missing
+
+
 def main() -> int:
     os.makedirs(OUT, exist_ok=True)
     runs = index_runs()
     parts = index_partitions()
+    grid = index_grid(runs)
     write(os.path.join(OUT, "run_index.csv"), runs)
     write(os.path.join(OUT, "data_partition_index.csv"), parts)
+    write(os.path.join(OUT, "grid_coverage.csv"), grid)
     print(f"run_index.csv            : {len(runs)} baris")
     print(f"data_partition_index.csv : {len(parts)} baris")
+    print(f"grid_coverage.csv        : {len(grid)} baris")
     from collections import Counter
     print("per family  :", dict(Counter(r["family"] for r in runs)))
     print("per status  :", dict(Counter(r["status"] for r in runs)))
     print("per error   :", dict(Counter((r["error"] or "n/a")[:32] for r in runs)))
-    print("per wave    :", dict(Counter(r["wave_ts"] for r in runs)))
+    print("sel grid    :", sum(1 for g in grid if g["grid_cell_exists"]), "ada,",
+          sum(1 for g in grid if not g["grid_cell_exists"]), "tidak pernah dijalankan")
+    print("percobaan per sel (min/max):",
+          min(g["n_attempts"] for g in grid), "/", max(g["n_attempts"] for g in grid))
     print("tokenized dir tersinkron :",
           sum(1 for p in parts if p["tokenized_dir_present"]), "/", len(parts))
+    print("partition yang dev-nya tumpang tindih train:",
+          [p["partition"] for p in parts if p["exceeds_dataset"]])
     return 0
 
 
