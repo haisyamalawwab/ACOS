@@ -254,6 +254,8 @@ Empat langkah pertama tidak menambah klaim baru; keempatnya hanya membuat klaim 
 
 **Catatan penting untuk T03.** Ini bukan sekadar preferensi metodologis. Kode `02` dan `04` mengevaluasi **test set pada setiap epoch** dan menyimpan checkpoint ketika F1 test naik (`best_val_f1`), sehingga angka yang dilaporkan (81,27% dan 48,24%) adalah **maksimum atas 15 evaluasi test** — estimasi yang optimistis secara sistematis. Split dev sebenarnya tersedia (rest16: 171 kalimat; appsid: 8.027 klausa) tetapi tidak dipakai untuk seleksi. Memperbaiki ini adalah perubahan satu baris per notebook (`eval_type="dev"` + loader dev), dan hampir pasti menurunkan angka final 1–3 poin.
 
+**Koreksi 046 (02/11/2026).** Pernyataan "1–3 poin" di atas tidak didukung pengukuran dan terlalu besar. Deret epoch yang tersimpan menunjukkan selisih maksimum terhadap epoch terakhir sebesar **0,56 poin** pada `02` (81,27% vs 80,71%) dan **0,07 poin** pada `04` (48,24% vs 48,17%); bila dibandingkan dengan rata-rata plateau, selisihnya 0,44 dan 0,38 poin. Rincian bukti ada di `reports/046_verifikasi_jalur_a_02112026_HM.md`. T03 tetap prioritas P0 karena protokolnya keliru, bukan karena besarnya selisih.
+
 ### 14.2 Peta kelemahan teknis (T01–T12)
 
 | ID | Akar masalah | Bukti | Perbaikan teknis | Usaha | Dampak |
