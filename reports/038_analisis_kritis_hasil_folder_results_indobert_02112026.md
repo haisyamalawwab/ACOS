@@ -2,21 +2,22 @@
 
 > **Tanggal:** 02112026
 > **Target survey:** `D:\laragon\www\ACOS-ASLI\ACOS-IndoBERT\results`
-> **Cakupan:** 100 folder, 210 berkas, ±11,0 MB
-> **Metode:** enumerasi rekursif berkas, parsing 98 `run_result.json` + `run_config.json`, pembacaan seluruh `training_log.csv`/`eval_per_epoch.csv`, verifikasi silang ke `data/Apps-ACOS/_cv_report.json`, `tokenized_data/`, dan modul sumber `acos_id/{experiment_runner,cross_val,guards,checkpoint}.py`
+> **Cakupan:** 101 folder, 210 berkas, ±11,0 MB
+> **Metode:** enumerasi rekursif berkas, parsing 93 `run_result.json` + 94 `run_config.json`, pembacaan seluruh `training_log.csv`/`eval_per_epoch.csv`, verifikasi silang ke `data/Apps-ACOS/_cv_report.json`, `tokenized_data/`, dan modul sumber `acos_id/{experiment_runner,cross_val,guards,checkpoint}.py`
 > **Referensi sesi asal:** `docs/0007`–`docs/0010` (eksperimen GPU AMD MI300X, 24092026)
+> **⚠️ KOREKSI (03112026):** jumlah folder run dan rincian status di dokumen ini **salah** karena daftar direktori pertama terpotong di tengah keluaran terminal. Nilai benar: **94 folder run** (bukan 53), **87 run Bug #1** (bukan 47). Lihat §8 dan `reports/039_indexing_hasil_eda_dan_ablasi_cv5_cv10_03112026.md` §6. Angka lain (verdict, akar masalah, metrik degenerat) tetap berlaku.
 
 ---
 
 ## 1. Verdict Utama
 
-**Nol (0) dari 53 run eksperimen cross-validation menghasilkan hasil training yang sah.**
+**Nol (0) dari seluruh run eksperimen cross-validation menghasilkan hasil training yang sah** — **94** folder run, semuanya `ERROR` (awalnya dilaporkan sebagai 53; lihat koreksi di §8).
 
 - 100% `run_result.json` yang ada berisi `"status": "ERROR"`.
 - Direktori `results/checkpoints/step1_best`, `results/checkpoints/step2_best`, dan `results/csv/` **kosong total**.
 - Tidak ada satu pun artefak `md/`, `plots/`, `reports/`, `inference/` dari `result_saver.py` yang terisi.
 
-Kesimpulan operasional: folder `results/` saat ini **bukan gudang hasil eksperimen**, melainkan **gudang log kegagalan** (53 folder run) yang ditambahi **empat artefak pra-pemrosesan yang benar-benar valid** (`_eda/`, `_backbone/`, `_embedding/`, `_gates/`).
+Kesimpulan operasional: folder `results/` saat ini **bukan gudang hasil eksperimen**, melainkan **gudang log kegagalan** (94 folder run) yang ditambahi **empat artefak pra-pemrosesan yang benar-benar valid** (`_eda/`, `_backbone/`, `_embedding/`, `_gates/`).
 
 ---
 
@@ -46,18 +47,19 @@ Distribusi panjang teks (satuan kata): mean 8,92; median 7; std 6,96; min 1; p25
 
 ### 2.B. Bagian yang ada tetapi rusak — kerangka eksperimen CV
 
-| Kelompok | Jumlah folder | Berkas per folder | Durasi run | Status |
+| Kelompok (jam gelombang) | Jumlah folder | Berkas per folder | Durasi run | Status |
 |---|---|---|---|---|
-| `cv10fold_fold{1..10}_ep{50,75,100}` gelombang-1 (`1339`–`1342`) | 15 | `run_config.json` + `run_result.json` | 8,2–8,6 s | ❌ ERROR `'list' object has no attribute 'items'` |
-| `cv10fold_fold{1..10}_ep{50,75,100}` gelombang-2 (`1401`–`1404`) | 15 | config + result | 8,1–8,7 s | ❌ ERROR, bug identik |
-| `cv5fold_fold{1..4}_ep{50,75,100}` gelombang-1 (`1336`–`1337`) | 11 | config + result | 7,4–7,9 s | ❌ ERROR, bug identik |
-| `cv5fold_fold{1..4}_ep{50,75,100}` gelombang-2 (`1358`–`1359`) | 11 | config + result | 7,4–7,9 s | ❌ ERROR, bug identik |
-| `cv5fold_fold{1..5}` gelombang-3 (`1413`, `1415`, `1416`, `1418`, `1421`, `1422`) | 6 | config + result + `step1/training_log.csv` + `step1/eval_per_epoch.csv` | 88,7–89,9 s | ⚠️ ERROR `'BertForQuadABSA' object has no attribute 'save_pretrained'` — epoch 1 sempat berjalan |
-| `cv5fold_fold3_ep75_…_1424` | 1 | **hanya `run_config.json`** + 9 subfolder kosong (`checkpoints`, `csv`, `inference`, `logs`, `md`, `plots`, `reports`, `step1`, `step2`); tanpa `run_result.json` | – | ❌ Sesi terputus di tengah (kemungkinan interupsi manual / kernel restart) |
+| `cv5fold_*` jam **13** (`1336`–`1337`) | **27** | `run_config.json` + `run_result.json` | 7,4–7,9 s | ❌ ERROR `'list' object has no attribute 'items'` |
+| `cv10fold_*` jam **13** (`1338`–`1342`) | **31** | config + result | 8,2–8,7 s | ❌ ERROR, bug identik |
+| `cv5fold_*` jam **14** (`1413`–`1424`) | **7** (6 lengkap + 1 terputus) | config + result; 6 di antaranya **+ `step1/training_log.csv` + `step1/eval_per_epoch.csv`** | 88,7–89,9 s | ⚠️ ERROR `'BertForQuadABSA' object has no attribute 'save_pretrained'` — epoch 1 sempat berjalan |
+| `cv10fold_*` jam **14** (`1400`–`1404`) | **29** | config + result | 8,1–8,7 s | ❌ ERROR bug #1 — **diulang tanpa perbaikan kode** |
+| `cv5fold_fold3_ep75_…_1424` | 1 (subset dari baris ke-4) | **hanya `run_config.json`** + 9 subfolder kosong (`checkpoints`, `csv`, `inference`, `logs`, `md`, `plots`, `reports`, `step1`, `step2`); tanpa `run_result.json` | – | ❌ Sesi terputus di tengah (interupsi manual / kernel restart) |
 | `checkpoints/step1_best`, `checkpoints/step2_best` | 2 dir | – | – | ❌ Direktori kosong |
 | `csv/` | 1 dir | – | – | ❌ Direktori kosong |
 
-Total folder run CV = **53** (30 cv10fold + 23 cv5fold), dengan 98 berkas JSON status + 12 berkas CSV log epoch.
+Total = 27 + 31 + 7 + 29 = **94 folder run**. Tidak ada satu pun yang berstatus `OK`.
+
+Total folder run CV = **94** (60 cv10fold + 34 cv5fold). Rekonstruksi grid: `total_runs: 54`, tetapi karena grid di-*rerun* 2–3 kali, 54 sel grid itu menghasilkan 94 folder percobaan (44 sel pernah dicoba, 1 sel `cv5fold/ep75/fold_5` tidak pernah, dan 9 sel split-ratio tidak pernah dijalankan).
 
 ### 2.C. Bagian yang hilang sama sekali
 
@@ -74,12 +76,12 @@ Total folder run CV = **53** (30 cv10fold + 23 cv5fold), dengan 98 berkas JSON s
 
 ## 3. Analisis Akar Masalah — Dua Kegagalan yang Berbeda
 
-### Bug #1 — `'list' object has no attribute 'items'` (47 run)
+### Bug #1 — `'list' object has no attribute 'items'` (87 run)
 
 - **Waktu gagal:** 7,4–8,7 detik setelah start, **sebelum satu langkah training pun berjalan**.
 - **Posisi:** di dalam `train_fn(full_cfg)` yang dipanggil `run_all_experiments()` (`acos_id/experiment_runner.py:278`). Runner itu sendiri sudah benar — ia mengkonstruksi `full_cfg` sebagai `dict` (`{**cfg, "run_idx":…, "tokenized_dir":…, …}`).
 - **Diagnosis:** adapter `train_one_run()` di notebook menerima/mengolah `cfg` dalam bentuk **list**, lalu memanggil `.items()` padanya (pola yang sama ada di `result_saver.py:437` `for k, v in cfg.items()` dan `experiment_runner.py:393`). Jadi kesalahan ada di **samping notebook (sel adapter)**, bukan di modul repo.
-- **Catatan penting:** kedua gelombang (1336–1342 dan 1358–1404) gagal dengan bug yang **persis sama**, artinya tidak ada perbaikan yang benar-benar diterapkan di antara kedua gelombang tersebut — hanya diulang.
+- **Catatan penting:** gelombang jam 13 dan jam 14 (87 run) gagal dengan bug yang **persis sama**, artinya tidak ada perbaikan yang benar-benar diterapkan di antara kedua gelombang tersebut — hanya diulang.
 
 ### Bug #2 — `'BertForQuadABSA' object has no attribute 'save_pretrained'` (6 run)
 
@@ -136,7 +138,7 @@ Dari `data/Apps-ACOS/cv_5fold/_cv_report.json` (`n_splits: 5`, `dev_ratio: 0.1`,
 1. **Path Linux vs Windows.** Semua `run_dir`/`result_dir`/`tokenized_dir` di JSON beralamat `/shared-docker/ACOS-IndoBERT/…` (mesin GPU ROCm), sedangkan jejak yang tersinkron ke repo ini ada di `D:\laragon\www\ACOS-ASLI\ACOS-IndoBERT\…`. Semua path di dalam JSON karena itu **rusak/putus** jika dibaca di mesin ini — tidak ada normalisasi atau manifest pemetaan.
 2. **Penamaan run menyimpang dari runner.** `experiment_runner._unique_run_dir()` menghasilkan `appsid_<ddmmyyyy_hhmm>` (prefiks domain), tetapi folder aktual bernama `cv5fold_fold1_ep50_27092026_1413`. Selain itu `ts` dirender dengan format `%d%m%Y_%H%M` **tanpa padding nol** pada jam, sehingga `9` pagi dan `10` pagi berpotensi menghasilkan tabrakan nama yang ditangani oleh `_01/_02` — pola ini tidak terlihat dipakai di data.
 3. **Kesenjangan fase data.** Fase **build TSV berhasil dan tersinkron**: `data/Apps-ACOS/` berisi `cv_5fold/fold_1..5`, `cv_10fold/`, `split_602020/701515/801010`, masing-masing dengan `appsid_quad_{train,dev,test}.tsv` + `id_to_split.json` + `_cv_report.json`. Fase **tokenisasi CV tidak tersinkron** — `tokenized_data/` hanya 6 berkas basis, dan `gates.csv` mencatat `tokenized_n = 6`.
-4. **Rerun tanpa perubahan.** Dua gelombang CV10-fold (1339–1342 dan 1401–1404) dan dua gelombang CV5-fold (1336–1337, 1358–1359) gagal dengan bug identik dalam rentang 25 menit. Ini mengindikasikan siklus "restart kernel → jalankan ulang sel yang sama" tanpa perbaikan akar masalah.
+4. **Rerun tanpa perubahan.** 58 run jam-13 dan 29 run cv10fold jam-14 gagal dengan bug identik dalam rentang 28 menit. Ini mengindikasikan siklus "restart kernel → jalankan ulang sel yang sama" tanpa perbaikan akar masalah.
 
 ---
 
@@ -154,7 +156,7 @@ Dari `data/Apps-ACOS/cv_5fold/_cv_report.json` (`n_splits: 5`, `dev_ratio: 0.1`,
 
 ### 6.2 Struktur & reproducibility
 
-6. Bakukan lokasi run ke `results/experiments/<domain>_<ddmmyyyy_hhmm>/` sesuai `_unique_run_dir()`, lalu pindahkan 53 folder CV yang ada ke bawah `results/experiments/` (atau perbarui runner — pilih satu, jangan biarkan dua konvensi hidup).
+6. Bakukan lokasi run ke `results/experiments/<domain>_<ddmmyyyy_hhmm>/` sesuai `_unique_run_dir()`, lalu pindahkan 94 folder CV yang ada ke bawah `results/experiments/` (atau perbarui runner — pilih satu, jangan biarkan dua konvensi hidup).
 7. Jalankan ulang `prepare_all_data()` sampai tuntas sehingga `tokenized_data/_experiment_manifest.json` dan `results/experiments/_experiment_progress.json` benar-benar ter-write; keduanya adalah satu-satunya jejak yang memungkinkan audit grid 54 run.
 8. Sinkronkan `tokenized_data/cv_5fold/fold_*`, `cv_10fold/*`, `split_*/` dari mesin GPU — tanpa itu tidak ada run yang bisa dilanjutkan di repo ini.
 9. Tambahkan normalisasi/manifest path (mis. `path_map.json`: `/shared-docker/ACOS-IndoBERT` → root repo lokal) sehingga JSON dari mesin GPU bisa dibaca lintas mesin.
@@ -162,26 +164,53 @@ Dari `data/Apps-ACOS/cv_5fold/_cv_report.json` (`n_splits: 5`, `dev_ratio: 0.1`,
 
 ### 6.3 Metodologi & pelaporan
 
-11. Audit dan dokumentasikan definisi split CV (test 15.003 baris di skema "5-fold"); pertimbangkan rebuild sebagai K-fold murni dengan test-set global terpisah.
-12. Arsipkan 47 run Bug #1 (tanpa isi epoch) ke `results/_archive_failed/` sebagai bukti, dan bersihkan 9 subfolder kosong pada run `1424`.
+11. Dokumentasikan bahwa skema `cv_5fold` memakai hold-out test 20% (15.003 baris) sementara `cv_10fold` memakai 10%, sehingga **keduanya tidak komparabel** — lihat `reports/039` §3.2. Jika perbandingan lipatan tetap diinginkan, bangun ulang sebagai K-fold murni dengan test-set global terpisah.
+12. Arsipkan 87 run Bug #1 (tanpa isi epoch) ke `results/_archive_failed/` sebagai bukti, dan bersihkan 9 subfolder kosong pada run `1424`.
 13. Satu-satunya klaim yang layak dikutip ke laporan saat ini: **`_eda/`, `_backbone/`, `_embedding/`, `_gates/`** — seluruh angka training di folder `cv*` tidak dapat digunakan.
 
 ---
 
 ## 7. Lampiran — Ringkasan Numerik Folder
 
+> Nilai di bawah sudah dikoreksi sesuai hasil indexing (`results/_index/run_index.csv`, 94 baris); lihat §8.
+
 | Metrik | Nilai |
 |---|---|
-| Total folder | 100 |
+| Total folder | 101 (sebelum `_index/` dibuat) |
 | Total berkas | 210 |
 | Ukuran total | ±11,0 MB (10,4 MB di antaranya = `eda_all_samples_annotated.csv`) |
-| Berkas `run_result.json` | 53 — status `ERROR` 53, status `OK` **0** |
-| Berkas `run_config.json` | 54 (termasuk run `1424` tanpa result) |
+| Folder run CV | **94** — cv10fold 60, cv5fold 34 |
+| Berkas `run_result.json` | **93** — status `ERROR` 93, status `OK` **0** |
+| Berkas `run_config.json` | 94 (termasuk run `1424` tanpa result) |
+| Run karena Bug #1 (`list.items`) | **87** |
+| Run karena Bug #2 (`save_pretrained`) | 6 |
 | Berkas `training_log.csv` / `eval_per_epoch.csv` | 6 / 6, masing-masing hanya 1 baris epoch |
-| Run dengan data epoch | 6 dari 53 (11,3%) |
-| Direktori kosong | `checkpoints/step1_best`, `checkpoints/step2_best`, `csv/`, + 9 subfolder run `1424`, + `checkpoints/step{1,2}_best` internal run `1424` |
+| Run dengan data epoch | 6 dari 94 (6,4%) |
+| Sel grid CV pernah dicoba / total | 44 / 45 (`cv5fold/ep75/fold_5` tidak pernah) |
+| Sel grid split-ratio pernah dicoba | 0 / 9 (`run_idx` 1–9 tidak ada) |
+| Direktori kosong | `checkpoints/step1_best`, `checkpoints/step2_best`, `csv/`, + 9 subfolder run `1424` |
 | Artefak valid (pra-pemrosesan) | 4 bagian: `_eda/`, `_backbone/`, `_embedding/`, `_gates/` |
-| Gap grid eksperimen | 9 run split-ratio tidak berjejak; 53 folder run = hanya dimensi CV |
+| Partisi TSV siap pakai vs tertokenisasi lokal | 18 vs **1** |
+
+---
+
+## 8. Koreksi & Tindak Lanjut (03112026)
+
+Dokumen ini disusun dari keluaran terminal yang **terpotong di tengah**, sehingga jumlah folder run diremehkan. Indeks ulang dengan skrip `scripts/index_acos_results.py` menghasilkan angka sebenarnya:
+
+| Butir | Nilai lama (keliru) | Nilai terverifikasi |
+|---|---|---|
+| Folder run CV | 53 (30 cv10 + 23 cv5) | **94** (60 cv10 + 34 cv5) |
+| Run berstatus ERROR karena Bug #1 | 47 | **87** |
+| Berkas `run_result.json` | 53 | **93**, + 1 folder tanpa result |
+| Total folder | 100 | 101 |
+| Run dengan data epoch | 6 dari 53 (11,3%) | 6 dari **94** (6,4%) |
+| Disjointness train/dev/test | “perlu diaudit ulang” | **Terverifikasi 0 tumpang tindih** pada 36.821 review — klaim anti-leakage di `docs/0010` berlaku |
+| Dugaan “test 15.003 tidak proporsional” | disebut anomali | Bukan anomali: cv5 memang hold-out 20%. Temuan sebenarnya: **cv5 pakai 72% data latih, cv10 pakai 81%** sehingga keduanya tidak komparabel |
+
+Yang **tidak** berubah: verdict 0 hasil sah, dua akar masalah, dan kesimpulan bahwa metrik 100% itu degenerat.
+
+Detail indexing, peta partisi, rencana EDA 4 tingkat, dan grid ablasi A1–A9 ada di **`reports/039_indexing_hasil_eda_dan_ablasi_cv5_cv10_03112026.md`**.
 
 ---
 
