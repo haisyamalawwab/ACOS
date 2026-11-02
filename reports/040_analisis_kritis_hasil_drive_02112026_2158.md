@@ -5,6 +5,8 @@
 > **Sifat:** baca-saja. Tidak ada berkas yang diunggah, diubah, atau dihapus di Drive.
 > **Pelengkap:** laporan 039 (peta repo) dan 038 (audit kritis). Laporan ini **tidak menimpa** keduanya; ia menguji ulang klaim 036/039 terhadap artefak Drive.
 > **Lampiran data:** `reports/040_data/inventaris_drive.csv`, `rekonsiliasi_klaim_drive.csv`, `run_cv_27092026.csv`, `temuan_kritis.csv`
+>
+> **Tindak lanjut:** laporan **041** (`reports/041_analisis_mendalam_notebook_02112026_HM.md`) menambahkan jejak notebook untuk angka-angka di sini: 47,68 ↔ 48,24 (`04` sel 12), 78,72/81,93/69,56 ↔ 78,95/82,51/70,11 (`04` sel 12), dan menandai 66,28% serta 97,94% sebagai agregasi/cache-hit. Isi laporan ini tidak diubah.
 
 ---
 

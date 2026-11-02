@@ -1,0 +1,21 @@
+id,angka,notebook,sel,exec_count,bukti_teks,sesi,tingkat
+P01,"Step-1 97,94",V4_INDOBERT,46,69,8 baris riwayat; TP 16.514 / FP 434 / FN 259,appsid_05092026_122741,E2
+P02,"Step-1 97,94 (echo)",V4_1_INDOBERT; V4_2_GUARDS; V4_3_SESSION,58;58;58,—,'[CACHE HIT] 8 metrik … dimuat tanpa evaluasi ulang',appsid_05092026_122741,E3
+P03,"Step-1 97,94 di sesi rest16",V5_EN_REST16_LAPTOP,48,—,"riwayat 8 baris identik appsid, ditulis ke folder rest16",rest16_12092026_104518,E0
+P04,"Step-1 97,19",run08092026; run24092026_MI300X,45;45,37;148,'training Step 1 tidak dijalankan (cache hit) … 97.19% (epoch 3)',appsid_24092026_0901,E3
+P05,"Step-2 67,16",V4_INDOBERT,67,—,Quad num 10.505; TP 6.552 / FP 3.953 / FN 2.454,appsid_05092026_122741,E2
+P06,"Step-2 67,86",V4_1_03_step2_train,19,41,"1 epoch; loss 0,554376; TP 6.654 / FP 3.951 / FN 2.352; VRAM 3.971 MB",appsid_08092026_150437,E2
+P07,"Step-2 67,86 (echo)",V4_1_INDOBERT; V4_2_GUARDS; V4_3_SESSION; V4_1_04; V4_2_06,71;71;71;8;11,43;43;43;44;43,"'[CACHE HIT] 8 metrik keseluruhan, 15 sub-task'",appsid_08092026_150437,E3
+P08,"Step-2 67,69",run08092026,72,51,cache 6 metrik; TP 6.681 / FP 4.052 / FN 2.325,appsid_24092026_0901,E3
+P09,"Step-2 67,69 (hitung ulang)",run24092026_MI300X,72,162,pair_eval 687 batch; Quad num 10.733; TP/FP/FN sama dengan P08,appsid_24092026_1426,E2
+P10,"15 sub-task 66,28 / 96,29",V4_1_04_eval_inference,10,52,"gold 19.528 (2,17× aplikasi), prediksi 24.066; P 63,94 / R 69,07",appsid_08092026_150437,E2
+P11,"15 sub-task 94,21 … 67,69",run24092026_MI300X,74,163,"15 baris master_08; quad penuh 66,08 (rata-rata) vs 67,69 (micro)",appsid_24092026_1426,E2
+P12,"Step-1 81,27",02_ACOS_Step1,13,8,"test: TP 1.367 / FP 382 / FN 248; P 78,16 / R 84,64; epoch terbaik 8",rest16_31082026_144800,E2
+P13,"Step-2 48,24",04_ACOS_Step2,10 & 12,5 & 6,Quad num 1.120; TP 486 / FP 634 / FN 409; epoch terbaik 12 dari 15,rest16_02092026_135007,E2
+P14,15 sub-task rest16,04_ACOS_Step2,12,6,"kategori 78,95 … quad penuh 48,24 (lihat Tabel 10)",rest16_02092026_135007,E2
+P15,"Step-1 81,23",00_..._UPDATE,13,—,"15 epoch dijalankan, output tanpa ec; sesi hanya muncul di teks",rest16_27082026_090134,E1
+P16,"Step-1 80,76 / Step-2 0,00",00_ACOS_Master_Pipeline_Colab,12 & 16,7 & 9,1.450 pasangan tapi Quad num 301 → tp 0 / fp 301 / fn 895,rest16_24092026_0849,E2
+P17,"Step-2 0,00 + fp 165.728",V5_EN_REST16_LAPTOP,75,—,"master_07: precision 0,00 / recall 0,00 / TP 0 / FP 165.728 / FN 895",rest16_12092026_104518,E0
+P18,Grid 54 run,V5.2.1; V5.3; V5.1; V5.2,19;19;7;7,10;—;52;52,9 split-ratio + 45 CV hanya dicetak; DRY_RUN=True; 0 run selesai,—,E0
+P19,"Dual-head 0,00",V4_1; V4_2; V4_3; V4_1_04; V4_2_06,71;71;71;8;11,43;43;43;44;43,"category/sentiment micro-F1 & accuracy = 0,00 (tidak terhitung)",—,E0
+P20,"47,68 (tanpa notebook)",—,—,—,hanya ada di Drive master_metrics.json; tidak ada sel yang mencetaknya,rest16_27082026_070817,E2
