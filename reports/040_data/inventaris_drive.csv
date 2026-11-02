@@ -1,0 +1,41 @@
+path,id_folder,id_file,jenis,ukuran,modified,kategori,catatan
+results,1vKiRYlU2K9cNQWgXV4JBO5u-7DdtiAFq,—,folder,—,2026-09-05T12:27:40Z,root,4 item: 3 folder (1 sesi + 2 eksperimen) + 1 state pkl
+results/appsid_05092026_122741,1IUh17tPAMwwr5SBOSVqJFTUY-eSR7VuZ,—,folder,—,2026-09-05T12:27:41Z,sesi,"51 berkas: 16 csv, 9 log/json + 1 folder gerbang, 9 md, 6 plot, 8 berkas checkpoint"
+results/appsid_05092026_122741/session_manifest.json,1IUh17tPAMwwr5SBOSVqJFTUY-eSR7VuZ,1hoHOGBLGzKIpueg-0AoWurUkoXVMw25M,json,1333,2026-09-10T12:54:02Z,manifest,"status STEP2_TRAINING; step2 3/15; best 68,9969 (ep3)"
+results/appsid_05092026_122741/logs/step1_run_result.json,1eRL3DqrGB1HSQCre1nUMVcIC8Yu-yQC4,1LrhdlbB0HcGOeculRynNIpRZVH83M2Fy,json,2922,2026-09-10T12:09:30Z,log,"mode cache_hit; 8/15 epoch; best 97,94 (ep8); early_stopped false"
+results/appsid_05092026_122741/csv/step1_training_history.csv,1PvJ9BP4H6NHOYuxwfYEdQhM4tUbsxoM8,1s1vth9wQ_OW85qDyHyqj47HzBo3b4z_Q,csv,900,—,tabel,"8 baris; loss 2,1423 -> 0,0999; peak VRAM 5.174,17 MB"
+results/appsid_05092026_122741/csv/master_03_step1_riwayat.csv,1PvJ9BP4H6NHOYuxwfYEdQhM4tUbsxoM8,1PGdvTuH1ZnVLyd4jRC4Hq6Jy8kda-OyL,csv,598,—,tabel,"sama dengan history, dalam persen"
+results/appsid_05092026_122741/csv/step2_training_history.csv,1PvJ9BP4H6NHOYuxwfYEdQhM4tUbsxoM8,11ocx1pnO4GRzZQ5yvzH8a2nsG-X8WEWJ,csv,436,—,tabel,"3 baris; F1 67,16/66,55/69,00; category_micro_f1=0 dan sentiment_acc=0"
+results/appsid_05092026_122741/logs/step2_progress.json,1eRL3DqrGB1HSQCre1nUMVcIC8Yu-yQC4,1MG1BAml5SFRPAzMkrpDIoe47ofTUQKXT,json,336,2026-09-10T12:53:28Z,log,stage STEP2_TRAINING; epoch 3/15
+results/appsid_05092026_122741/logs/step2_resume.json,1eRL3DqrGB1HSQCre1nUMVcIC8Yu-yQC4,1LyTrf-2JBNVQXD8AnZ5T-ITzYsyRf8CX,json,1212,2026-09-10T12:53:28Z,log,3 epoch; nol permanen pada dua kepala; early_stopped false
+results/appsid_05092026_122741/logs/gate1_weights.json,1eRL3DqrGB1HSQCre1nUMVcIC8Yu-yQC4,1IOp-tXLqOIpg5ccY6Ldz-OC4zCxnUweg,json,949,—,gerbang,199/199 kunci; mean identik 3 probe; ok true
+results/appsid_05092026_122741/csv/master_00c_gate1_bobot_encoder.csv,1PvJ9BP4H6NHOYuxwfYEdQhM4tUbsxoM8,1fsoiuvIgZCE0PHU0wkmTApjCRuir_PoR,csv,359,—,tabel,rekap Gate-1 dalam CSV
+results/appsid_05092026_122741/logs/id_gates.json,1eRL3DqrGB1HSQCre1nUMVcIC8Yu-yQC4,18uB4X9ui7oorrcppJ-HFUDsEutyyuVSG,json,5528,—,gerbang,"5 gerbang ok: taxonomy, dataset, acos_build, tokenized, gate2_english"
+results/appsid_05092026_122741/logs/backbone_report.json,1eRL3DqrGB1HSQCre1nUMVcIC8Yu-yQC4,1e9jmGhLEHGSLb7yaBQj2nH334YS_l9ZC,json,1998,—,log,vocab 30.521 baris vs config 50.000; rekey 199 kunci; sha256 vocab tercatat
+results/appsid_05092026_122741/csv/master_01_statistik_dataset.csv,1PvJ9BP4H6NHOYuxwfYEdQhM4tUbsxoM8,1PbHZcf-xOx0l1p2hAKDUDT3mldDUBnwo,csv,345,—,tabel,60.159/8.027/7.891 baris; 72.973/9.587/9.514 quad
+results/appsid_05092026_122741/csv/master_02_ringkasan_eda.csv,1PvJ9BP4H6NHOYuxwfYEdQhM4tUbsxoM8,1SwBZwEVUqFsVd31Xy9dIkbt1DzlJWeVw,csv,131,—,tabel,92.074 quad; implisit aspek 27.726; opini 37.274; median 7 token
+results/appsid_05092026_122741/csv/master_00b_gerbang_data_id.csv,1PvJ9BP4H6NHOYuxwfYEdQhM4tUbsxoM8,1NM9DNgzrZrUlfXSYrBA1LnEIlZ7Nvwhl,csv,249,—,tabel,quad_hilang 0 untuk tiga split
+results/appsid_05092026_122741/checkpoints/step1_best,1ldpIny1o-E4dqo9-4wDmvVyX0ydaSJuh,1GtREyFG-CMcJmDux7ww1TC3pwKy-HOjU,folder,3 berkas,—,checkpoint,model 500.244.267 B + config + vocab
+results/appsid_05092026_122741/checkpoints/step2_best,1ldpIny1o-E4dqo9-4wDmvVyX0ydaSJuh,1IGzpIj7sjkzMYkD_AV048ujkqZ5IgKlg,folder,3 berkas,—,checkpoint,model 497.946.703 B + config + vocab
+results/appsid_05092026_122741/checkpoints/step2_epoch_3,1ldpIny1o-E4dqo9-4wDmvVyX0ydaSJuh,1ySjD6jgRQd5hYD_piJmqPnHrJ3Ave_KK,folder,2 berkas,—,checkpoint,model 497.946.703 B + optimizer 991.121.547 B
+results/appsid_05092026_122741/logs/result.txt,1eRL3DqrGB1HSQCre1nUMVcIC8Yu-yQC4,1zKBe9621T01CUUqTkMBDZvkJ2ZbV72QH,txt,1295540,—,prediksi,"keluaran evaluasi per baris (teks, span, label)"
+results/appsid_05092026_122741/logs/pred4pipeline.txt,1eRL3DqrGB1HSQCre1nUMVcIC8Yu-yQC4,1CZUYqMHxtk05TNNNP2RvyEfzCpHKuGMb,txt,512075,—,prediksi,pasangan span a-/o- hasil Step-1 (jembatan ke Step-2)
+results/latest_pipeline_state_appsid.pkl,1EAYUj79mmk4BKvUJA8Ut4RTjbw0_TDY3,1EAYUj79mmk4BKvUJA8Ut4RTjbw0_TDY3,pkl,775330,2026-09-10T12:09:39Z,state,salinan pipeline_state.pkl di root results
+results/appsid_05092026_122741/pipeline_state.pkl,1IUh17tPAMwwr5SBOSVqJFTUY-eSR7VuZ,1P1H_pQUX_DkjbI-4k07jzp6sibsveGBw,pkl,775330,2026-09-10T12:09:39Z,state,state level-3 sesi
+results/experiments_26092026,12YJUYK7y0ghJ8zblC8_qcrnEFSwsLL95,—,folder,—,2026-11-02T14:42:45Z,eksperimen,kerangka kosong: csv/logs/md/checkpoints/plots tanpa berkas (7 berkas lain di root/_gates/_backbone)
+results/experiments_26092026/reports/REPORT_INDEX.md,12YJUYK7y0ghJ8zblC8_qcrnEFSwsLL95,1kaMZs0QzQTKrIg1SjCVHR8ELxspcN1sc,md,284,2026-09-26T15:50:24Z,laporan,menyatakan 0 berkas di csv/plots/md/logs
+results/experiments_26092026/_gates/gates.csv,1j4PAm56eX0XnL07ifYlaucppzO4lnnVw,1YI5REqQucjbv_yO_067tvJvQtWv0RIUL,csv,48,2026-09-26T15:50:12Z,gerbang,"taxonomy True, vocab True, tokenized_n 7"
+results/experiments_26092026/_pair_bridge.csv,12YJUYK7y0ghJ8zblC8_qcrnEFSwsLL95,1F4WChAjWde-yv12AweXVivXH_AAXR9e4,csv,96,2026-09-26T15:50:19Z,tabel,65.423/8.991/9.006 pasangan
+results/experiments_26092026/pipeline_state.pkl,12YJUYK7y0ghJ8zblC8_qcrnEFSwsLL95,1phc4nVAUyXGpqoWS16x3bQ2RdQlASCIl,pkl,483,2026-09-26T15:50:19Z,state,state kosong 483 B
+results/experiments_27092026,1J5t0O-uF2EBxYhVIkuKSj_c9qtqram5u,—,folder,94 folder sesi,2026-11-02T14:43:04Z,eksperimen,34 folder cv5fold + 60 folder cv10fold; 93 run_result.json
+results/experiments_27092026/_gates/gates.csv,12IT59HYitdAaPl9-jOXG-0Rn8HzHPkFB,19KgRNYqLlwm4tZMC7APsKgzjPuAPHpiq,csv,48,2026-09-26T15:50:12Z,gerbang,"taxonomy True, vocab True, tokenized_n 6"
+results/experiments_27092026/_embedding/embedding_audit.csv,1jJu6Wbohyy550gv9qc_xdZgEXlq8LuV5,1Eq532S8DY1qjK5fB-wy30TKldRTapEz9,csv,162,—,audit,vocab 30.521; config 50.000; span_bergeser 25.992; unk 0
+results/experiments_27092026/_backbone/backbone_check.csv,1IRhRfRwJmDtSvfO9ks2V2Te4bJBkkwTa,1RJ7X9DJ-5m810yZYn131iCbEc19_ZZHl,csv,128,—,audit,"3 split OK; pytorch_model.bin 474,8 MB; vocab 0,2 MB"
+results/experiments_27092026/cv5fold_fold1_ep100_27092026_1359/run_result.json,10DnzjlxWfXwl3w186EL_Tc5xb0OFssbY,1SYGOi0Ud4-sILBTPpH298jGn2Yt5ABRy,json,573,2026-09-27T13:59:29Z,run,"status ERROR: 'list' object has no attribute 'items'; 7,5 s"
+results/experiments_27092026/cv5fold_fold1_ep75_27092026_1421/run_result.json,1-HpIrICo8O4C8eX_zk20oS1wx9zqGLo9,1ZH-i2dwCkVOf8eIeW4UD9636MBm0OIoC,json,591,2026-09-27T14:22:48Z,run,"status ERROR: BertForQuadABSA has no attribute save_pretrained; 89,9 s"
+results/experiments_27092026/cv5fold_fold4_ep75_27092026_1337/run_result.json,1bb4lc6C64NFs9PucMqUEinMP_k7LK7op,1YqryFHvbSI2JZNyQHIdKP0I50YeN_Tu_,json,569,2026-09-27T13:37:13Z,run,"status ERROR: 'list' object has no attribute 'items'; 7,6 s"
+results/experiments_27092026/cv10fold_fold9_ep100_27092026_1403/run_result.json,1Sru09kq2_Jf6hqdn8mAGm2wIeKZZJgTm,1oHzWvyuYBlg44Z0L52etqhwZYF_wWV2h,json,578,2026-09-27T14:04:05Z,run,"status ERROR: 'list' object has no attribute 'items'; 8,3 s"
+luar folder (dirujuk 036),1SeUEo0faB2Qf162S5nrkY0j-VQiTUT3H,—,folder,52 berkas,2026-09-02T12:56:26Z,sesi BERT,"rest16_27082026_070817; status FINAL_EVAL_COMPLETED; F1 47,68"
+luar folder: rest16/logs/master_metrics.json,1SeUEo0faB2Qf162S5nrkY0j-VQiTUT3H,1KtQHORqhCk9f0TPQ_XJ431_5-3JM90mg,json,10905,—,metrik,"15 subtask; overall P 43,06 / R 53,41 / F1 47,68; 30 baris step2"
+luar folder: rest16/csv/master_08_metrik_subtask.csv,1tylhmN4oA8k5I5a2Rx_4jjM2i2Ak8-VH,1TXLapXB77WBPZUs0H_MIsT91L4wa1d4c,csv,666,—,metrik,"15 subtask REST16; QUAD 47,03; TP/FP/FN kosong"
+luar folder: rest16/session_manifest.json,1SeUEo0faB2Qf162S5nrkY0j-VQiTUT3H,1dSQpB6dywK2GaC0Oe0qDjRLorS4nVVsu,json,1429,2026-09-02T12:56:26Z,manifest,bert-base (vocab 231.508 B); FINAL_EVAL_COMPLETED
