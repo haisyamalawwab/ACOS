@@ -456,3 +456,156 @@ Catatan lingkungan: sandbox audit tidak memuat `numpy`, `pandas`, `torch`, `requ
 ---
 
 *Laporan ini adalah audit, bukan validasi. Angka yang tidak dapat dihitung ulang dari repo ditandai eksplisit sebagai E3/E4.*
+
+---
+
+
+---
+
+## Lampiran D — Inventaris hasil (35 artefak)
+
+Sumber tabel: `reports/039_data/inventaris_hasil.csv`. Kolom **tingkat** memakai kode E1–E4 (§1.2).
+
+| ID | Subsistem | Artefak | Angka kunci | Tingkat | Status |
+|---|---|---|---|---|---|
+| A01 | Dataset Apps-ACOS | `processed/reviews_clean.csv` | 43.673 ulasan; 13 app; 37.825 Google Play + 5.848 App Store | E1 | terverifikasi |
+| A02 | Dataset Apps-ACOS | `processed/quintuples_weak.csv` | 96.417 tuple; 40.537 ulasan; 69.724 klausa unik | E1 | terverifikasi |
+| A03 | Dataset Apps-ACOS | `appsid_quad_{train,dev,test}.tsv` | 76.077 baris; 92.074 tuple; 66.198 teks klausa unik | E1 | terverifikasi + dapat dibangun ulang |
+| A04 | Dataset Apps-ACOS | `Split utama per review_id` | 60.159/8.027/7.891 baris; 28.839/3.991/3.991 ulasan; 0 overlap | E1 | terverifikasi (split), tidak dapat diregenerasi |
+| A05 | Dataset Apps-ACOS | `cv_5fold/` | 5 fold; 36.821 ulasan; test 7.365/7.364x4; 0 overlap | E1 | terverifikasi sebagai split |
+| A06 | Dataset Apps-ACOS | `cv_10fold/` | 10 fold; 36.821 ulasan; 0 overlap | E1 | terverifikasi sebagai split |
+| A07 | Tokenisasi | `tokenized_data/appsid_*_quad_bert.tsv` | 92.074 quad; 0 [UNK]; 0 span invalid | E1 | terverifikasi |
+| A08 | Tokenisasi | `tokenized_data/appsid_*_pair.tsv` | 83.420 baris; 0 quad hilang; multi-label 0,39% train | E1 | terverifikasi |
+| A09 | Konversi data | `acos_id/build_acos.py` | 3 split; 92.074 tuple; 4.183 klausa tanpa split | E1 | terverifikasi hari ini |
+| A10 | Gate Indonesia | `acos_id/selftest.py` | 3 lulus (taxonomy, dataset, acos_build); 2 gagal (tokenized, gate2_english) | E1 | terverifikasi sebagian |
+| A11 | Gate Inggris | `ACOS-BERT/acos_en/selftest.py` | rest16 3/3; laptop 3/3 | E1 | terverifikasi |
+| A12 | Gate ACOSE | `absa5/selftest.py` | 13/13 lulus; 18.862 span; 2.417 baris pair | E1 | terverifikasi |
+| A13 | Model IndoBERT Step-1 | `Notebook V4_INDOBERT sel 46` | Best 97.94% (ep8); TP 16.514 FP 434 FN 259 | E2 | bukti tersimpan |
+| A14 | Model IndoBERT Step-2 (run A) | `V4_1_03_step2_train.ipynb` | F1 67,86%; TP 6.654 FP 3.951 FN 2.352 | E2 | bukti tersimpan |
+| A15 | Model IndoBERT Step-2 (run B) | `00_..._V4_INDOBERT.ipynb sel 67` | 67,16 / 66,55 / 69,00%; best ep3 | E2 | bukti tersimpan |
+| A16 | Model IndoBERT Step-2 (run C) | `V4_INDOBERT_run24092026 (MI300X)` | Step-1 97,19% ep3; Step-2 67,69% ep3 | E2 | bukti tersimpan |
+| A17 | Model BERT rest16 Step-1 | `notebooks/02_ACOS_Step1...` | Best 81,27% (ep8); P 78,16 R 84,64 | E2 | bukti tersimpan |
+| A18 | Model BERT rest16 Step-2 | `notebooks/04_ACOS_Step2...` | Best 48,24% (ep12); P 43,39 R 54,30 | E2 | bukti tersimpan |
+| A19 | Model BERT rest16 end-to-end | `V5_EN_REST16_LAPTOP.ipynb` | 0,00%; TP 0; FP 165.728; FN 895 | E2 | hasil negatif (terkontaminasi) |
+| A20 | Kontaminasi rest16 (baru) | `V4_BERT_rest16_run24092026` | Step-1 97,19% & Step-2 67,69% identik dengan run appsid MI300X | E2 | hasil negatif (terkontaminasi) |
+| A21 | Metrik 15 subtask | `reports/036 Tabel VI` | Opinion 96,29; aspect 93,88; category 92,41; sentiment 84,97; QUAD 66,28 | E3 | terdokumentasi saja |
+| A22 | Gate-1 bobot IndoBERT | `reports/036 Tabel III` | 199/199 key, 0 missing | E3 | terdokumentasi saja |
+| A23 | EDA Apps-ACOS | `build/_eda_id/` | 10,6 MB CSV; 3 plot | E2 | artefak ada |
+| A24 | EDA rest16 | `notebooks/01_ACOS_Setup...` | 1.530/171/583; 3.661 quad | E2 | bukti tersimpan |
+| A25 | Inferensi demo | `V4_INDOBERT sel 78` | 4 baris quadruple pada 1 kalimat | E2 | bukti tersimpan |
+| A26 | Cross-validation model | `-` | Tidak ada | E4 | belum ada |
+| A27 | Model laptop | `-` | Tidak ada | E4 | belum ada |
+| A28 | Scaffold ACOS-BERT | `ACOS-BERT/` | Gate lokal lulus; training tidak | E4 | scaffold |
+| A29 | Model ACOSE (absa5) | `absa5/` | 13/13 gate; tanpa training | E4 | belum ada model |
+| A30 | Gold manusia / IAA | `reports/021, 022a-h` | PDF + DOCX | E4 | belum ada anotasi |
+| A31 | V5.2 universal | `Notebook V5.2` | Import gagal: bert_utils | E4 | klaim tidak terbukti |
+| A32 | Matriks 54 run MI300X | `01_ACOS_MI300X_V5...` | 54 run (3 epoch x 3 rasio x 3 CV + ...) | E4 | belum ada |
+| A33 | Dokumentasi | `181 file .md` | 2 duplikat persis; 8 laporan memuat angka F1 | E1 | artefak ada |
+| A34 | Panduan anotasi | `dist/Panduan_Anotasi_ACOSE_Bahasa_Indonesia.pdf` | PDF 364 KB + DOCX 79 KB | E1 | artefak ada |
+| A35 | Bukti lingkungan GPU | `screenshot/` | 31 PNG (MI300X, 24-09) | E2 | artefak ada |
+
+**Cara membaca:** E1 = dapat dijalankan ulang di clone; E2 = output eksekusi tersimpan tetapi artefak run tidak ada; E3 = angka hanya di dokumen; E4 = rencana/klaim. Detail bukti per baris ada di CSV (`bukti_path`, `catatan`).
+
+---
+
+## Lampiran E — Matriks klaim vs bukti (20 klaim)
+
+Sumber tabel: `reports/039_data/matriks_klaim.csv`.
+
+| ID | Klaim | Sumber | Hasil verifikasi independen | Putusan |
+|---|---|---|---|---|
+| K01 | 43.673 ulasan, 76.077 klausa, 92.074 tuple | 036/032/035 | 43.673 ✓; 92.074 ✓; 76.077 adalah baris, bukan klausa unik (66.198 teks unik) | **TERVERIFIKASI SEBAGIAN** |
+| K02 | Split 60.159/8.027/7.891 & 28.839/3.991/3.991 review disjoint | 036 | Sama persis; 0 irisan review | **TERVERIFIKASI** |
+| K03 | 0 [UNK], 0 span invalid, 0 tuple hilang setelah retokenisasi | 036 | 0 [UNK], 0 span invalid, 0 dari 92.074 quad hilang dari pair file | **TERVERIFIKASI** |
+| K04 | Multi-label 0,4% (255/65.423 pair row) | 036 | 255/65.423 = 0,39% ✓ (dev/test masing-masing 16) | **TERVERIFIKASI** |
+| K05 | 14,7% baris test = klausa berulang dari train; 9,0% teks unik | 036 | 14,66% baris; 8,98% teks unik | **TERVERIFIKASI** |
+| K06 | Step-1 appsid 97,94% (ep8/15, TP 16.514) | 036/030 | Riwayat 8 epoch lengkap di output notebook; cocok | **TERVERIFIKASI (output tersimpan)** |
+| K07 | Step-2 appsid 67,86% pada epoch 1/15 | 036 | Cocok untuk run A; run A memang berhenti setelah 1 epoch | **TERVERIFIKASI, TAPI BUKAN TERBAIK** |
+| K08 | Tidak ada hasil Step-2 rest16 yang sah | 036 | Notebook 04 memuat run rest16 Step-2 15 epoch: 48,24% (pair gold, BERT legacy); sesi V4 IndoBERT tetap tidak sah | **TERBANTAH SEBAGIAN** |
+| K09 | BERT rest16 Step-1 = 81,23% (epoch 6) | 030/033/035 | Run yang tersimpan: 81,14% (ep6) dan 81,27% (ep8) | **TIDAK COCOK** |
+| K10 | rest16 end-to-end 0,00% = kegagalan pipeline | 036 | TP 0; FP 165.728; FN 895; cache appsid dipakai ulang | **TERVERIFIKASI** |
+| K11 | Cache lintas domain hanya terjadi sekali (12-09) | 036/038 | Terjadi lagi 24-09: run rest16 melaporkan 97,19/67,69 identik dengan run appsid | **TEMUAN BARU** |
+| K12 | category_micro_f1 = sentiment_acc = 0,00% adalah bug logging | 036 | Logis mustahil: exact-match quadruple 67,86% mensyaratkan akurasi sentimen ≥ 67,86% | **INFERENSI KUAT, MEKANISME BELUM DIBUKTIKAN** |
+| K13 | 15 subtask: sentimen bottleneck 84,97% vs opini 96,29% | 036 | Tabel ada, CSV master_08 tidak ada di repo | **TIDAK DAPAT DIVERIFIKASI** |
+| K14 | Gate-1 199/199 bobot IndoBERT termuat | 036 | Tidak ada checkpoint/backbone lokal; tidak dapat diuji | **TIDAK DAPAT DIVERIFIKASI** |
+| K15 | Cross-validation 5/10-fold tersedia | 036/038 | Manifest split lengkap & valid; skor model tidak ada | **SPLIT TERVERIFIKASI, HASIL TIDAK ADA** |
+| K16 | V5.2 universal 8 platform, import fix | V5_2_README/DEV_REPORT | Notebook V5.2 berhenti di ModuleNotFoundError bert_utils | **TERBANTAH** |
+| K17 | 54 run eksperimen & hasil agregasi | notebook V5.3/V5.2.1/MI300X | Tidak ada run OK; assertion & IndentationError; DRY_RUN=True | **TERBANTAH** |
+| K18 | Model ACOSE (quintuple) siap | RENCANA_QUINTUPLE/absa5 | Hanya 13 gate software; tidak ada training/evaluasi emosi | **BELUM ADA MODEL** |
+| K19 | Weak label = gold? | 036 | Tidak ada anotasi manusia/IAA; panduan ada, eksekusi tidak | **BELUM ADA GOLD** |
+| K20 | Repo reproducible dari clone | 036/038 | Tidak ada checkpoint/CSV/history; stage builder tidak ada; 1 commit squashed | **TIDAK REPRODUCIBLE END-TO-END** |
+
+---
+
+## Lampiran F — Bukti per notebook (45 notebook)
+
+Sumber tabel: `reports/039_data/bukti_notebook.csv`. Kolom **sel** = jumlah sel, **output** = sel kode yang memiliki output, **error** = jumlah output bertipe error.
+
+| Notebook | Sel | Output | Error | Domain | Putusan |
+|---|---:|---:|---:|---|---|
+| `ACOS-BERT/notebooks/00_ACOS_Master_Pipeline_V1_1_BERT.ipynb` | 24 | 0 | 0 | — | 🟡 tanpa output |
+| `ACOS-BERT/notebooks/00_ACOS_Master_Pipeline_V1_BERT.ipynb` | 18 | 7 | 1 | rest16 | 🔴 ERROR: ModuleNotFoundError: No module named 'torchcrf' |
+| `ACOS-BERT/notebooks/V1_01_setup.ipynb` | 8 | 0 | 0 | — | 🟡 tanpa output |
+| `ACOS-BERT/notebooks/V1_02_step1_train.ipynb` | 11 | 0 | 0 | — | 🟡 tanpa output |
+| `ACOS-BERT/notebooks/V1_03_step2_train.ipynb` | 12 | 0 | 0 | — | 🟡 tanpa output |
+| `ACOS-BERT/notebooks/V1_04_eval_inference.ipynb` | 11 | 0 | 0 | — | 🟡 tanpa output |
+| `ACOS-BERT/notebooks/V1_1_01_setup.ipynb` | 12 | 0 | 0 | — | 🟡 tanpa output |
+| `ACOS-BERT/notebooks/V1_1_02_step1_train.ipynb` | 16 | 0 | 0 | — | 🟡 tanpa output |
+| `ACOS-BERT/notebooks/V1_1_03_step2_train.ipynb` | 17 | 0 | 0 | — | 🟡 tanpa output |
+| `ACOS-BERT/notebooks/V1_1_04_eval_inference.ipynb` | 16 | 0 | 0 | — | 🟡 tanpa output |
+| `ACOS-IndoBERT/notebooks/00_ACOS_Master_Pipeline_Colab.ipynb` | 23 | 10 | 1 | rest16 | 🔴 ERROR: AttributeError: 'NoneType' object has no attribute 'to' |
+| `ACOS-IndoBERT/notebooks/00_ACOS_Master_Pipeline_Colab_V4_1_INDOBERT.ipynb` | 80 | 37 | 0 | appsid | 🟢 output berisi metrik |
+| `ACOS-IndoBERT/notebooks/00_ACOS_Master_Pipeline_Colab_V4_2_GUARDS.ipynb` | 86 | 37 | 0 | appsid | 🟢 output berisi metrik |
+| `ACOS-IndoBERT/notebooks/00_ACOS_Master_Pipeline_Colab_V4_3_SESSION.ipynb` | 86 | 37 | 0 | appsid | 🟢 output berisi metrik |
+| `ACOS-IndoBERT/notebooks/00_ACOS_Master_Pipeline_Colab_V4_BERT_rest16_run24092026_GPU_AMD_MI300X.ipynb` | 81 | 38 | 1 | appsid | 🔴 ERROR: RuntimeError: GATE 1 GAGAL: bobot encoder di model tidak sama dengan checkpoint. Encoder kemungkinan terinisialisasi acak (modeling.py |
+| `ACOS-IndoBERT/notebooks/00_ACOS_Master_Pipeline_Colab_V4_INDOBERT copy.ipynb` | 80 | 21 | 2 | appsid | 🔴 ERROR: KeyboardInterrupt:  |
+| `ACOS-IndoBERT/notebooks/00_ACOS_Master_Pipeline_Colab_V4_INDOBERT.ipynb` | 80 | 32 | 0 | appsid | 🟢 output berisi metrik |
+| `ACOS-IndoBERT/notebooks/00_ACOS_Master_Pipeline_Colab_V4_INDOBERT_run08092026.ipynb` | 81 | 38 | 0 | appsid | 🟢 output berisi metrik |
+| `ACOS-IndoBERT/notebooks/00_ACOS_Master_Pipeline_Colab_V4_INDOBERT_run24092026_GPU_AMD_MI300X.ipynb` | 81 | 38 | 0 | appsid | 🟢 output berisi metrik |
+| `ACOS-IndoBERT/notebooks/00_ACOS_Master_Pipeline_Colab_V5_EN_REST16_LAPTOP.ipynb` | 82 | 38 | 1 | appsid | 🔴 ERROR: RuntimeError: GATE 1 GAGAL: bobot encoder di model tidak sama dengan checkpoint. Encoder kemungkinan terinisialisasi acak (modeling.py |
+| `ACOS-IndoBERT/notebooks/00_ACOS_Master_Pipeline_Kaggle_V4_INDOBERT.ipynb` | 80 | 0 | 0 | — | 🟡 tanpa output |
+| `ACOS-IndoBERT/notebooks/01_ACOS_MI300X_V5_FullExperiment_GPU_AMD_MI300X.ipynb` | 24 | 4 | 1 | appsid | 🔴 ERROR: IndentationError: unexpected indent (890569663.py, line 25) |
+| `ACOS-IndoBERT/notebooks/01_ACOS_V5_1_FullExperiment_GPU_ROCM_CUDA_DriveSync.ipynb` | 27 | 3 | 1 | appsid | 🔴 ERROR: ModuleNotFoundError: No module named 'bert_utils' |
+| `ACOS-IndoBERT/notebooks/02_ACOS_V5_2_1_Embedding_Classification_Prediction.ipynb` | 40 | 18 | 1 | appsid | 🔴 ERROR: AssertionError: Belum ada run OK — jalankan Sel 9 DRY_RUN=False dulu. |
+| `ACOS-IndoBERT/notebooks/02_ACOS_V5_2_Universal_FullExperiment_AllPlatforms.ipynb` | 35 | 3 | 1 | appsid | 🔴 ERROR: ModuleNotFoundError: No module named 'bert_utils' |
+| `ACOS-IndoBERT/notebooks/03_ACOS_V5_3_Classification_Prediction_IndoBERT.ipynb` | 40 | 18 | 1 | appsid | 🔴 ERROR: AssertionError: Belum ada run OK — jalankan Sel 9 DRY_RUN=False dulu. |
+| `ACOS-IndoBERT/notebooks/V4_1_01_setup.ipynb` | 33 | 15 | 0 | appsid | 🟢 output setup/diagnostik |
+| `ACOS-IndoBERT/notebooks/V4_1_02_step1_train.ipynb` | 23 | 1 | 1 | — | 🔴 ERROR: :  |
+| `ACOS-IndoBERT/notebooks/V4_1_03_step2_train.ipynb` | 21 | 7 | 0 | appsid | 🟢 output berisi metrik |
+| `ACOS-IndoBERT/notebooks/V4_1_04_eval_inference.ipynb` | 17 | 5 | 0 | appsid | 🟢 output berisi metrik |
+| `ACOS-IndoBERT/notebooks/V4_2_05_acos_classification_indobert.ipynb` | 21 | 7 | 0 | appsid | 🟢 output berisi metrik |
+| `ACOS-IndoBERT/notebooks/V4_2_06_prediction_indobert.ipynb` | 17 | 5 | 0 | appsid | 🟢 output berisi metrik |
+| `GPU_Status.ipynb` | 7 | 0 | 0 | — | 🟡 tanpa output |
+| `kaggle/00_ACOS_Master_Pipeline_Kaggle_V4_INDOBERT.ipynb` | 80 | 0 | 0 | — | 🟡 tanpa output |
+| `notebooks/00_ACOS_Master_Pipeline_Colab_ASLI.ipynb` | 24 | 7 | 0 | rest16 | 🟢 output setup/diagnostik |
+| `notebooks/00_ACOS_Master_Pipeline_Colab_PRO.ipynb` | 29 | 0 | 0 | — | 🟡 tanpa output |
+| `notebooks/00_ACOS_Master_Pipeline_Colab_PRO_Resume.ipynb` | 62 | 0 | 0 | — | 🟡 tanpa output |
+| `notebooks/00_ACOS_Master_Pipeline_Colab_UPDATE.ipynb` | 26 | 10 | 1 | rest16 | 🔴 ERROR: KeyError: 'a--1,-1' |
+| `notebooks/00_ACOS_Master_Pipeline_Colab_V2_STAGED.ipynb` | 72 | 0 | 0 | — | 🟡 tanpa output |
+| `notebooks/00_ACOS_Master_Pipeline_Colab_V3_ACOSE.ipynb` | 82 | 0 | 0 | — | 🟡 tanpa output |
+| `notebooks/01_ACOS_Setup_and_Data_Exploration.ipynb` | 17 | 8 | 0 | rest16 | 🟢 output setup/diagnostik |
+| `notebooks/02_ACOS_Step1_Aspect_Opinion_Extraction.ipynb` | 16 | 8 | 0 | rest16 | 🟢 output berisi metrik |
+| `notebooks/03_ACOS_Step1_to_Step2_Pair_Generation.ipynb` | 11 | 5 | 0 | rest16 | 🟢 output setup/diagnostik |
+| `notebooks/04_ACOS_Step2_Category_Sentiment_Classification.ipynb` | 15 | 7 | 0 | rest16 | 🟢 output berisi metrik |
+| `notebooks/05_ACOS_Evaluation_and_Interactive_Inference.ipynb` | 24 | 5 | 0 | rest16 | 🟢 output setup/diagnostik |
+
+**Rekap:** 45 notebook; 16 tanpa output; 13 output error. Notebook dengan hasil metrik: Step-1/Step-2 Apps-ACOS (V4_1_03, V4_INDOBERT), baseline rest16 (`notebooks/02`, `notebooks/04`), dan dua sesi rest16 yang terkontaminasi.
+
+---
+
+## Lampiran G — Cara memperbarui laporan ini
+
+```bash
+# 1. rekalkulasi seluruh angka (stdlib, ±5 detik)
+python3 scripts/audit_039_repo.py
+
+# 2. gate software
+python3 -m absa5.selftest --repo .
+cd ACOS-BERT && python3 -m acos_en.selftest --domain rest16
+cd ../ACOS-IndoBERT && python3 -m acos_id.selftest
+
+# 3. reproduksi konversi data (bandingkan dengan git diff)
+python3 -m acos_id.build_acos data
+```
+
+Jika ada run baru, tambahkan baris ke `inventaris_hasil.csv` dengan tingkat bukti yang sesuai, lalu perbarui tabel di Lampiran D dan ringkasan §4.
