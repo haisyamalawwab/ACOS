@@ -224,8 +224,8 @@ ax.text(80, 34, "vs", ha="center", va="center", fontsize=9.4, color=MUTED,
 
 # ------------------------------------------------------------------ catatan
 ax.text(80, 1.9,
-        "Sumber: pengukuran ketercakupan span pada naskah 035 §III-C (ulasan utuh 61,5% aspek / 48,0% opini; "
-        "klausa 100% dan 0 [UNK])  ·  gambar skematik",
+        "Sumber: 023 §2.2 (pengukuran) & 035 §III-C — ulasan utuh 61,5% aspek / 48,0% opini, klausa 100%; "
+        "0 [UNK] dari _build_report_appsid.json  ·  gambar skematik",
         ha="center", va="center", fontsize=7.2, color=MUTED)
 
 fig.savefig(OUT_PNG, dpi=300, bbox_inches="tight", facecolor="white")

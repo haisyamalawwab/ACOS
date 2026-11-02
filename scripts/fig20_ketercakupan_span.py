@@ -161,8 +161,8 @@ ax.text(PX0 + 3.5, 15.6, "Unit klausa: truncation loss = 0 pada kedua atribut.",
 
 # ------------------------------------------------------------------ catatan kaki
 ax.text(80, 3.2,
-        "Sumber: pengukuran ketercakupan span pada naskah 035 §III-C  ·  angka penanda diturunkan dari "
-        "selisih terhadap plafon 100%  ·  grafik skematik",
+        "Sumber: 023 §2.2 (pengukuran) & 035 §III-C  ·  penanda = 100% − ketercakupan  ·  "
+        "0 [UNK] dari _build_report_appsid.json  ·  grafik skematik",
         ha="center", va="center", fontsize=7.2, color=MUTED)
 
 fig.savefig(BASE + ".png", dpi=300, bbox_inches="tight", facecolor="white")
