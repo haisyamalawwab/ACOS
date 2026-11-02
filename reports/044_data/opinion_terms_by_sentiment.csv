@@ -1,0 +1,181 @@
+sentiment,term,count
+positive,bagus,5027
+positive,mudah,2285
+positive,cepat,1154
+positive,sangat membantu,1040
+positive,suka,974
+positive,aman,937
+positive,lancar,623
+positive,gratis,604
+positive,terbaik,558
+positive,membantu,550
+positive,sukses,527
+positive,sangat mudah,511
+positive,menarik,494
+positive,mudah digunakan,479
+positive,praktis,464
+positive,sangat bagus,459
+positive,lengkap,416
+positive,senang,414
+positive,rumit,410
+positive,nyaman,378
+positive,mantap,298
+positive,ribet,267
+positive,bunga tinggi,255
+positive,gratis transfer,239
+positive,memuaskan,232
+positive,direkomendasikan,223
+positive,bebas biaya,215
+positive,jelas,210
+positive,tinggi,201
+positive,bermanfaat,194
+positive,berhasil,191
+positive,keren,189
+positive,puas,185
+positive,top,167
+positive,simpel,165
+positive,terpercaya,162
+positive,mudah dipakai,144
+positive,besar,133
+positive,lambat,132
+positive,tanpa biaya,126
+positive,berguna,125
+positive,hemat,114
+positive,gampang,107
+positive,sangat praktis,105
+positive,sangat puas,103
+positive,menguntungkan,101
+positive,solusi,98
+positive,tidak ada biaya,95
+positive,luar biasa,88
+positive,ramah,87
+positive,stabil,83
+positive,oke,82
+positive,sangat cepat,81
+positive,fleksibel,79
+positive,tidak bisa,74
+positive,responsif,73
+positive,lama,58
+positive,tepat,58
+positive,hebat,57
+positive,kendala,57
+neutral,jelas,204
+neutral,berhasil,175
+neutral,besar,154
+neutral,lama,141
+neutral,cepat,103
+neutral,top,103
+neutral,lambat,95
+neutral,mudah,86
+neutral,gratis,83
+neutral,kurang,82
+neutral,tidak bisa,77
+neutral,kendala,77
+neutral,sulit,70
+neutral,tinggi,69
+neutral,solusi,62
+neutral,kecil,62
+neutral,rendah,60
+neutral,bagus,54
+neutral,sukses,43
+neutral,lengkap,41
+neutral,perbaiki,37
+neutral,stabil,37
+neutral,tidak pernah,34
+neutral,rumit,31
+neutral,suka,29
+neutral,berat,29
+neutral,menarik,29
+neutral,oke,27
+neutral,error,22
+neutral,kecewa,21
+neutral,berkurang,21
+neutral,gagal,20
+neutral,tepat,18
+neutral,keluar sendiri,17
+neutral,profesional,13
+neutral,lancar,12
+neutral,lemot,12
+neutral,layak,10
+neutral,tidak muncul,10
+neutral,simpel,10
+neutral,hilang,9
+neutral,senang,9
+neutral,bermasalah,9
+neutral,turun,8
+neutral,minim,8
+neutral,mahal,8
+neutral,berguna,7
+neutral,buruk,7
+neutral,bersih,7
+neutral,gampang,7
+neutral,terpotong,7
+neutral,ribet,6
+neutral,terbatas,6
+neutral,tidak jelas,5
+neutral,canggih,5
+neutral,praktis,5
+neutral,bug,5
+neutral,parah,5
+neutral,belum bisa,5
+neutral,murah,5
+negative,tidak bisa,6192
+negative,lambat,1561
+negative,gagal,1531
+negative,buruk,1484
+negative,sulit,1468
+negative,lama,1392
+negative,rumit,734
+negative,kecewa,589
+negative,perbaiki,542
+negative,tidak jelas,537
+negative,error,521
+negative,tidak masuk,508
+negative,hilang,501
+negative,keluar sendiri,430
+negative,kendala,395
+negative,terpotong,333
+negative,bug,331
+negative,tidak pernah,313
+negative,ribet,293
+negative,lemot,279
+negative,berat,258
+negative,belum bisa,210
+negative,kurang,198
+negative,tidak dapat,198
+negative,belum masuk,191
+negative,stabil,172
+negative,tolong diperbaiki,172
+negative,bermasalah,169
+negative,bagus,165
+negative,parah,162
+negative,susah,147
+negative,lelet,140
+negative,loading lama,140
+negative,sangat buruk,133
+negative,tidak sesuai,132
+negative,stuck,130
+negative,menyesal,121
+negative,mahal,121
+negative,sering error,119
+negative,berkurang,118
+negative,jelek,117
+negative,penipuan,117
+negative,eror,115
+negative,sangat lambat,114
+negative,kacau,114
+negative,tidak muncul,103
+negative,sangat kecewa,102
+negative,terblokir,101
+negative,percuma,98
+negative,pending,92
+negative,mengganggu,90
+negative,mengecewakan,79
+negative,dipersulit,79
+negative,sampah,78
+negative,sangat mengecewakan,76
+negative,nyaman,75
+negative,menyusahkan,74
+negative,berhasil,73
+negative,solusi,68
+negative,mohon diperbaiki,65
