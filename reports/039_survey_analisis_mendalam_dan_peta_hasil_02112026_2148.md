@@ -5,6 +5,7 @@
 > **Sifat:** audit independen berbasis **rekalkulasi dan uji ulang**, bukan ringkasan dokumen.
 > **Pelengkap:** `reports/038_...md` (pemetaan status) — laporan ini memverifikasi ulang klaimnya, mengoreksi yang perlu, dan menambah temuan kuantitatif yang belum ada.
 > **Peta visual:** `reports/039_peta_hasil.html`
+> **Tindak lanjut (2 Nov 2026, 21.58 WIB):** laporan **040** (`reports/040_analisis_kritis_hasil_drive_02112026_2158.md`) mengoreksi beberapa baris di laporan ini berdasarkan artefak Drive: checkpoint **ada** (E1), Gate-1 dan lima gerbang data terkonfirmasi, `master_08` yang ditemukan milik REST16 (bukan Apps-ACOS), dan penjelasan K6 tentang `66,28` vs `67,86` diganti dengan bukti volume kandidat.
 > **Data pendukung:** `reports/039_data/` (`inventaris_hasil.csv`, `matriks_klaim.csv`, `bukti_notebook.csv`, `audit_039_results.json`), skrip reproduksi `scripts/audit_039_repo.py`.
 
 ---
