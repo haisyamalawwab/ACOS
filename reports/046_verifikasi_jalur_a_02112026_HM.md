@@ -4,7 +4,7 @@
 **Metode:** pembacaan kode notebook dan keluaran tersimpan (`execution_count`), tanpa menjalankan ulang sel.
 **Sasaran:** memastikan setiap butir pada "Jalur A" punya bukti yang dapat ditunjuk — berkas, sel, dan baris.
 
-> **Putusan satu baris:** tiga klaim terbukti kuat dan dapat ditunjuk sampai nomor baris; **satu klaim salah besarnya** ("1–3 poin") dan harus diganti dengan **0,4–0,6 poin** yang terukur, sementara dua angka turunannya tidak punya dasar dan dihapus.
+> **Putusan satu baris:** tiga klaim terbukti kuat dan dapat ditunjuk sampai nomor baris; **satu klaim salah besarnya** ("1–3 poin") dan harus diganti dengan **0,07–0,56 poin** yang terukur, sementara dua angka turunannya tidak punya dasar dan dihapus.
 
 ---
 
@@ -52,9 +52,9 @@ Kesimpulan yang sah: pada dua run ini, memilih maksimum alih-alih epoch terakhir
 
 | ID | Berkas | Tindakan |
 |---|---|---|
-| K-01 | `reports/045` abstrak ID & EN | "1–3 poin" → "0,4–0,6 poin (terukur pada run yang tersedia)" + pernyataan bias lintas-run tidak terukur |
+| K-01 | `reports/045` abstrak ID & EN | "1–3 poin" → "0,07–0,56 poin (terukur pada run yang tersedia)" + pernyataan bias lintas-run tidak terukur |
 | K-02 | `reports/045` §5.1 | Menghapus rentang turunan 64–67% / 45–48% / 78–81%, menggantinya dengan angka terukur |
-| K-03 | `reports/045` Tabel 8 | Sel "estimasi 1–3 poin" → "0,4–0,6 poin (terukur)" |
+| K-03 | `reports/045` Tabel 8 | Sel "estimasi 1–3 poin" → "0,07–0,56 poin (terukur)" |
 | K-04 | `reports/042` §14 catatan T03 | Menambahkan paragraf koreksi angka dan rujukan ke laporan ini |
 
 ---
