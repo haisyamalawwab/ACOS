@@ -1,0 +1,206 @@
+{
+  "sumber": {
+    "ulasan": 43673,
+    "review_id_unik": 43673,
+    "platform": {
+      "google_play": 37825,
+      "app_store": 5848
+    },
+    "jumlah_aplikasi": 13,
+    "tahun": {
+      "2017": 2,
+      "2018": 9,
+      "2019": 50,
+      "2020": 77,
+      "2021": 576,
+      "2022": 1326,
+      "2023": 1796,
+      "2024": 3329,
+      "2025": 9447,
+      "2026": 27061
+    },
+    "rating": {
+      "1": 12266,
+      "2": 6552,
+      "3": 6386,
+      "4": 5248,
+      "5": 13221
+    },
+    "polaritas": {
+      "positive": 18469,
+      "negative": 18818,
+      "neutral": 6386
+    },
+    "kata_per_ulasan": {
+      "n": 43673,
+      "min": 3,
+      "p25": 8,
+      "median": 15,
+      "mean": 20.26,
+      "p75": 27,
+      "p95": 59,
+      "max": 307
+    },
+    "emoji": {
+      "total": 6748,
+      "ada_emoji": 3524
+    },
+    "ulasan_duplikat_teks": 455
+  },
+  "hasil": {
+    "split": {
+      "train": {
+        "baris": 60159,
+        "tuple": 72973,
+        "tuple_per_baris": 1.213,
+        "span_aspek_implisit": 21789,
+        "span_opini_implisit": 29702,
+        "rasio_aspek_implisit_pct": 29.86,
+        "rasio_opini_implisit_pct": 40.7,
+        "panjang_klausa_kata": {
+          "n": 60159,
+          "min": 1,
+          "p25": 4,
+          "median": 6,
+          "mean": 7.86,
+          "p75": 10,
+          "p95": 18,
+          "max": 77
+        }
+      },
+      "dev": {
+        "baris": 8027,
+        "tuple": 9587,
+        "tuple_per_baris": 1.194,
+        "span_aspek_implisit": 2999,
+        "span_opini_implisit": 3751,
+        "rasio_aspek_implisit_pct": 31.28,
+        "rasio_opini_implisit_pct": 39.13,
+        "panjang_klausa_kata": {
+          "n": 8027,
+          "min": 1,
+          "p25": 4,
+          "median": 6,
+          "mean": 7.72,
+          "p75": 10,
+          "p95": 18,
+          "max": 73
+        }
+      },
+      "test": {
+        "baris": 7891,
+        "tuple": 9514,
+        "tuple_per_baris": 1.206,
+        "span_aspek_implisit": 2938,
+        "span_opini_implisit": 3821,
+        "rasio_aspek_implisit_pct": 30.88,
+        "rasio_opini_implisit_pct": 40.16,
+        "panjang_klausa_kata": {
+          "n": 7891,
+          "min": 1,
+          "p25": 4,
+          "median": 6,
+          "mean": 7.82,
+          "p75": 10,
+          "p95": 18,
+          "max": 79
+        }
+      }
+    },
+    "total_tuple": 92074,
+    "kategori": {
+      "FEATURES_PRODUCT": 27694,
+      "TRANSACTION_TRANSFER": 14752,
+      "APP_PERFORMANCE": 9718,
+      "AUTH_ACCESS": 6615,
+      "ONBOARDING_KYC": 6585,
+      "UI_UX_DESIGN": 6225,
+      "CUSTOMER_SERVICE": 4845,
+      "INTEREST_RETURNS": 3749,
+      "NOTIFICATION_INFO": 3414,
+      "FEES_CHARGES": 2881,
+      "ACCOUNT_MANAGEMENT": 1952,
+      "PROMO_MARKETING": 1822,
+      "SECURITY_FRAUD": 1822
+    },
+    "sentimen": {
+      "negative": 45824,
+      "positive": 35846,
+      "neutral": 10404
+    },
+    "aspek_implisit": 27726,
+    "opini_implisit": 37274,
+    "rasio_aspek_implisit_pct": 30.11,
+    "rasio_opini_implisit_pct": 40.48,
+    "istilah_aspek_unik": 362,
+    "istilah_opini_unik": 202,
+    "panjang_span_aspek": {
+      "n": 64348,
+      "min": 1,
+      "p25": 1,
+      "median": 1.0,
+      "mean": 1.2,
+      "p75": 1,
+      "p95": 2,
+      "max": 4
+    },
+    "panjang_span_opini": {
+      "n": 54800,
+      "min": 1,
+      "p25": 1,
+      "median": 1.0,
+      "mean": 1.27,
+      "p75": 2,
+      "p95": 2,
+      "max": 3
+    },
+    "kebocoran_baris_test_di_train": 1157,
+    "kebocoran_pct_test": 14.66,
+    "klausa_unik": 66198,
+    "klausa_berulang": 9879
+  },
+  "replikasi_cakupan": [
+    {
+      "definisi": "raw/split",
+      "aspek_pct": 70.18,
+      "opini_pct": 49.08,
+      "klausa_pct": 0.0,
+      "n_aspek": 66490,
+      "n_opini": 58102,
+      "n_klausa": 0
+    },
+    {
+      "definisi": "raw/punct",
+      "aspek_pct": 80.71,
+      "opini_pct": 68.52,
+      "klausa_pct": 0.0,
+      "n_aspek": 66490,
+      "n_opini": 58102,
+      "n_klausa": 0
+    },
+    {
+      "definisi": "norm/split",
+      "aspek_pct": 89.25,
+      "opini_pct": 79.72,
+      "klausa_pct": 37.57,
+      "n_aspek": 66490,
+      "n_opini": 58102,
+      "n_klausa": 96417
+    },
+    {
+      "definisi": "norm/punct",
+      "aspek_pct": 100.0,
+      "opini_pct": 100.0,
+      "klausa_pct": 100.0,
+      "n_aspek": 66490,
+      "n_opini": 58102,
+      "n_klausa": 96417
+    }
+  ],
+  "patokan_laporan_lama": {
+    "aspek_pct": 61.5,
+    "opini_pct": 48.0,
+    "klausa_pct": 37.6,
+    "sumber": "023 §2.2 / 030 §3.3 / 035 §III-C"
+  }
+}

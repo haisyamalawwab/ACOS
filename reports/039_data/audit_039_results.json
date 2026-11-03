@@ -1,0 +1,619 @@
+{
+ "apps_quad": {
+  "train": {
+   "rows": 60159,
+   "tuples": 72973,
+   "unique_clauses": 52739,
+   "duplicate_clause_rows": 7420,
+   "implicit_aspect": 21789,
+   "implicit_opinion": 29702,
+   "categories": {
+    "FEATURES_PRODUCT": 21854,
+    "TRANSACTION_TRANSFER": 11733,
+    "APP_PERFORMANCE": 7699,
+    "AUTH_ACCESS": 5249,
+    "ONBOARDING_KYC": 5242,
+    "UI_UX_DESIGN": 4915,
+    "CUSTOMER_SERVICE": 3830,
+    "INTEREST_RETURNS": 3015,
+    "NOTIFICATION_INFO": 2716,
+    "FEES_CHARGES": 2299,
+    "ACCOUNT_MANAGEMENT": 1551,
+    "SECURITY_FRAUD": 1446,
+    "PROMO_MARKETING": 1424
+   },
+   "sentiment": {
+    "positive": 28482,
+    "negative": 36217,
+    "neutral": 8274
+   },
+   "bad_quad_fields": 0,
+   "tokens_mean": 7.86,
+   "tokens_median": 6,
+   "rows_le3_tokens": 12017,
+   "tuples_in_le3_token_rows": 12187
+  },
+  "dev": {
+   "rows": 8027,
+   "tuples": 9587,
+   "unique_clauses": 7434,
+   "duplicate_clause_rows": 593,
+   "implicit_aspect": 2999,
+   "implicit_opinion": 3751,
+   "categories": {
+    "FEATURES_PRODUCT": 2921,
+    "TRANSACTION_TRANSFER": 1527,
+    "APP_PERFORMANCE": 1013,
+    "ONBOARDING_KYC": 684,
+    "AUTH_ACCESS": 684,
+    "UI_UX_DESIGN": 653,
+    "CUSTOMER_SERVICE": 504,
+    "INTEREST_RETURNS": 392,
+    "NOTIFICATION_INFO": 310,
+    "FEES_CHARGES": 284,
+    "ACCOUNT_MANAGEMENT": 212,
+    "PROMO_MARKETING": 209,
+    "SECURITY_FRAUD": 194
+   },
+   "sentiment": {
+    "negative": 4819,
+    "positive": 3738,
+    "neutral": 1030
+   },
+   "bad_quad_fields": 0,
+   "tokens_mean": 7.72,
+   "tokens_median": 6,
+   "rows_le3_tokens": 1628,
+   "tuples_in_le3_token_rows": 1648
+  },
+  "test": {
+   "rows": 7891,
+   "tuples": 9514,
+   "unique_clauses": 7386,
+   "duplicate_clause_rows": 505,
+   "implicit_aspect": 2938,
+   "implicit_opinion": 3821,
+   "categories": {
+    "FEATURES_PRODUCT": 2919,
+    "TRANSACTION_TRANSFER": 1492,
+    "APP_PERFORMANCE": 1006,
+    "AUTH_ACCESS": 682,
+    "ONBOARDING_KYC": 659,
+    "UI_UX_DESIGN": 657,
+    "CUSTOMER_SERVICE": 511,
+    "NOTIFICATION_INFO": 388,
+    "INTEREST_RETURNS": 342,
+    "FEES_CHARGES": 298,
+    "ACCOUNT_MANAGEMENT": 189,
+    "PROMO_MARKETING": 189,
+    "SECURITY_FRAUD": 182
+   },
+   "sentiment": {
+    "negative": 4788,
+    "positive": 3626,
+    "neutral": 1100
+   },
+   "bad_quad_fields": 0,
+   "tokens_mean": 7.82,
+   "tokens_median": 6,
+   "rows_le3_tokens": 1593,
+   "tuples_in_le3_token_rows": 1615
+  },
+  "total_tuples": 92074,
+  "total_rows": 76077,
+  "overlap_train_test": {
+   "common_texts": 663,
+   "rows": 1157,
+   "pct_rows": 14.66,
+   "pct_unique": 8.98
+  },
+  "overlap_train_dev": {
+   "common_texts": 669,
+   "rows": 1245,
+   "pct_rows": 15.51,
+   "pct_unique": 9.0
+  }
+ },
+ "funnel": {
+  "reviews_clean": 43673,
+  "weak_rows": 96417,
+  "weak_reviews": 40537,
+  "weak_clauses": 69724,
+  "reviews_without_tuple": 3136,
+  "stage2_reviews": 36821,
+  "labels_but_no_split": 3766,
+  "split_but_no_labels": 50,
+  "tsv_rows": 76077,
+  "tsv_unique_clauses": 66198,
+  "tuples_dropped_in_conversion": 4343,
+  "review_retention_pct": 84.31
+ },
+ "split_snapshot": {
+  "file_rows": 96417,
+  "dropped_reviews": 3766,
+  "kept_reviews": 36771,
+  "dropped_first_row_mean": 51139.0,
+  "kept_first_row_mean": 48675.3,
+  "dropped_by_decile": {
+   "1": 314,
+   "2": 259,
+   "3": 396,
+   "4": 373,
+   "5": 390,
+   "6": 382,
+   "7": 435,
+   "8": 383,
+   "9": 380,
+   "10": 454
+  }
+ },
+ "stage_build": {
+  "stage1_train": {
+   "records": 40000,
+   "unique_keys": 35589,
+   "duplicate_records": 4411,
+   "reviews": 24822
+  },
+  "stage1_val": {
+   "records": 7880,
+   "unique_keys": 7309,
+   "duplicate_records": 571,
+   "reviews": 3991
+  },
+  "stage1_test": {
+   "records": 7765,
+   "unique_keys": 7277,
+   "duplicate_records": 488,
+   "reviews": 3991
+  },
+  "stage2_train": {
+   "records": 60000,
+   "unique_keys": 60000,
+   "duplicate_records": 0,
+   "reviews": 28839
+  },
+  "stage2_val": {
+   "records": 9429,
+   "unique_keys": 9429,
+   "duplicate_records": 0,
+   "reviews": 3991
+  },
+  "stage2_test": {
+   "records": 9386,
+   "unique_keys": 9386,
+   "duplicate_records": 0,
+   "reviews": 3991
+  },
+  "stage1_clauses": 49006,
+  "stage2_clauses": 59138,
+  "stage2_clauses_missing_in_stage1": 15991,
+  "stage1_clauses_missing_in_stage2": 5859
+ },
+ "emotion": {
+  "n": 96417,
+  "H_sentiment": 1.386,
+  "H_emotion": 1.869,
+  "H_emotion_given_sentiment": 0.498,
+  "mutual_information": 1.372,
+  "top_emotion_share_per_sentiment_pct": {
+   "positive": 94.03,
+   "negative": 87.82,
+   "neutral": 97.39
+  },
+  "sentiment_emotion_pairs": {
+   "negative|anger": 41970,
+   "negative|disgust": 3314,
+   "negative|fear": 771,
+   "negative|sadness": 1735,
+   "neutral|fear": 117,
+   "neutral|neutral": 10548,
+   "neutral|trust": 166,
+   "positive|joy": 35541,
+   "positive|trust": 2255
+  }
+ },
+ "tokenized": {
+  "train": {
+   "quad_rows": 60159,
+   "quads": 72973,
+   "quads_missing_in_pair": 0,
+   "unk_tokens": 0,
+   "pair_rows": 65423,
+   "multilabel_pair_rows": 255,
+   "multilabel_pct": 0.39
+  },
+  "dev": {
+   "quad_rows": 8027,
+   "quads": 9587,
+   "quads_missing_in_pair": 0,
+   "unk_tokens": 0,
+   "pair_rows": 8991,
+   "multilabel_pair_rows": 16,
+   "multilabel_pct": 0.18
+  },
+  "test": {
+   "quad_rows": 7891,
+   "quads": 9514,
+   "quads_missing_in_pair": 0,
+   "unk_tokens": 0,
+   "pair_rows": 9006,
+   "multilabel_pair_rows": 16,
+   "multilabel_pct": 0.18
+  }
+ },
+ "cross_validation": {
+  "cv_5fold": {
+   "folds": 5,
+   "unique_reviews": 36821,
+   "test_reviews_per_fold": [
+    7365,
+    7364,
+    7364,
+    7364,
+    7364
+   ],
+   "sum_test_reviews": 36821,
+   "folds_with_overlap": 0,
+   "has_fold_scores": false
+  },
+  "cv_10fold": {
+   "folds": 10,
+   "unique_reviews": 36821,
+   "test_reviews_per_fold": [
+    3683,
+    3682,
+    3682,
+    3682,
+    3682,
+    3682,
+    3682,
+    3682,
+    3682,
+    3682
+   ],
+   "sum_test_reviews": 36821,
+   "folds_with_overlap": 0,
+   "has_fold_scores": false
+  }
+ },
+ "inventory": {
+  "files": 685,
+  "size_mb": 427.0,
+  "by_extension_top": {
+   "md": 181,
+   "py": 143,
+   "tsv": 113,
+   "png": 56,
+   "pyc": 52,
+   "ipynb": 45,
+   "csv": 36,
+   "json": 33,
+   "bak_20260826": 7,
+   "jsonl": 6,
+   "txt": 3,
+   "bak": 2
+  },
+  "files_by_top_dir": {
+   "ACOS-IndoBERT": 232,
+   "docs": 92,
+   "reports": 67,
+   "Extract-Classify-ACOS": 50,
+   "absa5": 42,
+   "ACOS-BERT": 38,
+   "build": 37,
+   "screenshot": 31,
+   "notebooks": 30,
+   "data": 10,
+   "backups": 8,
+   "scripts": 8,
+   "img": 6,
+   "dist": 2,
+   "kaggle": 2,
+   "DEV_REPORT_V52_26092026.md": 1,
+   "GPU_Status.ipynb": 1,
+   "IMPLEMENTATION_PLAN_00_PRO_CACHING.md": 1,
+   "INSTRUKSI_FIX_V51_BERT_UTILS.md": 1,
+   "PANDUAN_SERVER_JUPYTER_AAPANEL.md": 1,
+   "README.md": 1,
+   "RENCANA_QUINTUPLE_ABSA5.md": 1,
+   "REPORT.md": 1,
+   "STEP_BY_STEP_AMD_GPU_JUPYTER_AAPANEL.md": 1,
+   "UNIVERSAL_SETUP_INSTRUCTIONS.md": 1,
+   "V5_2_CHANGELOG.md": 1,
+   "V5_2_QUICK_START.md": 1,
+   "V5_2_README.md": 1,
+   "build_v52_notebook.py": 1,
+   "cell_0_complete_setup.py": 1,
+   "cell_0_universal_dynamic.py": 1,
+   "cell_3_dynamic_adaptive.py": 1,
+   "cell_3_fixed_simple.py": 1,
+   "colab_quick_diagnostic_cell.py": 1,
+   "colab_utils.py": 1,
+   "diagnostic_empty_results.py": 1,
+   "dynamic_environment_detector.py": 1,
+   "fixed_cell3_v51.py": 1,
+   "google_drive_setup.py": 1,
+   "package-lock.json": 1,
+   "package.json": 1,
+   "test_bert_utils_fix.py": 1,
+   "test_v51_bug_condition.py": 1,
+   "v51_fixed_cells.py": 1,
+   "configs": 1
+  },
+  "notebooks": 45,
+  "notebook_cells": 1748,
+  "notebooks_without_output": 16,
+  "notebook_error_outputs": 13,
+  "python_files": 143,
+  "python_loc": 42691,
+  "git_commits": "1"
+ },
+ "notebook_metrics": [
+  {
+   "notebook": "ACOS-IndoBERT/notebooks/00_ACOS_Master_Pipeline_Colab_V4_1_INDOBERT.ipynb",
+   "metrics": {
+    "Micro-F1 terbaik tersimpan: ([0-9.]+)% \\(epoch (\\d+)\\)": [
+     [
+      "97.94",
+      "8"
+     ],
+     [
+      "67.86",
+      "1"
+     ]
+    ]
+   }
+  },
+  {
+   "notebook": "ACOS-IndoBERT/notebooks/00_ACOS_Master_Pipeline_Colab_V4_2_GUARDS.ipynb",
+   "metrics": {
+    "Micro-F1 terbaik tersimpan: ([0-9.]+)% \\(epoch (\\d+)\\)": [
+     [
+      "97.94",
+      "8"
+     ],
+     [
+      "67.86",
+      "1"
+     ]
+    ]
+   }
+  },
+  {
+   "notebook": "ACOS-IndoBERT/notebooks/00_ACOS_Master_Pipeline_Colab_V4_3_SESSION.ipynb",
+   "metrics": {
+    "Micro-F1 terbaik tersimpan: ([0-9.]+)% \\(epoch (\\d+)\\)": [
+     [
+      "97.94",
+      "8"
+     ],
+     [
+      "67.86",
+      "1"
+     ]
+    ]
+   }
+  },
+  {
+   "notebook": "ACOS-IndoBERT/notebooks/00_ACOS_Master_Pipeline_Colab_V4_BERT_rest16_run24092026_GPU_AMD_MI300X.ipynb",
+   "metrics": {
+    "Micro-F1 terbaik tersimpan: ([0-9.]+)% \\(epoch (\\d+)\\)": [
+     [
+      "97.19",
+      "3"
+     ],
+     [
+      "67.69",
+      "3"
+     ]
+    ]
+   }
+  },
+  {
+   "notebook": "ACOS-IndoBERT/notebooks/00_ACOS_Master_Pipeline_Colab_V4_INDOBERT.ipynb",
+   "metrics": {
+    "Micro-F1 terbaik tersimpan: ([0-9.]+)% \\(epoch (\\d+)\\)": [
+     [
+      "97.94",
+      "8"
+     ]
+    ],
+    "quadruple micro-F1 ([0-9.]+)%": [
+     "67.16",
+     "66.55",
+     "69.00"
+    ]
+   }
+  },
+  {
+   "notebook": "ACOS-IndoBERT/notebooks/00_ACOS_Master_Pipeline_Colab_V4_INDOBERT_run08092026.ipynb",
+   "metrics": {
+    "Micro-F1 terbaik tersimpan: ([0-9.]+)% \\(epoch (\\d+)\\)": [
+     [
+      "97.19",
+      "3"
+     ],
+     [
+      "67.69",
+      "3"
+     ]
+    ]
+   }
+  },
+  {
+   "notebook": "ACOS-IndoBERT/notebooks/00_ACOS_Master_Pipeline_Colab_V4_INDOBERT_run24092026_GPU_AMD_MI300X.ipynb",
+   "metrics": {
+    "Micro-F1 terbaik tersimpan: ([0-9.]+)% \\(epoch (\\d+)\\)": [
+     [
+      "97.19",
+      "3"
+     ],
+     [
+      "67.69",
+      "3"
+     ]
+    ]
+   }
+  },
+  {
+   "notebook": "ACOS-IndoBERT/notebooks/00_ACOS_Master_Pipeline_Colab_V5_EN_REST16_LAPTOP.ipynb",
+   "metrics": {
+    "Micro-F1 terbaik tersimpan: ([0-9.]+)% \\(epoch (\\d+)\\)": [
+     [
+      "97.94",
+      "8"
+     ],
+     [
+      "67.86",
+      "1"
+     ]
+    ]
+   }
+  },
+  {
+   "notebook": "ACOS-IndoBERT/notebooks/V4_1_03_step2_train.ipynb",
+   "metrics": {
+    "quadruple micro-F1 ([0-9.]+)%": [
+     "67.86"
+    ]
+   }
+  },
+  {
+   "notebook": "ACOS-IndoBERT/notebooks/V4_2_05_acos_classification_indobert.ipynb",
+   "metrics": {
+    "Micro-F1 terbaik tersimpan: ([0-9.]+)% \\(epoch (\\d+)\\)": [
+     [
+      "67.86",
+      "1"
+     ]
+    ]
+   }
+  },
+  {
+   "notebook": "notebooks/02_ACOS_Step1_Aspect_Opinion_Extraction.ipynb",
+   "metrics": {
+    "Epoch (\\d+) \\| loss ([0-9.]+) \\| P ([0-9.]+)% \\| R ([0-9.]+)% \\| micro-F1 ([0-9.]+)%": [
+     [
+      "01",
+      "15.9915",
+      "47.38",
+      "54.80",
+      "50.82"
+     ],
+     [
+      "02",
+      "5.0520",
+      "76.95",
+      "75.85",
+      "76.40"
+     ],
+     [
+      "03",
+      "2.7322",
+      "76.00",
+      "81.98",
+      "78.88"
+     ],
+     [
+      "04",
+      "1.6258",
+      "79.01",
+      "82.04",
+      "80.50"
+     ],
+     [
+      "05",
+      "1.0798",
+      "81.46",
+      "79.44",
+      "80.44"
+     ],
+     [
+      "06",
+      "0.7067",
+      "81.04",
+      "81.24",
+      "81.14"
+     ],
+     [
+      "07",
+      "0.5478",
+      "78.30",
+      "83.10",
+      "80.62"
+     ],
+     [
+      "08",
+      "0.3985",
+      "78.16",
+      "84.64",
+      "81.27"
+     ]
+    ]
+   }
+  },
+  {
+   "notebook": "notebooks/04_ACOS_Step2_Category_Sentiment_Classification.ipynb",
+   "metrics": {
+    "Epoch (\\d+) \\| loss ([0-9.]+) \\| P ([0-9.]+)% \\| R ([0-9.]+)% \\| micro-F1 ([0-9.]+)%": [
+     [
+      "01",
+      "0.1791",
+      "0.00",
+      "0.00",
+      "0.00"
+     ],
+     [
+      "02",
+      "0.0818",
+      "38.81",
+      "39.33",
+      "39.07"
+     ],
+     [
+      "03",
+      "0.0528",
+      "42.80",
+      "46.15",
+      "44.41"
+     ],
+     [
+      "04",
+      "0.0357",
+      "41.97",
+      "43.80",
+      "42.86"
+     ],
+     [
+      "05",
+      "0.0240",
+      "42.70",
+      "51.28",
+      "46.60"
+     ],
+     [
+      "06",
+      "0.0163",
+      "42.47",
+      "50.39",
+      "46.09"
+     ],
+     [
+      "07",
+      "0.0118",
+      "43.11",
+      "52.74",
+      "47.44"
+     ],
+     [
+      "08",
+      "0.0087",
+      "42.40",
+      "52.96",
+      "47.09"
+     ]
+    ]
+   }
+  }
+ ]
+}
