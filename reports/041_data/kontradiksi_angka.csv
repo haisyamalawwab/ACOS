@@ -1,0 +1,11 @@
+id,objek,nilai_a,nilai_b,nilai_c,catatan
+C01,Step-2 rest16,"48,24 (nb 04)","47,68 (Drive 27/08)","0,00 (V5_EN, cache appsid)","Tiga nilai untuk klaim yang sama; 0,00 adalah artefak cache lintas domain"
+C02,Step-1 rest16,"81,27 (nb 02, 31/08)","81,23 (UPDATE, 27/08)","97,94 (V5_EN, cache appsid)","Dua nilai wajar berdekatan (Δ0,04); 97,94 milik appsid"
+C03,Step-2 appsid,"67,16 (0509, 3 ep)","67,86 (0809, 1 ep)","67,69 (0901, 3 ep)","TP+FN = 9.006 pada ketiganya, TP berbeda 6.552/6.654/6.681"
+C04,Step-1 appsid,"97,94 (0509, 8 ep)","97,19 (0901, 3 ep)",—,"Epoch lebih sedikit tetapi F1 hanya −0,75; tidak ada kurva 2409"
+C05,Jumlah metrik per sesi,8 metrik (V4_1 echo),6 metrik (run0809),15 sub-task (V4_1_04),Jumlah metrik tersimpan berbeda antar sesi; '8' dan '6' tidak dapat dibandingkan langsung
+C06,Quadruple rest16 vs appsid,"48,24 (nb 04)","47,68 (Drive)","66,28 (V4_1_04) / 47,03 (master_08 rest16)","66,28 memakai gold 19.528 (2,17×) sehingga tidak sebanding"
+C07,Jumlah pasangan kandidat,1.450 / 1.451 (rest16),10.735 / 10.991 (appsid + V5_EN),301 (rest16 24/09),"Rasio pasangan:gold 1,6 vs 1,2 vs 12,0 → presisi anjlok pada 12,0"
+C08,Epoch Step-2 dijalankan,15 (konfigurasi),"3 (0509, 0901)",1 (0809),Tidak ada bukti early-stop eksplisit; '1 epoch' adalah cache-hit yang dipakai ulang
+C09,Artefak 15 sub-task rest16,"78,95/82,51/70,11 (nb 04, 02/09)","78,72/81,93/69,56 (Drive, 27/08)",—,"Dua run berbeda, selisih ≤0,55 poin → konsisten"
+C10,Status gate-1,"LULUS (V5_EN, IndoBERT)",GAGAL (V4_BERT_rest16),LULUS (V5_EN rest16 BERT),Gate lulus/gagal tidak menghentikan eksekusi sel berikutnya

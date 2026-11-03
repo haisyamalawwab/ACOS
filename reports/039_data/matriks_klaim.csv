@@ -1,0 +1,21 @@
+id,klaim,sumber_klaim,hasil_verifikasi_independen,putusan,catatan
+K01,"43.673 ulasan, 76.077 klausa, 92.074 tuple",036/032/035,"43.673 ✓; 92.074 ✓; 76.077 adalah baris, bukan klausa unik (66.198 teks unik)",TERVERIFIKASI SEBAGIAN,Angka baris tidak boleh disebut jumlah klausa unik
+K02,Split 60.159/8.027/7.891 & 28.839/3.991/3.991 review disjoint,036,Sama persis; 0 irisan review,TERVERIFIKASI,-
+K03,"0 [UNK], 0 span invalid, 0 tuple hilang setelah retokenisasi",036,"0 [UNK], 0 span invalid, 0 dari 92.074 quad hilang dari pair file",TERVERIFIKASI,Dicek langsung pada file tersimpan
+K04,"Multi-label 0,4% (255/65.423 pair row)",036,"255/65.423 = 0,39% ✓ (dev/test masing-masing 16)",TERVERIFIKASI,-
+K05,"14,7% baris test = klausa berulang dari train; 9,0% teks unik",036,"14,66% baris; 8,98% teks unik",TERVERIFIKASI,Kebocoran teks tetap ada meski split review bersih
+K06,"Step-1 appsid 97,94% (ep8/15, TP 16.514)",036/030,Riwayat 8 epoch lengkap di output notebook; cocok,TERVERIFIKASI (output tersimpan),Checkpoint & CSV tidak ada di repo
+K07,"Step-2 appsid 67,86% pada epoch 1/15",036,Cocok untuk run A; run A memang berhenti setelah 1 epoch,"TERVERIFIKASI, TAPI BUKAN TERBAIK","Run B mencapai 69,00% (ep3); run C 67,69% (ep3)"
+K08,Tidak ada hasil Step-2 rest16 yang sah,036,"Notebook 04 memuat run rest16 Step-2 15 epoch: 48,24% (pair gold, BERT legacy); sesi V4 IndoBERT tetap tidak sah",TERBANTAH SEBAGIAN,Hasil ada tetapi bukan end-to-end dan tidak dikutip 036
+K09,"BERT rest16 Step-1 = 81,23% (epoch 6)",030/033/035,"Run yang tersimpan: 81,14% (ep6) dan 81,27% (ep8)",TIDAK COCOK,Kemungkinan run berbeda; provenance tidak ditunjukkan
+K10,"rest16 end-to-end 0,00% = kegagalan pipeline",036,TP 0; FP 165.728; FN 895; cache appsid dipakai ulang,TERVERIFIKASI,Tidak boleh dibaca sebagai performa model
+K11,Cache lintas domain hanya terjadi sekali (12-09),036/038,"Terjadi lagi 24-09: run rest16 melaporkan 97,19/67,69 identik dengan run appsid",TEMUAN BARU,"Bug sistemik, bukan insiden tunggal"
+K12,"category_micro_f1 = sentiment_acc = 0,00% adalah bug logging",036,"Logis mustahil: exact-match quadruple 67,86% mensyaratkan akurasi sentimen ≥ 67,86%","INFERENSI KUAT, MEKANISME BELUM DIBUKTIKAN",Perlu dump logit + hitung ulang
+K13,"15 subtask: sentimen bottleneck 84,97% vs opini 96,29%",036,"Tabel ada, CSV master_08 tidak ada di repo",TIDAK DAPAT DIVERIFIKASI,Perlu artefak CSV/log
+K14,Gate-1 199/199 bobot IndoBERT termuat,036,Tidak ada checkpoint/backbone lokal; tidak dapat diuji,TIDAK DAPAT DIVERIFIKASI,Simpan hash + log gate
+K15,Cross-validation 5/10-fold tersedia,036/038,Manifest split lengkap & valid; skor model tidak ada,"SPLIT TERVERIFIKASI, HASIL TIDAK ADA",Jangan sebut hasil CV
+K16,"V5.2 universal 8 platform, import fix",V5_2_README/DEV_REPORT,Notebook V5.2 berhenti di ModuleNotFoundError bert_utils,TERBANTAH,Klaim harus diturunkan
+K17,54 run eksperimen & hasil agregasi,notebook V5.3/V5.2.1/MI300X,Tidak ada run OK; assertion & IndentationError; DRY_RUN=True,TERBANTAH,Belum ada hasil eksperimen
+K18,Model ACOSE (quintuple) siap,RENCANA_QUINTUPLE/absa5,Hanya 13 gate software; tidak ada training/evaluasi emosi,BELUM ADA MODEL,"Emotion ≈ fungsi sentimen (H(E|S)=0,50 bit)"
+K19,Weak label = gold?,036,"Tidak ada anotasi manusia/IAA; panduan ada, eksekusi tidak",BELUM ADA GOLD,Semua skor = agreement dengan heuristic
+K20,Repo reproducible dari clone,036/038,Tidak ada checkpoint/CSV/history; stage builder tidak ada; 1 commit squashed,TIDAK REPRODUCIBLE END-TO-END,Hanya data + gate + build TSV yang reproducible

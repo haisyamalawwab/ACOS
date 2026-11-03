@@ -1,0 +1,16 @@
+subtask,n_elemen,indobert_appsid_f1,bert_rest16_f1,selisih
+opinion,1,94.21,78.88,+15.33
+aspect,1,92.57,78.31,+14.26
+category,1,91.84,78.95,+12.89
+sentiment,1,85.72,82.51,+3.21
+category + aspect,2,90.27,67.24,+23.03
+sentiment + opinion,2,82.72,71.74,+10.98
+category + opinion,2,81.37,65.27,+16.10
+sentiment + aspect,2,80.01,69.18,+10.83
+category + sentiment,2,79.47,70.11,+9.36
+aspect + opinion,2,78.52,57.87,+20.65
+category + sentiment + aspect,3,77.87,60.28,+17.59
+category + aspect + opinion,3,76.56,52.39,+24.17
+category + sentiment + opinion,3,70.73,59.63,+11.10
+sentiment + aspect + opinion,3,67.92,53.18,+14.74
+category + sentiment + aspect + opinion,4,66.08,48.24,+17.84

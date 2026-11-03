@@ -1,0 +1,5 @@
+folder,id_folder,run_idx,n_splits,fold_idx,epochs,status,error,duration_sec
+cv5fold_fold4_ep75_27092026_1337,1bb4lc6C64NFs9PucMqUEinMP_k7LK7op,18,5,4,75,ERROR,'list' object has no attribute 'items',"7,6"
+cv5fold_fold1_ep100_27092026_1359,10DnzjlxWfXwl3w186EL_Tc5xb0OFssbY,20,5,1,100,ERROR,'list' object has no attribute 'items',"7,5"
+cv5fold_fold1_ep75_27092026_1421,1-HpIrICo8O4C8eX_zk20oS1wx9zqGLo9,15,5,1,75,ERROR,'BertForQuadABSA' object has no attribute 'save_pretrained',"89,9"
+cv10fold_fold9_ep100_27092026_1403,1Sru09kq2_Jf6hqdn8mAGm2wIeKZZJgTm,53,10,9,100,ERROR,'list' object has no attribute 'items',"8,3"
