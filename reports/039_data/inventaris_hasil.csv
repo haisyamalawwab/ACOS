@@ -1,0 +1,36 @@
+id,subsistem,artefak,jenis_hasil,angka_kunci,bukti_path,tingkat_bukti,status,catatan
+A01,Dataset Apps-ACOS,processed/reviews_clean.csv,Data mentah bersih,43.673 ulasan; 13 app; 37.825 Google Play + 5.848 App Store,ACOS-IndoBERT/data/Apps-ACOS/processed/reviews_clean.csv,E1,terverifikasi,Hitung ulang header + baris
+A02,Dataset Apps-ACOS,processed/quintuples_weak.csv,Label lemah per tuple,96.417 tuple; 40.537 ulasan; 69.724 klausa unik,ACOS-IndoBERT/data/Apps-ACOS/processed/quintuples_weak.csv,E1,terverifikasi,3.136 ulasan tanpa tuple
+A03,Dataset Apps-ACOS,"appsid_quad_{train,dev,test}.tsv",Format ACOS siap latih,76.077 baris; 92.074 tuple; 66.198 teks klausa unik,ACOS-IndoBERT/data/Apps-ACOS/appsid_quad_*.tsv,E1,terverifikasi + dapat dibangun ulang,build_acos menghasilkan byte-identik
+A04,Dataset Apps-ACOS,Split utama per review_id,Split train/dev/test,60.159/8.027/7.891 baris; 28.839/3.991/3.991 ulasan; 0 overlap,ACOS-IndoBERT/data/Apps-ACOS/processed/stage2_*.jsonl,E1,"terverifikasi (split), tidak dapat diregenerasi",Builder stage*.jsonl tidak ada di repo
+A05,Dataset Apps-ACOS,cv_5fold/,Manifest cross-validation,5 fold; 36.821 ulasan; test 7.365/7.364x4; 0 overlap,ACOS-IndoBERT/data/Apps-ACOS/cv_5fold/,E1,terverifikasi sebagai split,Tidak ada skor model per fold
+A06,Dataset Apps-ACOS,cv_10fold/,Manifest cross-validation,10 fold; 36.821 ulasan; 0 overlap,ACOS-IndoBERT/data/Apps-ACOS/cv_10fold/,E1,terverifikasi sebagai split,Tidak ada skor model per fold
+A07,Tokenisasi,tokenized_data/appsid_*_quad_bert.tsv,Data WordPiece + span,92.074 quad; 0 [UNK]; 0 span invalid,ACOS-IndoBERT/tokenized_data/,E1,terverifikasi,"Dicek langsung, bukan hanya laporan build"
+A08,Tokenisasi,tokenized_data/appsid_*_pair.tsv,Pair Step-2,"83.420 baris; 0 quad hilang; multi-label 0,39% train",ACOS-IndoBERT/tokenized_data/,E1,terverifikasi,16 multi-label di dev & test
+A09,Konversi data,acos_id/build_acos.py,Reproduksi TSV,3 split; 92.074 tuple; 4.183 klausa tanpa split,python -m acos_id.build_acos,E1,terverifikasi hari ini,TSV hasil regenerasi identik dengan file repo
+A10,Gate Indonesia,acos_id/selftest.py,5 gate torch-free,"3 lulus (taxonomy, dataset, acos_build); 2 gagal (tokenized, gate2_english)",python -m acos_id.selftest,E1,terverifikasi sebagian,Gagal karena vocab backbone tidak ada & unduhan diblokir
+A11,Gate Inggris,ACOS-BERT/acos_en/selftest.py,3 gate per domain,rest16 3/3; laptop 3/3,python -m acos_en.selftest --domain rest16|laptop,E1,terverifikasi,16.640 span rest16 & 1.380 span laptop dicek
+A12,Gate ACOSE,absa5/selftest.py,13 gate software,13/13 lulus; 18.862 span; 2.417 baris pair,python -m absa5.selftest --repo .,E1,terverifikasi,Tanpa dependensi ML; bukan hasil training
+A13,Model IndoBERT Step-1,Notebook V4_INDOBERT sel 46,Riwayat 8 epoch,Best 97.94% (ep8); TP 16.514 FP 434 FN 259,ACOS-IndoBERT/notebooks/00_ACOS_Master_Pipeline_Colab_V4_INDOBERT.ipynb,E2,bukti tersimpan,Checkpoint/CSV asli tidak ada di repo
+A14,Model IndoBERT Step-2 (run A),V4_1_03_step2_train.ipynb,1 epoch,"F1 67,86%; TP 6.654 FP 3.951 FN 2.352",ACOS-IndoBERT/notebooks/V4_1_03_step2_train.ipynb,E2,bukti tersimpan,Run berhenti setelah epoch 1; angka yang dikutip 036
+A15,Model IndoBERT Step-2 (run B),00_..._V4_INDOBERT.ipynb sel 67,3 epoch,"67,16 / 66,55 / 69,00%; best ep3",notebook V4_INDOBERT,E2,bukti tersimpan,"Best 69,00 > 67,86 yang dikutip; tetap berhenti di ep3"
+A16,Model IndoBERT Step-2 (run C),V4_INDOBERT_run24092026 (MI300X),3 epoch,"Step-1 97,19% ep3; Step-2 67,69% ep3",notebook V4_INDOBERT_run24092026_GPU_AMD_MI300X.ipynb,E2,bukti tersimpan,Sesi appsid_24092026_1426
+A17,Model BERT rest16 Step-1,notebooks/02_ACOS_Step1...,15 epoch penuh,"Best 81,27% (ep8); P 78,16 R 84,64",notebooks/02_ACOS_Step1_Aspect_Opinion_Extraction.ipynb,E2,bukti tersimpan,"036/030 mengutip 81,23% ep6: tidak cocok dengan run ini"
+A18,Model BERT rest16 Step-2,notebooks/04_ACOS_Step2...,"15 epoch penuh, pair gold","Best 48,24% (ep12); P 43,39 R 54,30",notebooks/04_ACOS_Step2_Category_Sentiment_Classification.ipynb,E2,bukti tersimpan,"Upper bound Step-2 (aspek/opini dari pair gold), bukan end-to-end"
+A19,Model BERT rest16 end-to-end,V5_EN_REST16_LAPTOP.ipynb,Evaluasi final,"0,00%; TP 0; FP 165.728; FN 895",ACOS-IndoBERT/notebooks/00_..._V5_EN_REST16_LAPTOP.ipynb,E2,hasil negatif (terkontaminasi),Cache appsid dipakai ulang; bukan skor model
+A20,Kontaminasi rest16 (baru),V4_BERT_rest16_run24092026,Run rest16 24-09,"Step-1 97,19% & Step-2 67,69% identik dengan run appsid MI300X",ACOS-IndoBERT/notebooks/00_..._V4_BERT_rest16_run24092026_GPU_AMD_MI300X.ipynb,E2,hasil negatif (terkontaminasi),"Bukti kontaminasi kedua, terpisah dari 12-09"
+A21,Metrik 15 subtask,reports/036 Tabel VI,Dekomposisi,"Opinion 96,29; aspect 93,88; category 92,41; sentiment 84,97; QUAD 66,28",reports/036...,E3,terdokumentasi saja,CSV master_08 tidak ada di repo
+A22,Gate-1 bobot IndoBERT,reports/036 Tabel III,Verifikasi numerik,"199/199 key, 0 missing",reports/036...,E3,terdokumentasi saja,Tidak ada checkpoint/backbone lokal untuk diuji ulang
+A23,EDA Apps-ACOS,build/_eda_id/,CSV + plot,"10,6 MB CSV; 3 plot",build/_eda_id/,E2,artefak ada,Tidak menjalankan ulang karena numpy tidak tersedia
+A24,EDA rest16,notebooks/01_ACOS_Setup...,Tabel + CSV,1.530/171/583; 3.661 quad,notebooks/01_ACOS_Setup_and_Data_Exploration.ipynb,E2,bukti tersimpan,Konsisten dengan data
+A25,Inferensi demo,V4_INDOBERT sel 78,Contoh quadruple,4 baris quadruple pada 1 kalimat,notebook V4_INDOBERT,E2,bukti tersimpan,Bukan evaluasi kuantitatif
+A26,Cross-validation model,-,Skor per fold,Tidak ada,-,E4,belum ada,Split ada; training/evaluasi fold tidak ada
+A27,Model laptop,-,Skor model,Tidak ada,-,E4,belum ada,Hanya data + gate
+A28,Scaffold ACOS-BERT,ACOS-BERT/,Kode + gate,Gate lokal lulus; training tidak,ACOS-BERT/notebooks/00_...V1_BERT.ipynb,E4,scaffold,Notebook berhenti: ModuleNotFoundError torchcrf
+A29,Model ACOSE (absa5),absa5/,Software + gate,13/13 gate; tanpa training,absa5/,E4,belum ada model,"Tidak ada checkpoint, logit, atau evaluasi emosi"
+A30,Gold manusia / IAA,"reports/021, 022a-h",Panduan anotasi,PDF + DOCX,reports/021...; dist/Panduan_Anotasi_ACOSE_Bahasa_Indonesia.pdf,E4,belum ada anotasi,"Tidak ada pilot, kappa, atau gold set"
+A31,V5.2 universal,Notebook V5.2,Klaim 8 platform,Import gagal: bert_utils,ACOS-IndoBERT/notebooks/02_ACOS_V5_2_Universal_FullExperiment_AllPlatforms.ipynb,E4,klaim tidak terbukti,DRY_RUN=True; tidak ada 54 run
+A32,Matriks 54 run MI300X,01_ACOS_MI300X_V5...,Rencana eksperimen,54 run (3 epoch x 3 rasio x 3 CV + ...),ACOS-IndoBERT/notebooks/01_ACOS_MI300X_V5_FullExperiment_GPU_AMD_MI300X.ipynb,E4,belum ada,Notebook error IndentationError sel 7
+A33,Dokumentasi,181 file .md,Laporan/rencana/panduan,2 duplikat persis; 8 laporan memuat angka F1,"reports/, docs/",E1,artefak ada,Status dokumen bercampur (plan/interim/final)
+A34,Panduan anotasi,dist/Panduan_Anotasi_ACOSE_Bahasa_Indonesia.pdf,Deliverable dokumen,PDF 364 KB + DOCX 79 KB,dist/,E1,artefak ada,Belum menjadi dataset gold
+A35,Bukti lingkungan GPU,screenshot/,Screenshot,"31 PNG (MI300X, 24-09)",screenshot/,E2,artefak ada,"Mendukung klaim hardware, bukan klaim model"

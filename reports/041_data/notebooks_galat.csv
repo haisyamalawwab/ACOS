@@ -1,0 +1,14 @@
+notebook,sel,exec_count,error,pesan
+ACOS-BERT/notebooks/00_ACOS_Master_Pipeline_V1_BERT.ipynb,9,26,ModuleNotFoundError,No module named 'torchcrf'
+ACOS-IndoBERT/notebooks/00_ACOS_Master_Pipeline_Colab.ipynb,18,10,AttributeError,'NoneType' object has no attribute 'to'
+ACOS-IndoBERT/notebooks/00_ACOS_Master_Pipeline_Colab_V4_BERT_rest16_run24092026_GPU_AMD_MI300X.ipynb,43,29,RuntimeError,GATE 1 GAGAL: bobot encoder di model tidak sama dengan checkpoint. Encoder kemungkinan terinisialisasi acak (modeling.py:745 memakai start_prefix='' karena kela
+ACOS-IndoBERT/notebooks/00_ACOS_Master_Pipeline_Colab_V4_INDOBERT copy.ipynb,2,1,KeyboardInterrupt,
+ACOS-IndoBERT/notebooks/00_ACOS_Master_Pipeline_Colab_V4_INDOBERT copy.ipynb,44,2,NameError,name 'require_vars' is not defined
+ACOS-IndoBERT/notebooks/00_ACOS_Master_Pipeline_Colab_V5_EN_REST16_LAPTOP.ipynb,44,29,RuntimeError,GATE 1 GAGAL: bobot encoder di model tidak sama dengan checkpoint. Encoder kemungkinan terinisialisasi acak (modeling.py:745 memakai start_prefix='' karena kela
+ACOS-IndoBERT/notebooks/01_ACOS_MI300X_V5_FullExperiment_GPU_AMD_MI300X.ipynb,7,,IndentationError,"unexpected indent (890569663.py, line 25)"
+ACOS-IndoBERT/notebooks/01_ACOS_V5_1_FullExperiment_GPU_ROCM_CUDA_DriveSync.ipynb,7,52,ModuleNotFoundError,No module named 'bert_utils'
+ACOS-IndoBERT/notebooks/02_ACOS_V5_2_1_Embedding_Classification_Prediction.ipynb,35,,AssertionError,Belum ada run OK — jalankan Sel 9 DRY_RUN=False dulu.
+ACOS-IndoBERT/notebooks/02_ACOS_V5_2_Universal_FullExperiment_AllPlatforms.ipynb,7,52,ModuleNotFoundError,No module named 'bert_utils'
+ACOS-IndoBERT/notebooks/03_ACOS_V5_3_Classification_Prediction_IndoBERT.ipynb,35,,AssertionError,Belum ada run OK — jalankan Sel 9 DRY_RUN=False dulu.
+ACOS-IndoBERT/notebooks/V4_1_02_step1_train.ipynb,2,,,
+notebooks/00_ACOS_Master_Pipeline_Colab_UPDATE.ipynb,19,,KeyError,"'a--1,-1'"

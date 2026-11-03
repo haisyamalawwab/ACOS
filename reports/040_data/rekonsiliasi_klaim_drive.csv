@@ -1,0 +1,18 @@
+kode,klaim,angka_di_repo,sumber_repo,artefak_drive,angka_di_drive,status,catatan
+K01,"Step-1 appsid 97,94% (8 epoch)","97,94",/data tidak ada; notebook,1LrhdlbB0HcGOeculRynNIpRZVH83M2Fy,"97,94 (ep8, TP 16.514/FP 434/FN 259)",TERKONFIRMASI,"History 8 baris, run_result cache_hit, checkpoint step1_best ada"
+K02,Step-1 memakai 15 epoch,15/15,036 §V,1LrhdlbB0HcGOeculRynNIpRZVH83M2Fy,8/15; early_stopped=false; stopped_at=null,TERBANTAH,Run berhenti di epoch 8 tanpa alasan tercatat
+K03,"Step-2 appsid 67,86% (epoch 1) dari sesi ini","67,86",036 §V,11ocx1pnO4GRzZQ5yvzH8a2nsG-X8WEWJ,"ep1 67,16; ep2 66,55; ep3 69,00",TIDAK COCOK,"67,86 berasal dari sesi appsid_08092026_150437 (root ACOS-ASLI), bukan folder ini"
+K04,Step-2 selesai 15 epoch,15/15,036 §V,1LyTrf-2JBNVQXD8AnZ5T-ITzYsyRf8CX,"3/15; best 69,00 ep3",TERBANTAH,manifest status STEP2_TRAINING
+K05,"Dual-head 0,00 hanya bug logging","0,00 di layar",036 §V,11ocx1pnO4GRzZQ5yvzH8a2nsG-X8WEWJ,"0,0 tersimpan di CSV dan resume 3 epoch",TIDAK TERBUKTI,Nol persisten; tidak ada artefak yang memisahkan logits kepala
+K06,"15 subtask appsid: opini 96,29 … QUAD 66,28","96,29/66,28",036 Tabel VI,—,Hanya output notebook V4_1_04 cell 10 (exec 52); tanpa CSV,TERVERIFIKASI SEBAGIAN,"Angka & hitungan konsisten, tetapi CSV master_08 appsid tidak ada di folder ini"
+K07,TP/FP/FN lengkap ada di CSV master_08 appsid,ada,036 Tabel VI,1TXLapXB77WBPZUs0H_MIsT91L4wa1d4c,"master_08 yang ada = REST16, TP/FP/FN kosong",TIDAK TERBUKTI,CSV yang dirujuk tidak ada; CSV yang ada domain lain
+K08,"rest16 Step-1 81,27 / Step-2 48,24","81,27/48,24",039/notebook,1KtQHORqhCk9f0TPQ_XJ431_5-3JM90mg,"81,23 (ep6) / 47,68 (ep15)",BERBEDA TIPIS,"Sesi BERT-rest16 27/08; angka 81,27/48,24 berasal dari run notebook lain"
+K09,Baseline BERT tidak punya skor end-to-end,crash,036 §VII,1KtQHORqhCk9f0TPQ_XJ431_5-3JM90mg,"QUAD 47,68; 15 subtask 47,03",TERBANTAH,Sesi BERT-rest16 punya 30 baris history dan evaluasi final
+K10,Gate-1 199/199 LULUS,199/199,036 §III,1IOp-tXLqOIpg5ccY6Ldz-OC4zCxnUweg,199/199; mean identik; ok=true,TERKONFIRMASI,"Tiga probe: embedding, layer0 query, layer11 dense"
+K11,Enam gerbang data lulus,5/5 di id_gates,036 §III,18uB4X9ui7oorrcppJ-HFUDsEutyyuVSG,"taxonomy, dataset, acos_build, tokenized, gate2_english = ok",TERKONFIRMASI,Gate2 English toleransi 1 (cacat upstream baris 451)
+K12,Tidak ada checkpoint / artefak bobot,nol,039 §bukti,1GtREyFG-CMcJmDux7ww1TC3pwKy-HOjU,3 set checkpoint; 475–500 MB per model,TERBANTAH,"Checkpoint ada di Drive, hanya tidak ada di repo"
+K13,Skor CV 5/10-fold tidak ada,0 skor,039 §CV,1J5t0O-uF2EBxYhVIkuKSj_c9qtqram5u,94 folder; 93 run_result ERROR; 0 checkpoint,TERKONFIRMASI,"54 run direncanakan, tidak satu pun menghasilkan metrik"
+K14,master_metrics.json ada untuk appsid,ada,036 §V,1KtQHORqhCk9f0TPQ_XJ431_5-3JM90mg,master_metrics hanya ada untuk REST16,TIDAK TERBUKTI,Logs sesi appsid tidak memuat master_metrics.json
+K15,Vocab 30.521 vs 50.000 = +14 juta parameter,+14M,030/035/036,1eBX8pzdPRC9ksc4sxK5QhnZ6_MTpHPQb,vocab 30.521; config 50.000; tokenizer terbukti IndoBERT,SALAH TAFSIR,50.000 baris embedding adalah desain IndoBERT; baris >30.520 tidak pernah diindeks
+K16,0 span defect setelah tokenisasi,0,039 §data,1Eq532S8DY1qjK5fB-wy30TKldRTapEz9,"span_bergeser 25.992 (14,12% dari 184.148 span)",MENYESATKAN,"Tidak ada span invalid, tetapi 25.992 offset berubah dan 26.822 baris teks berubah"
+K17,"Kontaminasi cache rest16 (0,00; FP 165.728)","0,00",036 §VI,—,Tidak ada di folder ini; sesi 12/09 tidak disertakan,TIDAK DAPAT DIPERIKSA,Bukti ada di notebook V5_EN_REST16_LAPTOP (exec None) dan sesi lain

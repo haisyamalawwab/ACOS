@@ -1,0 +1,4 @@
+split,baris,tuple,tuple_per_baris,aspek_implisit,opini_implisit,rasio_aspek_implisit_pct,rasio_opini_implisit_pct,klausa_median_kata,klausa_p95_kata,klausa_max_kata
+train,60159,72973,1.213,21789,29702,29.86,40.7,6,18,77
+dev,8027,9587,1.194,2999,3751,31.28,39.13,6,18,73
+test,7891,9514,1.206,2938,3821,30.88,40.16,6,18,79

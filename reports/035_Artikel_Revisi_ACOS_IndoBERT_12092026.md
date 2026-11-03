@@ -3,6 +3,8 @@
 > **Status**: Draft revisi — konsolidasi report 032 + 033 dengan koreksi inkonsistensi.
 > Semua angka telah diverifikasi ulang terhadap sumber primer (12 Sep 2026).
 > Sumber angka: reports 023/025/026/027/028/030/031; artefak `_build_report_appsid.json`, `_build_acos_report.json`, `eda_dataset_statistics.csv`.
+>
+> **Status publikasi (2 Nov 2026):** berdasarkan `reports/042_kesiapan_publikasi_q2_s2_02112026_HM.md`, naskah ini **belum siap submit ke Scopus Q2** dan berisiko *major revision* di SINTA S2. Blocker utama: kebocoran teks 14,7% baris test, dua evaluator dengan gold berbeda (9.006 vs 19.528), Step-2 baru 1–3 dari 15 epoch, tanpa multi-seed/CV, dan tanpa gold manusia. Angka di naskah ini tidak diubah oleh catatan ini.
 
 ---
 

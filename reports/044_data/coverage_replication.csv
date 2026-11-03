@@ -1,0 +1,5 @@
+definisi,aspek_pct,opini_pct,klausa_pct,n_aspek,n_opini,n_klausa
+raw/split,70.18,49.08,0.0,66490,58102,0
+raw/punct,80.71,68.52,0.0,66490,58102,0
+norm/split,89.25,79.72,37.57,66490,58102,96417
+norm/punct,100.0,100.0,100.0,66490,58102,96417
