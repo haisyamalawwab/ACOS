@@ -1,8 +1,8 @@
 # Indeks dan Pemetaan Referensi — ACOS-IndoBERT
 
 > **Tanggal survei:** 3 November 2026
-> **Ruang lingkup:** seluruh berkas Markdown di `ACOS-IndoBERT/REFERENSI/`
-> **Catatan path:** nama direktori di repo adalah `REFERENSI` (bukan `REFERENCE` atau `REFERENCES`). Indeks ini tidak mengubah nama direktori maupun isi dokumen sumber.
+> **Ruang lingkup:** tiga dokumen sumber Markdown di `ACOS-IndoBERT/REFERENSI/`; file indeks ini tidak dihitung sebagai sumber.
+> **Catatan path:** repo juga memiliki direktori terpisah `ACOS-IndoBERT/REFERENCES/`; lihat [INDEX_REFERENCES.md](../REFERENCES/INDEX_REFERENCES.md) untuk indeks seluruh 27 Markdown di sana.
 
 ## Daftar isi indeks
 
@@ -20,8 +20,9 @@
 |---|---|---|---:|
 | [Analisis IndoBERT 13 BANK DIGITAL.md](./Analisis%20IndoBERT%2013%20BANK%20DIGITAL.md) | Sintesis literatur IndoBERT, ABSA/ACOS, kualitas layanan, emosi, generalisasi, dan gap studi 13 bank | 264 baris; 5 bagian utama, subbagian hasil/gap | 62 DOI |
 | [IndoBERT 13 Bank Belum Ada.md](./IndoBERT%2013%20Bank%20Belum%20Ada.md) | Ringkasan klaim efektivitas IndoBERT, benchmark layanan digital, dan keterbatasan bukti 13-bank | 88 baris; 3 bagian utama | 20 DOI |
+| [ACOS Menangkap Struktur Implicit Explicit BUKAN EMOSI.md](./ACOS%20Menangkap%20Struktur%20Implicit%20Explicit%20BUKAN%20EMOSI.md) | Sintesis tentang batas ACOS, cakupan emosi/intensitas/pemicu, dan implikasi perilaku pelanggan | 255 baris; 5 bagian utama, 4 subbagian hasil | 49 DOI |
 
-**Cakupan pustaka statis:** 82 kemunculan DOI di dua dokumen; 10 DOI berulang di keduanya; **72 DOI unik** setelah deduplikasi lintas dokumen. Penghitungan ini memeriksa pola DOI yang tertulis, bukan memverifikasi bahwa metadata/DOI benar-benar cocok dengan rekaman penerbit.
+**Cakupan pustaka statis:** 131 DOI unik-per-dokumen dijumlahkan; 12 DOI berulang antara dokumen, sehingga terdapat **119 DOI unik** setelah deduplikasi lintas tiga sumber. Penghitungan ini memeriksa pola DOI yang tertulis, bukan memverifikasi kecocokan metadata dengan rekaman penerbit.
 
 ---
 
@@ -51,6 +52,23 @@
 - [Keterbatasan dan Tantangan untuk 13 Bank Digital](./IndoBERT%2013%20Bank%20Belum%20Ada.md#keterbatasan-dan-tantangan-untuk-13-bank-digital)
 - [References](./IndoBERT%2013%20Bank%20Belum%20Ada.md#references)
 
+### 2.3 `ACOS Menangkap Struktur Implicit Explicit BUKAN EMOSI.md`
+
+- [Introduction](./ACOS%20Menangkap%20Struktur%20Implicit%20Explicit%20BUKAN%20EMOSI.md#1-introduction)
+- [Methods](./ACOS%20Menangkap%20Struktur%20Implicit%20Explicit%20BUKAN%20EMOSI.md#2-methods)
+- [Results](./ACOS%20Menangkap%20Struktur%20Implicit%20Explicit%20BUKAN%20EMOSI.md#3-results)
+  - [Key Papers](./ACOS%20Menangkap%20Struktur%20Implicit%20Explicit%20BUKAN%20EMOSI.md#31-key-papers)
+  - [ACOS Coverage Versus Emotional Coverage](./ACOS%20Menangkap%20Struktur%20Implicit%20Explicit%20BUKAN%20EMOSI.md#32-acos-coverage-versus-emotional-coverage)
+  - [Emotion, Cause, and Intensity Alternatives](./ACOS%20Menangkap%20Struktur%20Implicit%20Explicit%20BUKAN%20EMOSI.md#33-emotion-cause-and-intensity-alternatives)
+  - [Behavioral Stakes](./ACOS%20Menangkap%20Struktur%20Implicit%20Explicit%20BUKAN%20EMOSI.md#34-behavioral-stakes)
+  - [Results Timeline](./ACOS%20Menangkap%20Struktur%20Implicit%20Explicit%20BUKAN%20EMOSI.md#results-timeline)
+  - [Top Contributors](./ACOS%20Menangkap%20Struktur%20Implicit%20Explicit%20BUKAN%20EMOSI.md#top-contributors)
+- [Discussion](./ACOS%20Menangkap%20Struktur%20Implicit%20Explicit%20BUKAN%20EMOSI.md#4-discussion)
+- [Conclusion](./ACOS%20Menangkap%20Struktur%20Implicit%20Explicit%20BUKAN%20EMOSI.md#5-conclusion)
+  - [Research Gaps](./ACOS%20Menangkap%20Struktur%20Implicit%20Explicit%20BUKAN%20EMOSI.md#research-gaps)
+  - [Open Research Questions](./ACOS%20Menangkap%20Struktur%20Implicit%20Explicit%20BUKAN%20EMOSI.md#open-research-questions)
+- [References](./ACOS%20Menangkap%20Struktur%20Implicit%20Explicit%20BUKAN%20EMOSI.md#references)
+
 ---
 
 ## 3. Peta isi dan jenis bukti
@@ -72,7 +90,7 @@
 
 ### P0 — Keterlacakan metode tinjauan
 
-Dokumen panjang menyatakan `Retrieved 1.1M → Eligible 399 → Included 100`, tetapi belum memberi tanggal pencarian, query lengkap, kriteria inklusi/eksklusi, alur deduplikasi, cara screening, atau daftar studi yang termasuk. Daftar pustaka memuat 62 entri dan timeline hanya merangkum 20 studi; relasi antara tiga jumlah ini belum dijelaskan. Perlakukan angka tersebut sebagai klaim laporan pencarian, bukan hitungan systematic review yang dapat diaudit, sampai log pencarian dan daftar screening tersedia.
+Dua sintesis utama menyatakan alur Consensus dengan `Included 100` (dokumen IndoBERT: `Retrieved 1.1M → Eligible 399 → Included 100`; dokumen ACOS/emosi: `Retrieved 9.9M → Eligible 370 → Included 100`), tetapi tidak menyertakan tanggal pencarian, query lengkap, kriteria inklusi/eksklusi, log deduplikasi/screening, atau daftar 100 studi included. Dokumen IndoBERT memuat 62 DOI dengan timeline yang merangkum 20 paper; dokumen ACOS/emosi memuat 49 DOI, sementara timeline 2023 menyatakan 5 paper tetapi hanya menampilkan 4 sitasi. Relasi antar hitungan tersebut belum dijelaskan. Perlakukan angka screening sebagai klaim laporan pencarian, bukan hasil systematic review yang dapat diaudit.
 
 ### P0 — Referensi yang perlu dikoreksi sebelum sitasi akademik
 
@@ -90,9 +108,10 @@ Tabel benchmark mencampur akurasi aspek, akurasi klasifikasi, F1, AUC, task sing
 
 ### P1 — Aset dan struktur dokumen
 
-- Caption Figure 1–6 di dokumen panjang dan Figure 1–2 di dokumen ringkas tidak disertai gambar atau tautan gambar; saat ini itu placeholder, bukan figur yang dapat diperiksa.
-- Kedua dokumen memiliki 10 DOI yang sama. Tetapkan satu dokumen sebagai sintesis utama dan jadikan yang lain ringkasan/brief; hindari dua versi klaim yang berubah tanpa riwayat.
-- Catatan Consensus pada kedua dokumen menyebut penggunaan personal/nonkomersial dan bahwa redistribusi memerlukan izin pemegang hak. Periksa izin dan ketentuan sebelum memaketkan atau menerbitkan ulang teks/hasil pencarian tersebut.
+- Caption Figure 1–6 di dokumen IndoBERT, Figure 1–2 di dokumen ringkas, dan Figure 1–7 di dokumen ACOS/emosi tidak memiliki gambar tertanam atau tautan aset pada folder ini; saat ini caption berfungsi sebagai placeholder.
+- Tiga dokumen memiliki overlap sitasi: 10 DOI antara dua dokumen IndoBERT dan 2 DOI antara dokumen ACOS/emosi dan sintesis IndoBERT. Tentukan dokumen kanonik dan relasi versi; hindari beberapa ringkasan yang membawa klaim serupa tanpa provenance.
+- File `ACOS Menangkap Struktur Implicit Explicit BUKAN EMOSI.md` identik byte-per-byte dengan `ACOS-IndoBERT/REFERENCES/Limitation ACOS.md`. Pertahankan satu sumber kanonik atau dokumentasikan kenapa salinan dibutuhkan.
+- Catatan Consensus pada ketiga dokumen menyebut penggunaan personal/nonkomersial dan bahwa redistribusi memerlukan izin pemegang hak. Periksa izin dan ketentuan sebelum memaketkan atau menerbitkan ulang teks/hasil pencarian tersebut.
 - Tinjauan ini belum menautkan setiap klaim kuantitatif ke lokasi spesifik dalam sumber (tabel/halaman/section); tambahkan locator supaya audit klaim lebih cepat.
 
 ### P2 — Rencana penguatan isi
@@ -108,4 +127,4 @@ Tabel benchmark mencampur akurasi aspek, akurasi klasifikasi, F1, AUC, task sing
 
 ## 5. Batas survei
 
-Survei ini menghitung struktur heading, pola DOI, overlap daftar pustaka, dan konsistensi teks di dua berkas Markdown. Survei ini **tidak** mengklaim telah memverifikasi keberadaan, metadata, peer-review status, atau akurasi angka di setiap paper terhadap situs penerbit. Untuk penggunaan tesis/paper, verifikasi bibliografi satu per satu tetap diperlukan.
+Survei ini menghitung struktur heading, pola DOI, overlap daftar pustaka, dan konsistensi teks di tiga dokumen sumber Markdown. Survei ini **tidak** mengklaim telah memverifikasi keberadaan, metadata, peer-review status, atau akurasi angka di setiap paper terhadap situs penerbit. Untuk penggunaan tesis/paper, verifikasi bibliografi satu per satu tetap diperlukan.
