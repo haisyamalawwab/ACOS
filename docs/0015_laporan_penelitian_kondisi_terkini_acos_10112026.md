@@ -2,6 +2,7 @@
 
 **Tanggal penyusunan:** 10/11/2026
 **Dasar penyusunan:** commit `cee6893` pada `main` (merge PR #13) dan berkas yang ada di repositori pada commit tersebut.
+**Catatan amandemen (sebelum PR, 10/11/2026):** setelah laporan ini disusun, `main` maju ke `e343ae0` (merge PR #12) dengan satu tambahan berkas `reports/050_audit_references_04112026_HM.md` — audit pustaka `ACOS-IndoBERT/REFERENCES/` (501 DOI belum terverifikasi eksternal; 19 PDF adalah ekspor Consensus, bukan paper primer; temuan T1 berstatus blocker untuk submit). Temuan 050 tidak mengubah satu pun status hasil di laporan ini; basis penyusunan tetap `cee6893`.
 **Sifat dokumen:** laporan *status*, bukan laporan hasil akhir. Tujuannya menjawab satu pertanyaan: **apa yang sekarang benar-benar dimiliki proyek ini, dan apa yang belum boleh diklaim.**
 
 **Legenda tingkat bukti.** **E2** = terverifikasi di repositori lewat kode, keluaran tersimpan, atau hitung ulang. **E1** = dokumen repositori yang belum diverifikasi ulang ke artefak primer. **E0** = penilaian dan rekomendasi.
@@ -174,6 +175,7 @@ Selain tiga blocker, review mencatat 13 temuan lain (mayor dan minor). Empat di 
 | P1 | Tiga seed pada Step-1 rest16 dan Step-2 rest16 | GPU | Menjawab temuan #4 |
 | P1 | Perbaiki bug persistensi metrik dua kepala Step-2 | GPU | Tanpa itu, klaim kepala kategori dan sentimen tidak punya dasar |
 | P2 | Protokol pencarian literatur dan pernyataan lisensi | Tanpa GPU | Blocker #1 dan #3 |
+| P2 | Verifikasi eksternal 501 DOI dan bibliografi master sesuai `reports/050` T1 | Tanpa GPU | Prasyarat submit menurut audit 050 |
 | P2 | Sinkronkan abstrak `reports/035` | Tanpa GPU | Menghapus angka yang sudah ditolak |
 
 ---
@@ -184,7 +186,7 @@ Selain tiga blocker, review mencatat 13 temuan lain (mayor dan minor). Empat di 
 2. **Tidak ada pelatihan ulang atau inferensi baru.** Seluruh angka berasal dari keluaran tersimpan.
 3. **Belum ada pemeriksaan independen** atas klaim bahwa 97,94% adalah *cache-hit*; laporan ini meneruskannya dari 0012 dan 040 tanpa menguji ulang mekanismenya.
 4. **Kontradiksi di §4 sengaja dibiarkan terbuka.** Menutupnya dengan memilih salah satu angka akan mengulang kesalahan yang justru dikritik review 049.
-5. **Tanggal dokumen** mengikuti commit terakhir `main` (`cee6893`) dan berkas terbaru di repositori, bukan tanggal penyusunan di luar repositori.
+5. **Tanggal dokumen** mengikuti commit `main` pada saat penyusunan (`cee6893`; `main` kemudian maju ke `e343ae0` — lihat catatan amandemen di pembuka) dan berkas terbaru di repositori, bukan tanggal penyusunan di luar repositori.
 
 ---
 
@@ -200,3 +202,4 @@ Selain tiga blocker, review mencatat 13 temuan lain (mayor dan minor). Empat di 
 8. `reports/046_verifikasi_jalur_a_02112026_HM.md`
 9. `reports/048_draft_artikel_sinta2_apps_acos_03112026.md`
 10. `reports/049_review_profesor_draft_artikel_sinta2_apps_acos_04112026_HM.md`
+11. `reports/050_audit_references_04112026_HM.md` — masuk ke `main` (`e343ae0`) setelah laporan ini disusun; dirujuk hanya pada catatan amandemen
