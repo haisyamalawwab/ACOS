@@ -1,0 +1,10 @@
+ablasi,kelompok,benar,n,akurasi_pct
+A1_kebocoran,A1_bocor,799,1171,68.23
+A1_kebocoran,A1_bersih,4903,8343,58.77
+A2_slot,E-E,1818,2755,65.99
+A2_slot,E-I,2085,3821,54.57
+A2_slot,I-E,1799,2938,61.23
+A3_istilah,lookup,4221,6573,64.22
+A3_istilah,fallback,1802,2941,61.27
+A3_istilah,TOTAL,6023,9514,63.31
+B2_pembanding,test,5702,9514,59.93

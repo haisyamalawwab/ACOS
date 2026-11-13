@@ -4,11 +4,12 @@
 > Target: **Khazanah Informatika (SINTA 3)**, alternatif tier sama: JOINTECS, JTMI, Barekeng (ejaan sesuai daftar pengguna: "Baukereng" — konfirmasi nama jurnal), INFORM naik ke SINTA 2 — cek panduan penulis saat submit.
 > Basis: artefak repositori `main` `6704cbf`. Angka baseline dihitung baru oleh `scripts/eda_053_majority_baseline_implisit.py` (stdlib, deterministik, 12/11/2026; keluaran `reports/053_data/majority_baseline.csv`). Teks ditulis segar; **Turnitin/iThenticate belum dijalankan** — wajib sebelum submit.
 > Wajib sebelum submit: (1) anotasi manusia + κ — klaim "determinisme" atas label lemah perlu dibatasi sampai κ diketahui [`reports/049` #2]; (2) verifikasi DOI rujukan (`reports/050` T1).
+> Gambar fig28 oleh `scripts/figs_051_054_ablasi_grafik.py` (matplotlib; pengecualian V-04); ablasi A1–A3 oleh `scripts/eda_055_ablasi_draf_artikel.py` (stdlib) → `reports/055_data/ablasi_053_baseline.csv`.
 > Konvensi angka: pemisah ribuan titik, desimal koma (ID).
 
 ## Abstrak
 
-Pada tugas kuadruplet aspek–kategori–opini–sentimen (ACOS), komponen sentimen lazim dilaporkan sebagai bukti pemahaman bahasa. Artikel ini menguji seberapa jauh sentimen sebenarnya dapat diprediksi dari kategori aspek saja, tanpa membaca teks, pada korpus 92.074 kuadruplet berlabel lemah dari ulasan 13 aplikasi bank digital Indonesia. Kami memasang baseline majority-per-category: sentimen diprediksi sebagai kelas mayoritas kategori pada data latih, lalu dievaluasi pada 9.514 kuadruplet uji. Baseline sederhana ini mencapai akurasi 59,93%, dibandingkan 50,33% untuk mayoritas global, dan mencapai 78–79% pada kategori teknis (APP_PERFORMANCE 78,03%; AUTH_ACCESS 79,47%) yang bersifat keluhan fungsi. Temuan ini mengindikasikan bahwa metrik sentimen pada korpus domain sempit sebagian mengukur korelasi kategori–sentimen, bukan pemahaman opini, sehingga evaluasi model ACOS perlu melaporkan baseline trivial ini sebagai ambang batas bawah. Karena label dihasilkan supervisi lemah tanpa verifikasi manusia, seluruh angka dilaporkan sebagai properti korpus berlabel lemah.
+Pada tugas kuadruplet aspek–kategori–opini–sentimen (ACOS), komponen sentimen lazim dilaporkan sebagai bukti pemahaman bahasa. Artikel ini menguji seberapa jauh sentimen sebenarnya dapat diprediksi dari kategori aspek saja, tanpa membaca teks, pada korpus 92.074 kuadruplet berlabel lemah dari ulasan 13 aplikasi bank digital Indonesia. Kami memasang baseline majority-per-category: sentimen diprediksi sebagai kelas mayoritas kategori pada data latih, lalu dievaluasi pada 9.514 kuadruplet uji. Baseline sederhana ini mencapai akurasi 59,93%, dibandingkan 50,33% untuk mayoritas global, dan mencapai 78–79% pada kategori teknis (APP_PERFORMANCE 78,03%; AUTH_ACCESS 79,47%) yang bersifat keluhan fungsi. Temuan ini mengindikasikan bahwa metrik sentimen pada korpus domain sempit sebagian mengukur korelasi kategori–sentimen, bukan pemahaman opini, sehingga evaluasi model ACOS perlu melaporkan baseline trivial ini sebagai ambang batas bawah. Ablasi memperkuat temuan: akurasi baseline naik 9,46 poin pada baris uji yang teksnya juga muncul di data latih (68,23% berbanding 58,77% pada baris bersih), dan menambah istilah aspek sebagai fitur hanya menaikkan 3,38 poin (63,31%). Karena label dihasilkan supervisi lemah tanpa verifikasi manusia, seluruh angka dilaporkan sebagai properti korpus berlabel lemah.
 
 **Kata kunci:** analisis sentimen berbasis aspek; ACOS; baseline trivial; shortcut learning; bank digital
 
@@ -49,6 +50,10 @@ Selain akurasi, kami melaporkan pangsa kelas sentimen dominan per kategori (gabu
 | B1 — mayoritas global (negatif) | 4.788 | 50,33% |
 | B2 — majority-per-category | 5.702 | **59,93%** |
 
+![Gambar 1 — Baseline determinisme](fig28_baseline_determinisme.png)
+
+*Gambar 1. (a) Tiga baseline trivial pada 9.514 kuadruplet uji: mayoritas global (B1), mayoritas per kategori (B2), dan B2 ditambah istilah aspek (A3). (b) Akurasi uji tiap kategori terhadap pangsa kelas mayoritas kategori tersebut di data latih; garis diagonal = identitas. Skrip `scripts/figs_051_054_ablasi_grafik.py`.*
+
 B2 unggul 9,60 poin atas B1 dan dev menghasilkan angka konsisten (60,74%), menandakan pola stabil antar split.
 
 ### 4.2 Determinisme per kategori
@@ -77,9 +82,43 @@ Akurasi uji per kategori mendekati pangsa mayoritas latih (selisih <1,9 poin pad
 
 Korpus didominasi keluhan berbentuk ketidakberhasilan tindakan: istilah opini paling frekuent adalah "tidak bisa" (6.343) di atas "bagus" (5.246). Kelas netral (11,30%) berperilaku sebagai kelas sisa: kosakatanya memuat kata bermuatan negatif seperti "lambat" dan "gagal", indikasi label netral menampung kasus ambigu, bukan polaritas tengah sejati.
 
+### 4.4 Studi ablasi
+
+Tiga ablasi menguji robustness baseline B2. Semua dihitung ulang dari berkas gold TSV oleh skrip deterministik `scripts/eda_055_ablasi_draf_artikel.py` (keluaran `reports/055_data/ablasi_053_baseline.csv`).
+
+**Tabel 3.** Ablasi A1 — akurasi B2 menurut status kebocoran teks baris uji (1.157 baris uji berbagi teks dengan latih; 1.171 kuadruplet).
+
+| Kelompok baris uji | Kuadruplet | Benar | Akurasi |
+|---|---:|---:|---:|
+| Teks muncul di latih (bocor) | 1.171 | 799 | **68,23%** |
+| Teks tidak muncul di latih (bersih) | 8.343 | 4.903 | 58,77% |
+
+Selisih 9,46 poin ini dicapai baseline yang **tidak membaca teks sama sekali**: duplikasi teks antar split membuat distribusi kategori–sentimen baris uji yang bocor lebih mudah dihafal lewat mayoritas kategori. Kebocoran 14,66% karenanya bukan hanya masalah untuk model, tetapi juga untuk baseline — angka pada subset bersih (58,77%) adalah ukuran determinisme yang lebih jujur.
+
+**Tabel 4.** Ablasi A2 — akurasi B2 menurut tipe pasangan slot.
+
+| Tipe pasangan (aspek–opini) | Kuadruplet | Akurasi |
+|---|---:|---:|
+| E–E (keduanya eksplisit) | 2.755 | **65,99%** |
+| I–E (aspek implisit) | 2.938 | 61,23% |
+| E–I (opini implisit) | 3.821 | 54,57% |
+
+Sentimen paling deterministik justru ketika opini tampil eksplisit (E–E 65,99%) dan paling bebas ketika opini implisit (E–I 54,57%; selisih 11,42 poin) — indikasi bahwa sebagian ketergantungan kategori–sentimen melemah saat keluhan tidak dinyatakan sebagai kata.
+
+**Tabel 5.** Ablasi A3 — menambah istilah aspek eksplisit sebagai fitur lookup (mayoritas per pasangan (kategori, istilah aspek) di latih, fallback ke B2).
+
+| Varian | Kuadruplet | Benar | Akurasi |
+|---|---:|---:|---:|
+| B2 murni (pembanding) | 9.514 | 5.702 | 59,93% |
+| B2 + istilah aspek (total) | 9.514 | 6.023 | **63,31%** |
+| — subset yang memakai lookup | 6.573 | 4.221 | 64,22% |
+| — subset fallback (istilah tak dikenal / aspek implisit) | 2.941 | 1.802 | 61,27% |
+
+Menambah istilah aspek hanya menaikkan 3,38 poin: sebagian besar sinyal sentimen sudah terkandung dalam kategori, dan 36,69% kuadruplet tetap salah ditebak tanpa membaca opini. Ini menetapkan bahwa ruang sinyal yang tersisa untuk model bahasa — di atas baseline trivial — adalah 36,69 poin pada korpus ini.
+
 ## 5. Pembahasan
 
-**(RQ1)** Baseline majority-per-category mencapai 59,93% — 9,60 poin di atas mayoritas global. Angka ini adalah ambang yang harus dilampaui model apabila klaim "memahami opini" ingin dibuat; selisih metrik sentimen model terhadap 59,93% itulah, bukan angka absolutnya, yang menunjukkan kontribusi teks. **(RQ2)** Determinisme menumpuk pada kategori teknis (±79%): keluhan kinerja dan autentikasi hampir selalu negatif pada domain aplikasi. Kategori besar seperti TRANSACTION_TRANSFER justru paling sulit (46,2%) karena memuat keberhasilan dan kegagalan — area di mana bacaan opini sesungguhnya diperlukan. **(RQ3)** Implikasinya: pelaporan metrik sentimen ACOS pada domain sempit tanpa baseline trivial adalah tidak lengkap; kami merekomendasikan B2 dilaporkan sebagai baris wajib pada tabel hasil.
+**(RQ1)** Baseline majority-per-category mencapai 59,93% — 9,60 poin di atas mayoritas global. Angka ini adalah ambang yang harus dilampaui model apabila klaim "memahami opini" ingin dibuat; selisih metrik sentimen model terhadap 59,93% itulah, bukan angka absolutnya, yang menunjukkan kontribusi teks; ablasi A3 (Tabel 5) menunjukkan bahwa fitur dangkal tambahan (istilah aspek) hanya mengambil 3,38 poin dari ruang tersebut, sehingga 36,69 poin tersisa untuk pemahaman opini sesungguhnya. **(RQ2)** Determinisme menumpuk pada kategori teknis (±79%): keluhan kinerja dan autentikasi hampir selalu negatif pada domain aplikasi. Kategori besar seperti TRANSACTION_TRANSFER justru paling sulit (46,2%) karena memuat keberhasilan dan kegagalan — area di mana bacaan opini sesungguhnya diperlukan. **(RQ3)** Implikasinya: pelaporan metrik sentimen ACOS pada domain sempit tanpa baseline trivial adalah tidak lengkap; kami merekomendasikan B2 dilaporkan sebagai baris wajib pada tabel hasil.
 
 Pada pipeline dua tahap kami sendiri (berbasis IndoBERT [8]), akurasi kepala sentimen tidak dapat dibandingkan dengan baseline ini karena bug persistensi metrik (nilai tercatat 0,0), sehingga perbandingan model–baseline ditunda hingga perbaikan selesai; ini kami laporkan terbuka agar pembaca tidak menganggap pembandingan telah dilakukan.
 
@@ -87,7 +126,7 @@ Keterbatasan: (i) label lemah tanpa verifikasi manusia — determinisme yang ter
 
 ## 6. Kesimpulan
 
-Pada korpus kuadruplet ACOS ulasan aplikasi bank digital Indonesia berlabel lemah, sentimen dapat diprediksi dari kategori saja dengan akurasi 59,93% (mayoritas global 50,33%), dan mencapai ±79% pada kategori teknis. Baseline majority-per-category karenanya wajib dilaporkan pada evaluasi ACOS domain sempit, dan klaim pemahaman opini harus diukur sebagai kelebihan di atas baseline ini. Pekerjaan lanjutan: verifikasi manusia atas label (κ), replikasi pada korpus independen, dan perbandingan model–baseline setelah bug metrik dirapikan.
+Pada korpus kuadruplet ACOS ulasan aplikasi bank digital Indonesia berlabel lemah, sentimen dapat diprediksi dari kategori saja dengan akurasi 59,93% (mayoritas global 50,33%), dan mencapai ±79% pada kategori teknis. Baseline majority-per-category karenanya wajib dilaporkan pada evaluasi ACOS domain sempit, dan klaim pemahaman opini harus diukur sebagai kelebihan di atas baseline ini. Ablasi menunjukkan baseline memanfaatkan kebocoran teks (68,23% pada baris bocor berbanding 58,77% pada baris bersih) dan hanya memperoleh 3,38 poin tambahan dari istilah aspek. Pekerjaan lanjutan: verifikasi manusia atas label (κ), replikasi pada korpus independen, dan perbandingan model–baseline setelah bug metrik dirapikan.
 
 ## Daftar Pustaka
 
@@ -117,3 +156,5 @@ Pada korpus kuadruplet ACOS ulasan aplikasi bank digital Indonesia berlabel lema
 | Kelas netral sebagai kelas sisa (kualitatif) | wordcloud `reports/fig23`; `docs/0011` §4.5 | E2 (kualitatif) |
 | Bug persistensi metrik sentimen 0,0 | `docs/0012` §4.2 | E2 (via 0012) |
 | Label lemah, κ belum diukur | `reports/049` #2; `docs/0012` | E1 |
+| Ablasi A1/A2/A3 (Tabel 3–5) | `scripts/eda_055_ablasi_draf_artikel.py` (12/11/2026) → `reports/055_data/ablasi_053_baseline.csv` | E2 (hitungan baru) |
+| Gambar 1 | `reports/fig28_*.png` (`scripts/figs_051_054_ablasi_grafik.py`) | E2 |

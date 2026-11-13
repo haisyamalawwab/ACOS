@@ -4,11 +4,12 @@
 > Target: **IJCSD — International Journal of Computing and Digital Systems, Bahrain (Q3)**, alternatif: INASS, IJACSA — cek panduan penulis & lingkup saat submit.
 > Basis: artefak repositori `main` `6704cbf`. Angka gold dihitung oleh `scripts/eda_053_majority_baseline_implisit.py` (stdlib, deterministik, 12/11/2026; keluaran `reports/053_data/implisit_2x2_kategori.csv`). Angka kandidat berasal dari artefak sesi (analisis `reports/041`–`042`) dan **belum dihitung ulang deterministik**; anomali label domain pada sesi sumber terdokumentasi. Teks ditulis segar; **Turnitin/iThenticate belum dijalankan** — wajib sebelum submit.
 > Wajib sebelum submit: (1) hitung ulang distribusi kandidat dari artefak prediksi secara deterministik; (2) anotasi manusia + κ — status "implisit" adalah keputusan pelabelan lemah [`reports/049` #2]; (3) verifikasi DOI rujukan (`reports/050` T1); (4) angka gold Restaurant-ACOS 895 di Tabel 4 masih konflik dengan 916 (`reports/033`; `reports/049` #15).
+> Gambar fig29 oleh `scripts/figs_051_054_ablasi_grafik.py` (matplotlib; pengecualian V-04); ablasi struktural §4.5 oleh `scripts/eda_055_ablasi_draf_artikel.py` (stdlib) → `reports/055_data/ablasi_054_bridge.csv`.
 > Konvensi angka: pemisah ribuan koma, desimal titik (EN).
 
 ## Abstract
 
-The ACOS formulation of aspect-based sentiment analysis admits implicit aspects and opinions through NULL slots, yet the empirical structure of implicitness at the quadruple level is rarely reported. We analyze a weakly labeled Indonesian corpus of 92,074 quadruples from mobile-banking app reviews and find a strict structural property: implicitness never co-occurs. Exactly one slot is implicit in 70.59% of quadruples (opinion-implicit 40.48%, aspect-implicit 30.11%), both slots are explicit in 29.40%, and both implicit in 0.00% — the labeling schema cannot express double-implicit quadruples at all. Implicitness also varies sharply by category: aspect-implicit ranges from 0% (authentication, onboarding) to 72.27% (interface design), while opinion-implicit ranges from 15.86% (interface design) to 73.36% (account management), in a complementary pattern. On the modeling side, the candidate bridge that pairs predicted aspects with opinions generates 10,735 candidates against 9,006 gold quadruples (ratio 1.19), of which only 7 (0.07%) are implicit–implicit — all necessarily false positives given the gold structure. We further document a cross-domain failure in which unbounded candidate generation under stale predictions produced 10,735 candidates against 895 gold quadruples (ratio 12.0) and collapsed quadruple F1 to 0.00. We conclude that implicit-slot reporting should be stratified, schema-level constraints on implicitness must be documented, and candidate bridges need explicit volume control.
+The ACOS formulation of aspect-based sentiment analysis admits implicit aspects and opinions through NULL slots, yet the empirical structure of implicitness at the quadruple level is rarely reported. We analyze a weakly labeled Indonesian corpus of 92,074 quadruples from mobile-banking app reviews and find a strict structural property: implicitness never co-occurs. Exactly one slot is implicit in 70.59% of quadruples (opinion-implicit 40.48%, aspect-implicit 30.11%), both slots are explicit in 29.40%, and both implicit in 0.00% — the labeling schema cannot express double-implicit quadruples at all. Implicitness also varies sharply by category: aspect-implicit ranges from 0% (authentication, onboarding) to 72.27% (interface design), while opinion-implicit ranges from 15.86% (interface design) to 73.36% (account management), in a complementary pattern. On the modeling side, the candidate bridge that pairs predicted aspects with opinions generates 10,735 candidates against 9,006 gold quadruples (ratio 1.19), of which only 7 (0.07%) are implicit–implicit — all necessarily false positives given the gold structure. With oracle gold spans, the Cartesian bridge covers 100.00% of gold pairs at a candidate/gold ratio of 1.20, bounding one-label-per-pair performance at precision 83.61%, recall 99.99%, and F1 91.07% — a structural ceiling against which the interim 69.00 leaves a 22.07-point gap attributable to span detection and label classification rather than the bridge. We further document a cross-domain failure in which unbounded candidate generation under stale predictions produced 10,735 candidates against 895 gold quadruples (ratio 12.0) and collapsed quadruple F1 to 0.00. We conclude that implicit-slot reporting should be stratified, schema-level constraints on implicitness must be documented, and candidate bridges need explicit volume control.
 
 **Keywords:** ACOS; implicit aspects; implicit opinions; weak supervision; candidate generation; Indonesian
 
@@ -44,6 +45,10 @@ Gold-side statistics are computed with a deterministic standard-library script o
 |---|---:|---:|
 | Explicit | 27,074 (29.40%) | 37,274 (40.48%) |
 | Implicit | 27,726 (30.11%) | **0 (0.00%)** |
+
+![Figure 1 — Implicitness structure](fig29_implisit_2x2_kategori.png)
+
+*Fig. 1. (a) Joint distribution of slot implicitness: the implicit–implicit cell is exactly zero. (b) Complementary implicitness pattern across the 13 categories (diverging bars). Generated by `scripts/figs_051_054_ablasi_grafik.py` from `reports/053_data/implisit_2x2_kategori.csv`.*
 
 Exactly one slot is implicit in 70.59% of quadruples; both are explicit in 29.40%; both are implicit in none. The marginals reproduce the per-split statistics (aspect-implicit 30.11%, opinion-implicit 40.48%), and the zero cell is exact: the labeling schema never emits a quadruple with two implicit slots. Any statement that a corpus or model "handles implicit aspects and opinions" must therefore be qualified: in this corpus, implicitness is single-slot by construction, and double-implicit sentiment (a clause-level opinion with neither span) is inexpressible.
 
@@ -96,6 +101,38 @@ The candidate distribution tracks the gold marginals closely, but the bridge doe
 
 In one documented session, Stage-1 predictions inherited from another domain/session were bridged for Restaurant-ACOS, producing 12 candidates per gold quadruple; false positives exploded and quadruple F1 collapsed to 0.00. This is not a model failure but a candidate-generation failure — the bridge has no volume control, and its behaviour is determined by whatever Stage-1 feeds it.
 
+### 4.5 Structural ablation of the bridge
+
+Two structural ablations are computed directly from the released gold TSVs (deterministic script `scripts/eda_055_ablasi_draf_artikel.py`; outputs in `reports/055_data/ablasi_054_bridge.csv`). They require no model and no GPU.
+
+**Table 5.** Oracle bridge on the test split: gold spans per clause are fed to the Cartesian pairing.
+
+| Measure | Value |
+|---|---:|
+| Test clauses | 7,891 |
+| Gold quadruples | 9,514 |
+| Unique (aspect, opinion) pairs | 9,513 |
+| Oracle Cartesian candidates | 11,378 |
+| Candidate/gold ratio | 1.20 |
+| Gold-pair coverage by Cartesian product | 100.00% |
+| Pairs carrying >1 distinct sentiment | 1 (2 quadruples) |
+| Pairs carrying >1 distinct category | 0 |
+
+A methodological note: the gold total here (9,514, read from the released TSV) differs from the pair-evaluator total (9,006) used for the session artifacts of Table 3 — the evaluator inconsistency documented in our reproducibility audit; the TSV is used as ground truth for this computation.
+
+**Table 6.** Ceilings implied by Table 5, and candidate suppression.
+
+| Quantity | Value |
+|---|---:|
+| Precision ceiling (one label per pair) | 9,513 / 11,378 = 83.61% |
+| Recall ceiling (one label per pair) | 9,513 / 9,514 = 99.99% |
+| F1 ceiling | 91.07% |
+| Interim Step-2 F1 (predicted spans, epoch 3/15) | 69.00 |
+| Gap to structural ceiling | 22.07 points |
+| Suppressing implicit–implicit candidates | 10,735 → 10,728 (−7; all provably false positives) |
+
+Three conclusions follow. First, the (aspect, opinion) → label mapping is essentially functional: exactly one pair in 9,513 carries two different sentiments, so the single-label-per-pair assumption of the classifier head costs at most 0.01% recall on this corpus. Second, the bridge itself is not the bottleneck: with oracle spans its volume is benign (ratio 1.20) and its coverage complete, so the 22.07-point gap between the interim 69.00 and the 91.07 ceiling is attributable to Step-1 span detection and Step-2 classification. Third, the cross-domain collapse of Section 4.4 is a volume effect of stale predictions, not a property of the Cartesian construction — which motivates a volume gate rather than a redesign of the bridge.
+
 ## 5. Discussion
 
 **(RQ1)** Implicitness in this corpus is structurally single-slot. This reframes a common claim: "including implicit slots" here means 70.59% single-implicit quadruples and a schema-level impossibility of double-implicit ones. Schema constraints of this kind belong in corpus documentation, otherwise cross-corpus comparisons of implicit handling are meaningless. **(RQ2)** The complementary per-category pattern suggests category-conditioned strategies (e.g., opinion lexicons for flow categories, aspect lexicons for evaluation categories) and warns that aggregate implicit metrics hide a 0–73% range. **(RQ3)** The bridge inherits the gold structure almost exactly, but its unbounded Cartesian construction is fragile under domain shift; a volume gate (candidates per gold, or per sentence) is a cheap safeguard, and implicit–implicit suppression would remove a provably-false candidate class on this corpus.
@@ -104,7 +141,7 @@ Limitations: (i) labels are weakly supervised and unverified — implicitness is
 
 ## 6. Conclusion
 
-In a 92,074-quadruple Indonesian ACOS corpus, implicitness is exclusive: one slot implicit in 70.59% of quadruples, both explicit in 29.40%, both implicit in 0.00% — a schema property that must accompany any claim of implicit-slot support. Implicitness varies complementarily across categories (aspect-implicit 0–72.27%; opinion-implicit 15.86–73.36%). The candidate bridge mirrors this structure (implicit–implicit candidates 0.07%, all false positives by construction) but lacks volume control, as a documented cross-domain collapse to F1 0.00 shows. Future work: deterministic recomputation of candidate statistics, human verification with κ, implicit-stratified evaluation reporting, and a labeling schema that can express double-implicit opinions.
+In a 92,074-quadruple Indonesian ACOS corpus, implicitness is exclusive: one slot implicit in 70.59% of quadruples, both explicit in 29.40%, both implicit in 0.00% — a schema property that must accompany any claim of implicit-slot support. Implicitness varies complementarily across categories (aspect-implicit 0–72.27%; opinion-implicit 15.86–73.36%). The candidate bridge mirrors this structure (implicit–implicit candidates 0.07%, all false positives by construction) but lacks volume control, as a documented cross-domain collapse to F1 0.00 shows. With oracle spans the bridge covers all gold pairs and bounds one-label-per-pair F1 at 91.07%, so the remaining 22.07-point gap to the interim 69.00 lies in span detection and classification. Future work: deterministic recomputation of candidate statistics, human verification with κ, implicit-stratified evaluation reporting, and a labeling schema that can express double-implicit opinions.
 
 ## References
 
@@ -134,3 +171,5 @@ In a 92,074-quadruple Indonesian ACOS corpus, implicitness is exclusive: one slo
 | Interim F1 69.00 (epoch 3/15); Step-2 control 48.24 | `docs/0011` §4.1–4.2; `docs/0012` §4.2; `reports/048` Table 4 | E2 (via 0011/0012/048) |
 | 14.66% test–train overlap | `scripts/eda_044_appsid.py`; `docs/0011` §3.2 | E2 |
 | "implicit share is substantial in English corpora" [1] | literature notes in `ACOS-IndoBERT/REFERENCES/`; page-level verification pending (`reports/050` T1) | E1 |
+| Tables 5–6 (oracle bridge, ceilings, suppression) | `scripts/eda_055_ablasi_draf_artikel.py` (12/11/2026) → `reports/055_data/ablasi_054_bridge.csv` | E2 (new computation) |
+| Fig. 1 | `reports/fig29_*.png` (`scripts/figs_051_054_ablasi_grafik.py`) | E2 |

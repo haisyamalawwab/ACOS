@@ -4,6 +4,7 @@
 > Target: **RESTI (SINTA 2)**, alternatif tier yang sama: JTIIK, INFORM — cek panduan penulis & lingkup jurnal saat submit.
 > Basis: artefak repositori pada `main` `6704cbf`; seluruh angka punya provenance di Lampiran A. Draf ditulis ulang dari nol (bukan salinan 045/048); **pemeriksaan Turnitin/iThenticate belum dijalankan** — wajib sebelum submit (target <20%).
 > Wajib dikerjakan sebelum submit (pemetaan temuan `reports/049`): (1) protokol pencarian literatur sistematis untuk klaim "sejauh penelusuran kami" [#1 BLOCKER]; (2) anotasi manusia 500 klausa × 2 anotator + Cohen's κ [#2 BLOCKER]; (3) keputusan lisensi/izin redistribusi [#3 BLOCKER]; (4) verifikasi DOI seluruh rujukan (`reports/050` T1).
+> Gambar fig25–fig26 dibuat oleh `scripts/figs_051_054_ablasi_grafik.py` (matplotlib; pengecualian V-04); ablasi cakupan span memakai `reports/044_data/coverage_replication.csv`.
 > Konvensi angka: pemisah ribuan titik, desimal koma (ID); Abstract EN memakai konvensi Inggris.
 
 ## Abstrak
@@ -50,11 +51,31 @@ Ulasan dikumpulkan dari 13 aplikasi bank digital di Google Play (37.825 ulasan; 
 | Ulasan memuat emoji | 3.524 (8,07%; total 6.748 emoji) |
 | Duplikat teks ulasan | 455 (1,04%) |
 
+**Tabel 2.** Statistik per aplikasi (13 aplikasi; `reports/044_data/review_stats.csv`).
+
+| Aplikasi | Ulasan | Rating rerata | Rating 1–2 |
+|---|---:|---:|---:|
+| bnc_neobank | 4.202 | 3,5 | 32,2% |
+| allo_bank | 4.088 | 3,2 | 38,5% |
+| jenius | 3.893 | 2,81 | 48,0% |
+| superbank | 3.831 | 3,21 | 37,7% |
+| permata_x | 3.581 | 2,62 | 51,2% |
+| blu_bca | 3.494 | 2,92 | 43,7% |
+| bank_jago | 3.420 | 2,8 | 47,8% |
+| wondr_bni | 3.089 | 2,58 | 54,8% |
+| seabank | 3.020 | 3,03 | 44,8% |
+| krom_bank | 2.962 | 3,48 | 31,3% |
+| bank_saqu | 2.841 | 2,62 | 53,2% |
+| amar_senyumku | 2.738 | 3,09 | 39,4% |
+| bank_raya | 2.514 | 3,22 | 40,6% |
+
+Volume ulasan per aplikasi relatif seimbang (2.514–4.202; rasio maksimum/minimum 1,67), tetapi kadar keluhan (rating 1–2) berbeda dua kali lipat antar aplikasi (31,3%–54,8%) — korpus tidak didominasi satu aplikasi, namun perbandingan antar aplikasi harus mengontrol baseline keluhan masing-masing.
+
 ### 3.2 Pipeline konstruksi
 
 Pipeline terdiri atas lima tahap (Tabel 2). Pelabelan lemah menghasilkan 96.417 baris `quintuples_weak.csv`; pemecahan klausa menghasilkan 80.260 klausa; 4.183 klausa tanpa pemisah dibuang (tercatat di `_build_acos_report.json`); hasil akhir 76.077 klausa memuat 92.074 kuadruplet.
 
-**Tabel 2.** Tahap konstruksi dan jumlah keluaran.
+**Tabel 3.** Tahap konstruksi dan jumlah keluaran.
 
 | Tahap | Keluaran | Jumlah |
 |---|---|---|
@@ -77,7 +98,7 @@ Enam gerbang otomatis mengawal konstruksi: (G1) gerbang bobot encoder — 199/19
 
 ### 4.1 Distribusi kategori dan sentimen
 
-**Tabel 3.** Distribusi 13 kategori dan sentimennya (92.074 kuadruplet; gabungan split).
+**Tabel 4.** Distribusi 13 kategori dan sentimennya (92.074 kuadruplet; gabungan split).
 
 | Kategori | Kuadruplet | Pangsa | Sentimen dominan (pangsa) |
 |---|---:|---:|---|
@@ -95,11 +116,15 @@ Enam gerbang otomatis mengawal konstruksi: (G1) gerbang bobot encoder — 199/19
 | PROMO_MARKETING | 1.822 | 1,98% | positif (68,9%) |
 | SECURITY_FRAUD | 1.822 | 1,98% | positif (57,2%) |
 
+![Gambar 1 — Distribusi kategori dan sentimen](fig25_kategori_sentimen_appsacos.png)
+
+*Gambar 1. Distribusi 13 kategori dan sentimennya (92.074 kuadruplet, gabungan split). Kategori diurutkan menurut jumlah kuadruplet. Sumber data: `reports/044_data/category_counts.csv`; skrip `scripts/figs_051_054_ablasi_grafik.py`.*
+
 Sentimen keseluruhan: negatif 45.824 (49,77%), positif 35.846 (38,93%), netral 10.404 (11,30%). Kategori teknis (kinerja aplikasi, autentikasi) hampir selalu negatif, sedangkan kategori pengalaman (antarmuka, bunga/hasil) condong positif — pola yang membatasi validitas metrik sentimen karena sentimen sebagian dapat diprediksi dari kategori saja; baseline kuantitatifnya dilaporkan pada draf terpisah.
 
 ### 4.2 Slot implisit dan panjang klausa
 
-**Tabel 4.** Slot implisit per split (kuadruplet gold).
+**Tabel 5.** Slot implisit per split (kuadruplet gold).
 
 | Split | Kuadruplet | Aspek implisit | Opini implisit |
 |---|---:|---:|---:|
@@ -108,11 +133,15 @@ Sentimen keseluruhan: negatif 45.824 (49,77%), positif 35.846 (38,93%), netral 1
 | test | 9.514 | 2.938 (30,88%) | 3.821 (40,16%) |
 | **total** | **92.074** | **27.726 (30,11%)** | **37.274 (40,48%)** |
 
+![Gambar 2 — Slot implisit per split](fig26_implisit_per_split.png)
+
+*Gambar 2. Pangsa slot aspek dan opini implisit per split. Selisih antar split di bawah 1,6 poin. Sumber data: `reports/044_data/split_stats.csv`; skrip `scripts/figs_051_054_ablasi_grafik.py`.*
+
 Proporsi slot implisit stabil antar split (selisih <1,6 poin), menandakan pemecahan klausa dan pembagian split tidak menggeser komposisi fenomena implisit. Panjang klausa median 6–7 kata dan maksimum 79 kata, jauh di bawah `max_seq_length` 128, sehingga tidak ada span yang terpotong.
 
 ### 4.3 Integritas data
 
-**Tabel 5.** Audit integritas: yang terverifikasi dan yang terbuka.
+**Tabel 6.** Audit integritas: yang terverifikasi dan yang terbuka.
 
 | Pemeriksaan | Hasil | Status |
 |---|---|---|
@@ -127,7 +156,22 @@ Proporsi slot implisit stabil antar split (selisih <1,6 poin), menandakan pemeca
 
 Kebocoran teks 14,66% berasal dari klausa pendek berulang (mis. "tidak bisa login"); seluruh metrik yang dilaporkan korpus ini adalah prak-deduplikasi dan akan dilengkapi metrik pada subset uji bersih pada pekerjaan lanjutan.
 
-### 4.4 Keterbatasan
+### 4.4 Ablasi definisi cakupan span
+
+Justifikasi kuantitatif untuk keputusan memakai klausa sebagai unit anotasi sensitif terhadap definisi tokenisasi dan normalisasi. Kami mengulang pengukuran cakupan span label lemah terhadap teks dengan empat kombinasi definisi (Tabel 7).
+
+**Tabel 7.** Ablasi definisi cakupan span: persentase span yang ditemukan di teks (`reports/044_data/coverage_replication.csv`).
+
+| Definisi | Aspek | Opini | Klausa |
+|---|---:|---:|---:|
+| Teks mentah, `str.split()` | 70,18% | 49,08% | — |
+| Teks mentah, sadar tanda baca | 80,71% | 68,52% | — |
+| Teks ternormalisasi, `str.split()` | 89,25% | 79,72% | 37,57% |
+| Teks ternormalisasi, sadar tanda baca | 100,00% | 100,00% | 100,00% |
+
+Ablasi ini memisahkan dua sumber kehilangan span: tokenisasi sadar tanda baca menaikkan cakupan aspek 10,5 poin pada teks mentah (70,18% → 80,71%), sedangkan normalisasi menaikkan 19,5 poin (80,71% → 100%). Kesimpulannya, kehilangan span pada pipeline ini bukan akibat panjang urutan (`max_seq_length` 128 tidak pernah melampaui klausa maksimum 79 kata), melainkan akibat perbedaan normalisasi antara teks mentah dan teks yang dilabeli. Keputusan memakai klausa tetap sah, dengan alasan yang diperbaiki: menjaga jendela model pada unit pendek, bukan menghindari pemotongan span.
+
+### 4.5 Keterbatasan
 
 Tiga keterbatasan utama: (i) label lemah tanpa verifikasi manusia — κ belum diukur, sehingga mutu label belum dapat dikuantifikasi; (ii) kebocoran teks 14,66% belum diremediasi; (iii) cakupan temporal 61,96% tahun 2026 membatasi generalisasi waktu. Kosakata aspek (362 istilah unik) dan opini (202 istilah unik) relatif tertutup, mengikuti sifat domain perbankan.
 
@@ -166,3 +210,6 @@ Korpus Apps-ACOS menyediakan 92.074 kuadruplet ACOS berbahasa Indonesia dari 76.
 | Kebocoran 14,66% · klausa unik 66.198 · ulasan tanpa tuple 3.136 | `docs/0011` §3.2 (audit artefak) | E2 |
 | Gerbang G1–G6 · 199/199 · 0 quad hilang | `docs/0012` §3.4 (survey artefak Drive) | E2 (via 0012) |
 | 362 istilah aspek · 202 opini | `docs/0012` §EDA (survey artefak) | E1 |
+| Statistik per aplikasi (Tabel 2) | `reports/044_data/review_stats.csv` | E2 |
+| Ablasi cakupan span (Tabel 7) | `reports/044_data/coverage_replication.csv` (skrip `scripts/eda_044_appsid.py`) | E2 |
+| Gambar 1–2 | `reports/fig25_*.png`, `fig26_*.png` (`scripts/figs_051_054_ablasi_grafik.py`) | E2 |
