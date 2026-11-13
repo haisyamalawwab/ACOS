@@ -3,6 +3,7 @@
 > **Tanggal inventaris:** 3 November 2026
 > **Ruang lingkup:** semua berkas `.md` di `ACOS-IndoBERT/REFERENCES/` beserta daftar PDF yang menyertainya.
 > **Indeks saudara:** [REFERENSI/INDEX_REFERENSI.md](../REFERENSI/INDEX_REFERENSI.md) memetakan tiga dokumen Markdown berbahasa Indonesia di direktori `REFERENSI/`.
+> **Pembaruan 13/11/2026:** merge `baa3cc8` (PR #24 fork `zoom2uwg`) menambah 4 Markdown baru, menulis ulang `TinjauanABSA.md`, dan menambah 2 PDF (satu di subfolder `Dataset/`) **tanpa** memperbarui indeks ini. Baris-baris berikut telah diperbarui sesi Arena dengan metode audit `reports/050` (hash SHA-256, hitungan DOI regex, ekstraksi halaman judul PDF); statistik lama 3/11 ada di riwayat git.
 
 ## Daftar isi indeks
 
@@ -15,11 +16,11 @@
 
 ## Ikhtisar dan statistik
 
-- **27 dokumen Markdown**; **17** memakai heading Markdown dan **10** tidak memiliki heading Markdown eksplisit.
-- **19 PDF** berada di folder ini.
-- Pustaka memuat **844 DOI unik-per-dokumen**; setelah deduplikasi lintas dokumen terdapat **501 DOI unik**. Angka ini hanya menghitung string DOI, bukan validasi metadata.
+- **31 dokumen Markdown**; **22** memakai heading Markdown (21 dengan heading multi-level; `TinjauanABSA.md` hasil penulisan-ulang kini hanya memuat judul `#`) dan **9** tidak memiliki heading Markdown eksplisit.
+- **21 PDF** berada di folder ini, termasuk subfolder `Dataset/` yang baru.
+- Pustaka memuat **988 DOI unik-per-dokumen**; setelah deduplikasi lintas dokumen terdapat **657 DOI unik**. Angka ini hanya menghitung string DOI, bukan validasi metadata.
 - Scope literatur mencakup ABSA/ASTE/ACOS/ACOSE, IndoBERT/perbankan, emosi, label/data, domain game/hotel, BERTopic, hyperparameter, robustness, dan NLP Indonesia/code-mixing.
-- Teridentifikasi dua pasangan `.md` identik byte-per-byte (satu di folder ini, satu di folder saudara) serta dua pasangan near-duplicate lintas-folder dengan set DOI sama; lihat temuan audit.
+- Teridentifikasi pasangan `.md` identik byte-per-byte: `ABSA Bank Digital.md` = `Deep Critical and Mapping ABSA.md` (dalam folder ini), satu pasangan lintas-folder saudara, dan **pasangan baru** `Tinjauan ACOSE-ACOSI-ACOS.md` = `TinjauanACOS-ACOSE-ACOSI.md` (hash SHA-256 sama, dalam folder ini); ditambah dua pasangan near-duplicate lintas-folder dengan set DOI sama; lihat temuan audit.
 
 ### Peta dokumen (nama file, fokus, sitasi DOI)
 
@@ -38,8 +39,10 @@
 | [BERT lebih Unggul dari ML.md](./BERT%20lebih%20Unggul%20dari%20ML.md) | Klaim perbandingan BERT dengan model klasik untuk ABSA bank | 14 | heading Markdown |
 | [BERTopic X ABSA.md](./BERTopic%20X%20ABSA.md) | Integrasi BERTopic dengan ABSA dan batas bukti | 50 | heading Markdown |
 | [Deep Critical and Mapping ABSA.md](./Deep%20Critical%20and%20Mapping%20ABSA.md) | Salinan identik tinjauan ABSA bank digital | 23 | heading Markdown |
+| [Ekstraksi ACOSI.md](./Ekstraksi%20ACOSI.md) | ACOSI vs ACOS/ACOSQE/ASQP; quintuple dan status validasi emosi; ulasan aplikasi Indonesia | 74 | heading Markdown |
 | [Ekstraksi Quandruple ACOS.md](./Ekstraksi%20Quandruple%20ACOS.md) | Formulasi quadruple ACOS dan keluarga model | 44 | heading Markdown |
 | [Implementasi ACOSE.md](./Implementasi%20ACOSE.md) | Rancangan alur implementasi ACOSE lintas paradigma | 17 | outline sintetis; tanpa heading |
+| [IndoBERT ABSA.md](./IndoBERT%20ABSA.md) | Keunggulan IndoBERT untuk ABSA perbankan/fintech Indonesia; celah bukti 13 bank sekaligus | 20 | heading Markdown |
 | [IndoBERT Unggul.md](./IndoBERT%20Unggul.md) | Kinerja IndoBERT, ekstraksi aspek, dan opsi hybrid ACOSE | 6 | outline sintetis; tanpa heading |
 | [Indonesia AI NLP Mixed Code.md](./Indonesia%20AI%20NLP%20Mixed%20Code.md) | Pemetaan NLP/AI untuk Indonesia, bahasa daerah, dan code-mixing | 24 | heading Markdown |
 | [Integrasi ACOSE.md](./Integrasi%20ACOSE.md) | Rasionalisasi integrasi aspek, sentimen, emosi; ML/DL/LLM | 18 | outline sintetis; tanpa heading |
@@ -51,7 +54,9 @@
 | [Optimasi UMAP BERTopic.md](./Optimasi%20UMAP%20BERTopic.md) | Parameter UMAP/HDBSCAN, coherence, dan outlier BERTopic | 26 | heading Markdown |
 | [Pemetaan ABSA.md](./Pemetaan%20ABSA.md) | Taksonomi triplet dan subtask ABSA | 70 | heading Markdown |
 | [Rekomendasi ACOSE.md](./Rekomendasi%20ACOSE.md) | Rekomendasi arah pengembangan ACOSE dan intensitas | 12 | outline sintetis; tanpa heading |
-| [TinjauanABSA.md](./TinjauanABSA.md) | Tinjauan ABSA dual extraction pada game (versi tanpa heading Markdown) | 58 | outline sintetis; tanpa heading |
+| [TinjauanABSA.md](./TinjauanABSA.md) | Tinjauan ABSA dual extraction pada game (ditulis ulang 13/11/2026; kini hanya judul `#`, isi tanpa heading) | 58 | judul saja |
+| [Tinjauan ACOSE-ACOSI-ACOS.md](./Tinjauan%20ACOSE-ACOSI-ACOS.md) | Sintesis 50 paper ACOS/ACOSQE/ACOSI (Consensus Deep Search) | 24 | heading Markdown |
+| [TinjauanACOS-ACOSE-ACOSI.md](./TinjauanACOS-ACOSE-ACOSI.md) | Salinan identik `Tinjauan ACOSE-ACOSI-ACOS.md` (hash sama) | 24 | heading Markdown |
 
 ## Peta tema dan kematangan bukti
 
@@ -69,13 +74,14 @@
 ### Duplikasi dan versi dokumen
 
 - **Duplikat identik:** `ABSA Bank Digital.md` = `Deep Critical and Mapping ABSA.md`.
+- **Duplikat identik (baru, 13/11/2026):** `Tinjauan ACOSE-ACOSI-ACOS.md` = `TinjauanACOS-ACOSE-ACOSI.md` — hash SHA-256 `a92644b4f4ee482a…` sama, keduanya di folder ini; tetapkan satu kanonik (T3 `reports/050`).
 - **Kandidat near-duplicate lintas berkas:** `ABSA Dual Extraction.md` ↔ `TinjauanABSA.md`; DOI bersama **58**; kemiripan teks setelah normalisasi spasi **98.2%**. Periksa perubahan substansi dan tetapkan satu versi kanonik.
 - `ACOS-IndoBERT/REFERENSI/ACOS Menangkap Struktur Implicit Explicit BUKAN EMOSI.md` identik byte-per-byte dengan `REFERENCES/Limitation ACOS.md` (diduplikasi lintas folder).
 - File `Analisi IndoBERT.md` di folder ini memiliki 62 DOI yang sama dan kemiripan teks sekitar 98,5% dengan `REFERENSI/Analisis IndoBERT 13 BANK DIGITAL.md`; indikasi salinan/versi.
 
 ### Mutu struktur dan provenance
 
-- **10/27 Markdown tidak menggunakan heading `#`.** Untuk dokumen tersebut indeks berikut menyajikan outline hasil pemetaan dari title dan label paragraf/tabel, bukan TOC yang sudah tertulis di sumber. Disarankan menambahkan heading Markdown di sumber secara konsisten.
+- **9/31 Markdown tidak menggunakan heading `#`.** Untuk dokumen tersebut indeks berikut menyajikan outline hasil pemetaan dari title dan label paragraf/tabel, bukan TOC yang sudah tertulis di sumber. Disarankan menambahkan heading Markdown di sumber secara konsisten.
 - Banyak dokumen berformat sintesis Consensus mengulang funnel `Retrieved/Eligible/Included`; query, tanggal pencarian, inklusi-eksklusi, deduplikasi, daftar studi included, dan locator klaim belum seragam. Jangan menganggap angka tersebut systematic review yang dapat direplikasi tanpa log pencarian.
 - Caption `Figure`/`Table` muncul dalam beberapa Markdown sebagai teks, tetapi gambar/table pendukung tidak selalu embedded atau ditautkan. Verifikasi setiap figure/table sebelum dikutip.
 - Sebagian besar daftar pustaka adalah kumpulan citation inline dan DOI; **tidak semua DOI/metadata diverifikasi terhadap sumber penerbit** oleh survei ini.
@@ -447,7 +453,7 @@
 
 ## Inventaris PDF pendukung
 
-> PDF dicatat sebagai lampiran/referensi; isi PDF belum diekstrak atau diverifikasi dalam survei Markdown ini.
+> PDF dicatat sebagai lampiran/referensi; isi PDF belum diekstrak atau diverifikasi dalam survei Markdown ini — **kecuali dua PDF baru 13/11/2026** yang halaman judulnya telah diekstrak (lihat catatan di bawah daftar).
 
 - [ABOSA_Aspect_Based_Opinion_and_Sentiment_Analysis.pdf](./ABOSA_Aspect_Based_Opinion_and_Sentiment_Analysis.pdf) (523,492 bytes)
 - [ACOS_ACOSQE_Aspect_Category_Opinion_Sentiment_Qu (1).pdf](./ACOS_ACOSQE_Aspect_Category_Opinion_Sentiment_Qu%20%281%29.pdf) (408,074 bytes)
@@ -468,6 +474,10 @@
 - [Survey_and_Mapping_Deep_Critical_Analysis_Aspect.pdf](./Survey_and_Mapping_Deep_Critical_Analysis_Aspect.pdf) (421,578 bytes)
 - [What_are_the_state-of-the-art_approaches_for_Multi.pdf](./What_are_the_state-of-the-art_approaches_for_Multi.pdf) (205,378 bytes)
 - [what_is_aspect_based_sentiment_analysis.pdf](./what_is_aspect_based_sentiment_analysis.pdf) (162,509 bytes)
+- [2022.findings-emnlp.451.pdf](./2022.findings-emnlp.451.pdf) (4,616,536 bytes)
+- [Dataset/2024.findings-emnlp.907.pdf](./Dataset/2024.findings-emnlp.907.pdf) (1,460,115 bytes)
+
+**Catatan dua PDF baru (13/11/2026):** keduanya adalah **paper primer**, bukan ekspor Consensus — pertama kali folder ini memuat paper asli. Identitas diekstrak dari halaman judul: (1) Peper & Wang, "Generative Aspect-Based Sentiment Analysis with Contrastive Learning and Expressive Structure", *Findings of EMNLP 2022*, hlm. 6089–6095, 7 halaman; (2) Peper, Qiu, Bruggeman, Han, Ciliotta Chehade, & Wang, "Shoes-ACOSI: A Dataset for Aspect-Based Sentiment Analysis with Implicit Opinion Extraction", *Findings of EMNLP 2024*, hlm. 15477–15490, 14 halaman. DOI keduanya belum diverifikasi eksternal (tunggakan T1 `reports/050`).
 
 ## Batas survei
 
