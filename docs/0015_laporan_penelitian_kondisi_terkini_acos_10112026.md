@@ -72,7 +72,7 @@ Angka 0,07% untuk implisit–implisit **bukan temuan linguistik**. Ia artefak me
 | Step-2 rest16 (BERT) | 48,24% F1, epoch 12 dari 15 | E2 (`notebooks/04` sel 12) | Dipakai sebagai kontrol, dengan catatan selisih tidak signifikan |
 | Step-2 appsid sesi 05/09 | 3 epoch: 67,16 / 66,55 / **69,00** | E2 | **Batas bawah interim**, bukan hasil konvergen |
 | Step-2 appsid sesi 09/01 | 67,69% (TP/FP/FN 6.681/4.052/2.325) | E1 | **Belum dapat dipakai** — lihat §4.1 |
-| 15 sub-tugas | 91,08% → 66,08% (rest16, bukan appsid) | E2 | Berlaku hanya untuk rest16 |
+| 15 sub-tugas (appsid, interim) | 91,08% → 66,08%; padanan rest16 79,66% → 48,24% | E1 | **Erratum 12/11/2026:** versi awal laporan ini salah menandai 91,08→66,08 sebagai "rest16" — menurut `docs/0011` §4.3 dan `reports/048` §3.3 deret itu adalah dekomposisi **IndoBERT appsid (interim)**; kolom rest16 (BERT) adalah 79,66→48,24. Angka ini juga terkena temuan dua evaluator (T08, gold 9.006 vs 19.528) sehingga perlu dihitung ulang |
 | *Cross-validation* | 94 run, 93 ERROR, **0 skor sah** | E2 (`run_result.json`) | **Tidak boleh dikutip** |
 | Gerbang bobot (Gate-1) | 199 dari 199 key, rerata identik | E2 | Lulus |
 | Audit embedding | vocab 30.521 vs config 50.000; 25.992 span bergeser (14,12%) | E2 | Catatan teknis, bukan cacat baru |

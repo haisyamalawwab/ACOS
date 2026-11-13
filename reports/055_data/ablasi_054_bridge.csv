@@ -1,0 +1,12 @@
+ukuran,nilai
+klausa_test,7891
+kuadruplet_gold_test,9514
+pasangan_unik,9513
+kandidat_kartesian_oracle,11378
+rasio_kandidat_gold,1.196
+cakupan_pasangan_gold_pct,100.0
+pasangan_multi_sentimen,1
+kuadruplet_di_pasangan_multi_sentimen,2
+pasangan_multi_kategori,0
+kuadruplet_di_pasangan_multi_kategori,0
+batas_atas_recall_satu_label_pct,99.99
